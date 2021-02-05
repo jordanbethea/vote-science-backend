@@ -1,0 +1,16 @@
+@import models.dto.SlateDTO
+@(slate: SlateDTO)
+
+@main("Vote on this slate") {
+    <h2>@(slate.title)</h2>
+    @for(question <- slate.questions) {
+        <div>
+            <label>@(question.text)</label>
+            <select>
+                @for(candidate <- question.candidates) {
+                    <option id="@(candidate.id.get)">@(candidate.name) - @(candidate.description)</option>
+                }
+            </select>
+        </div>
+    }
+}

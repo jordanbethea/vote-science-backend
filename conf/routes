@@ -1,0 +1,28 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# https://www.playframework.com/documentation/latest/ScalaRouting
+# ~~~~
+
+# An example controller showing a sample home page
+GET     /                           controllers.HomeController.index()
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+
+#### FROM OLD VERSION. MIGHT NEED UPDATING
+# create Slate
+POST    /api/createSlate            controllers.CreationController.createSlate()
+
+# return list of all slates
+GET     /api/slates                 controllers.CreationController.getSlates
+
+# load voting interface for a given slate
+GET     /api/vote/:ballotID         controllers.VotingController.loadBallot(ballotID: Long)
+
+# save vote data for a specific ballot
+POST    /api/vote/:ballotID         controllers.VotingController.saveBallot(ballotID: Long)
+
+# get results info for given slate (just testing purposes atm)
+GET     /api/results/:slateID       controllers.VotingController.getSlateResults(slateID: Long)
+
