@@ -36,8 +36,7 @@ class CreationController @Inject()(slatesRepo: SlateRepository,
     }
   }
 
-  def getSlates = Action.async {
-    val allSlatesF = slatesRepo.listAll
+  def getSlates = Action.async {val allSlatesF = slatesRepo.listAll
     val allQuestionsF = questionRepo.listAll
     val allCandidatesF = candidateRepo.listAll
 
@@ -51,6 +50,7 @@ class CreationController @Inject()(slatesRepo: SlateRepository,
       val jsonSlate = Json.toJson(SlateRepository.constructSlateDTO(slates, questions, candidates))
       Ok(jsonSlate)
     }
+
   }
 
 }

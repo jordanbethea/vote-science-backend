@@ -15,13 +15,10 @@ This is an app to implement and experiment with different voting methods.
 3. Allow users to create simulations of votes on slates using large numbers of generated voters and votes.  
 
  
-Used the 
-[Scala Play Angular Seed](http://bit.ly/2AStvhK) as the seed for the code.
-
-
+Used 
+* Scala 2.13
 * [Play Framework: 2.8.0](https://www.playframework.com/documentation/2.8.x/Home)
-* [Angular: 8.x.x](https://angular.io/)
-* [Angular CLI: 8.3.9](https://cli.angular.io/)
+* Play-Slick integration
 
 
 ### Useful Info (for myself):

@@ -1,0 +1,15 @@
+@import models.db.Slate
+@import models.dto.SlateDTO
+@(slates: List[SlateDTO])
+@main("List of all slates")(play.twirl.api.HtmlFormat.empty) {
+    <ul>
+    @for(slate <- slates) {
+        <li>
+            <a href=@{
+                s"slates/${slate.id.getOrElse(0)}"
+            }> @(slate.title)</a>
+            @slate.creator
+        </li>
+    }
+    </ul>
+}

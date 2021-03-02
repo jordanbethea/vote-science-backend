@@ -1,7 +1,7 @@
 @import models.dto.SlateDTO
 @(slate: SlateDTO)
 
-@main("Vote on this slate") {
+@main("Vote on this slate")(play.twirl.api.HtmlFormat.empty) {
     <h2>@(slate.title)</h2>
     @for(question <- slate.questions) {
         <div>

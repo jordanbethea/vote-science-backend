@@ -6,6 +6,19 @@
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index()
 
+# Load form for creating a new slate
+GET     /createSlate                controllers.CreationWebController.createSlateForm()
+
+# New Form submission
+POST    /createSlate                controllers.CreationWebController.createSlate()
+
+# slate info page
+GET     /slates/:slateID             controllers.CreationWebController.slateInfo(slateID: Long)
+
+# list of all slates
+GET     /slateList                  controllers.CreationWebController.slateList()
+
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
