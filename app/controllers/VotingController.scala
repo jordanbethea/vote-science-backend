@@ -59,25 +59,28 @@ class VotingController @Inject()(slatesRepo: SlateRepository, ballotRepo: Ballot
     Console.println("running getSlateResults")
     for {
       voteResults <- ballotRepo.getBallotsForSlate(slateID)
-      fptpResults <- fptpRepo.getChoicesForBallots(voteResults.map(_.id))
+      //fptpResults <- fptpRepo.getChoicesForBallots(voteResults.map(_.id))
 
     } yield {
-      val details: Seq[BallotDetailsDTO] = voteResults.map(ballot => BallotDetailsDTO(Option(ballot.id), ballot.voter, ballot.slateID))
-      val fptpModel : Seq[FPTPChoiceDTO] = fptpResults.map(choices => FPTPChoiceDTO(choices.ballotID, choices.questionID, choices.candidateID))
-      val ballots = constructFullBallots(details, fptpModel)
-      Console.println(s"slate results length: ${ballots.length}, full value: ${ballots.mkString(" ")}")
-      Ok(Json.toJson(ballots))
+      //val details: Seq[BallotDetailsDTO] = voteResults.map(ballot => BallotDetailsDTO(Option(ballot.id), ballot.voter, ballot.slateID))
+      //val fptpModel : Seq[FPTPChoiceDTO] = fptpResults.map(choices => FPTPChoiceDTO(choices.questionID, choices.candidateID))
+      //TODO - update to use the updated FPTPChoiceDTO without the ballot ID
+      //val ballots = constructFullBallots(details, fptpModel)
+      //Console.println(s"slate results length: ${ballots.length}, full value: ${ballots.mkString(" ")}")
+      //Ok(Json.toJson(ballots))
+      Ok("TODO: Fix Later")
     }
   }
 
-  def constructFullBallots(ballotDetails: Seq[BallotDetailsDTO], fptpChoices: Seq[FPTPChoiceDTO]) : Seq[BallotDTO] = {
-    for {
-      ballotDetail <- ballotDetails
-      ballotFPTP = fptpChoices.filter(_.ballotID == ballotDetail.id.getOrElse(0))
-    } yield {
-      BallotDTO(ballotDetail, Option(FPTPModelDTO(ballotFPTP)))
-    }
-  }
+  //TODO - update to use the updated FPTPChoiceDTO without the ballot ID
+//  def constructFullBallots(ballotDetails: Seq[BallotDetailsDTO], fptpChoices: Seq[FPTPChoiceDTO]) : Seq[BallotDTO] = {
+//    for {
+//      ballotDetail <- ballotDetails
+//      ballotFPTP = fptpChoices.filter(_.ballotID == ballotDetail.id.getOrElse(0))
+//    } yield {
+//      BallotDTO(ballotDetail, Option(FPTPModelDTO(ballotFPTP)))
+//    }
+//  }
 
 
 }

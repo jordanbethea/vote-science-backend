@@ -7,8 +7,9 @@
         <li>
             <a href=@{
                 s"slates/${slate.id.getOrElse(0)}"
-            }> @(slate.title)</a>
-            @slate.creator
+            }>View Details for @(slate.title)</a>
+            Created by @slate.creator
+            <a href=@{s"slates/${slate.id.getOrElse(0)}/vote"}>Vote on @{slate.title}</a>
         </li>
     }
     </ul>

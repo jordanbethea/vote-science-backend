@@ -1,7 +1,7 @@
 package controllers
 
 import javax.inject._
-import models.db.{CandidateRepository, QuestionRepository, SlateRepository}
+import models.db.{BallotRepository, CandidateRepository, QuestionRepository, SlateRepository}
 import models.dto._
 import play.api.data._
 import play.api.data.Forms._
@@ -12,15 +12,21 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class CreationWebController @Inject()(slatesRepo: SlateRepository, questionRepo: QuestionRepository,
                                       candidateRepo: CandidateRepository,
+                                      ballotRepo: BallotRepository,
                                        val controllerComponents: ControllerComponents,
                                       messagesAction: MessagesActionBuilder)
                                      (implicit ex: ExecutionContext) extends BaseController {
 
 
   def slateInfo(slateID: Long) = Action.async {
-    slatesRepo.getFullSlate(slateID).map { result =>
-      Ok(views.html.slateInfo(result))
+
+    for {
+      slateInfo <- slatesRepo.getFullSlate(slateID)
+      ballots <- ballotRepo.getBallotsForSlate(slateID)
+    } yield {
+      Ok(views.html.slateInfo(slateInfo, ballots))
     }
+
   }
 
   def slateList() = Action.async {

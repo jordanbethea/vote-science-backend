@@ -11,15 +11,15 @@ import scala.concurrent.{ExecutionContext, Future}
 case class FPTPChoice(ballotID: Long, questionID: Long, candidateID:Long)
 
 object FPTPChoice {
-  implicit def choiceDTOToDB(dto: FPTPChoiceDTO): FPTPChoice = {
-    FPTPChoice(dto.ballotID, dto.questionID, dto.candidateID)
+  implicit def choiceDTOToDB(dto: FPTPChoiceDTO, ballotID: Long): FPTPChoice = {
+    FPTPChoice(ballotID, dto.questionID, dto.candidateID)
   }
 
   implicit def seqDTOToSeqDB(dto: Seq[FPTPChoiceDTO], ballotID: Long): Seq[FPTPChoice] = {
     for {
       i <- dto
     } yield {
-      choiceDTOToDB(i)
+      choiceDTOToDB(i, ballotID)
     }
   }
 

@@ -23,7 +23,7 @@ object FPTPModelDTO {
   implicit val fptpModelReads: Reads[FPTPModelDTO] = Json.reads[FPTPModelDTO]
 }
 
-case class FPTPChoiceDTO (ballotID: Long, questionID: Long, candidateID: Long)
+case class FPTPChoiceDTO (questionID: Long, candidateID: Long)
 
 object FPTPChoiceDTO {
   implicit val fptpChoiceWrites: Writes[FPTPChoiceDTO] = Json.writes[FPTPChoiceDTO]

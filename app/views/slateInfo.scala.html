@@ -1,5 +1,6 @@
 @import models.dto.SlateDTO
-@(slateOption: Option[SlateDTO])
+@import models.dto.BallotDTO
+@(slateOption: Option[SlateDTO], ballots: Seq[BallotDTO])
 
 @title = @{if(slateOption.isDefined){s"Info for slate ${slateOption.get.title}"} else {"Not a valid slate!"}}
 
@@ -7,16 +8,19 @@
 
     @if(slateOption.isDefined) {
         @defining(slateOption.get) { slate =>
-            @slate = slateOption.get
+            @* @slate = slateOption.get *@
             <p>Title: @slate.title</p>
             <p>Creator: @slate.creator</p>
             <p>Questions</p>
             @for(question <- slate.questions) {
-                <p>Text: @question.text</p>
+                <h6>Text: @question.text</h6>
                 @for(candidate <- question.candidates) {
-                    <p>@candidate.name</p>
-                    <p>@candidate.description</p>
+                    <p>@candidate.name - @candidate.description</p>
                 }
+            }
+            Ballots Cast: @ballots.length
+            @for(ballot <- ballots) {
+                <p>Cast by @ballot.details.voter</p>
             }
         }
     } else {
