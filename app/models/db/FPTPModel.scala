@@ -45,28 +45,17 @@ object FPTPRepository {
     val choicesWithBallotID = fptpData.choices.map(entry => FPTPChoice(ballotID, entry.questionID, entry.candidateID))
     FPTPRepository.fptpResults ++= choicesWithBallotID
   }
+
+  def getFPTPDataForBallotsQuery(ballotIDs: Seq[Long]): DBIO[Seq[FPTPChoice]] = {
+    FPTPRepository.fptpResults.filter(_.ballotID.inSet(ballotIDs)).result
+  }
 }
 
 class FPTPRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
                               (implicit executionContext: ExecutionContext)
                 extends HasDatabaseConfigProvider[JdbcProfile]{
 
-
-
-//  def addFullBallot(ballot: BallotDTO, choices: FPTPModelDTO): Future[Long] = {
-//      val ballotDB : Ballot = Ballot(ballot.id.getOrElse(0), ballot.slateID, ballot.voter)
-//      val tx = for {
-//        newBallotId <- BallotRepository.ballotsInserts += ballotDB
-//        choicesWithBallotID = choices.choices.map(entry => FPTPChoice(newBallotId, entry.questionID, entry.candidateID))
-//        _ <- FPTPRepository.fptpResults ++= choicesWithBallotID
-//      } yield (newBallotId)
-//
-//    tx.transactionally
-//    db.run(tx)
-//  }
-
-
-  def addRun(choice: FPTPChoice): Future[Int] = {
+    def addRun(choice: FPTPChoice): Future[Int] = {
     dbConfig.db.run(FPTPRepository.fptpResults += choice)
   }
 

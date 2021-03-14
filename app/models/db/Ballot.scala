@@ -1,7 +1,7 @@
 package models.db
 
 import com.google.inject.Inject
-import models.dto.{BallotDTO, BallotDetailsDTO, FPTPModelDTO}
+import models.dto.{BallotDTO, BallotDetailsDTO, FPTPChoiceDTO, FPTPModelDTO}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.dbio.DBIOAction
 import slick.jdbc.H2Profile.api._
@@ -69,19 +69,21 @@ class BallotRepository @Inject()(protected val dbConfigProvider: DatabaseConfigP
   }
 
   def getBallotsForSlate(slateID: Long): Future[Seq[BallotDTO]] = {
-    //Console.println(s"running getBallotsForSlate in ballot repo - total ballots ${BallotRepository.ballots.length.results}")
-    val ballotsF: Future[Seq[Ballot]] = dbConfig.db.run(BallotRepository.ballots.filter(_.slateID === slateID).result)
-    //val fptpF: Future[Seq[FPTPChoice]] = dbConfig.db.run(FPTPRepository.)
-    for {
-      ballots <- ballotsF
+    val ballotsQ: DBIO[Seq[Ballot]] = BallotRepository.ballots.filter(_.slateID === slateID).result
+
+    val tx = for {
+      ballots <- ballotsQ
+      fptpChoices <- FPTPRepository.getFPTPDataForBallotsQuery(ballots.map(_.id))
     } yield {
       ballots.map{
         ballot =>
           val details = new BallotDetailsDTO(Option(ballot.id), ballot.voter, ballot.slateID)
-          new BallotDTO(details, None)
+          val choicesForBallot = fptpChoices.filter(_.ballotID == ballot.id)
+          val fptpModel = new FPTPModelDTO(choicesForBallot.map(choice => FPTPChoiceDTO(choice.questionID, choice.candidateID)))
+          new BallotDTO(details, Option(fptpModel))
       }
     }
+    db.run(tx)
   }
-
 
 }

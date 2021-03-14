@@ -21,6 +21,12 @@
             Ballots Cast: @ballots.length
             @for(ballot <- ballots) {
                 <p>Cast by @ballot.details.voter</p>
+                @if(ballot.fptpModel.nonEmpty) {
+                    <p>FPTP Info</p>
+                    @for(choice <- ballot.fptpModel.get.choices) {
+                        <p>Question: @choice.questionID , Choice: @choice.candidateID</p>
+                    }
+                }
             }
         }
     } else {
