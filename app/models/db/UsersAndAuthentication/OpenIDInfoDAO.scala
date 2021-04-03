@@ -1,8 +1,10 @@
 package models.db.UsersAndAuthentication
 
 import com.mohiva.play.silhouette.api.LoginInfo
+
+import scala.reflect.ClassTag
 //import com.mohiva.play.silhouette.impl.daos.DelegableAuthInfoDAO
-import com.mohiva.play.silhouette.persistence.daos.AuthInfoDAO
+import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.impl.providers.OpenIDInfo
 import javax.inject.Inject
 //import play.api.libs.concurrent.Execution.Implicits._
@@ -14,9 +16,9 @@ import slick.jdbc.H2Profile.api._
  * The DAO to store the OpenID information.
  */
 class OpenIDInfoDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)
-                              (implicit val executionContext: ExecutionContext)
-    extends AuthInfoDAO[OpenIDInfo] with DAOSlick {
-
+                              (implicit val executionContext: ExecutionContext,
+                               implicit val classTag: ClassTag[OpenIDInfo])
+    extends DelegableAuthInfoDAO[OpenIDInfo] with DAOSlick {
 
   protected def openIDInfoQuery(loginInfo: LoginInfo) = for {
     dbLoginInfo <- loginInfoQuery(loginInfo)

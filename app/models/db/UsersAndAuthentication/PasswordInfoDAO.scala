@@ -2,8 +2,10 @@ package models.db.UsersAndAuthentication
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
+
+import scala.reflect.ClassTag
 //import com.mohiva.play.silhouette.impl.daos.DelegableAuthInfoDAO
-import com.mohiva.play.silhouette.persistence.daos.AuthInfoDAO
+import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 //import play.api.libs.concurrent.Execution.Implicits._
 import javax.inject.Inject
 //import play.api.libs.concurrent.Execution.Implicits._
@@ -15,9 +17,9 @@ import slick.jdbc.H2Profile.api._
  * The DAO to store the password information.
  */
 class PasswordInfoDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)
-                                (implicit executionContext: ExecutionContext)
-    extends AuthInfoDAO[PasswordInfo] with DAOSlick {
-
+                                (implicit executionContext: ExecutionContext,
+                                 implicit val classTag: ClassTag[PasswordInfo])
+    extends DelegableAuthInfoDAO[PasswordInfo] with DAOSlick {
 
   protected def passwordInfoQuery(loginInfo: LoginInfo) = for {
     dbLoginInfo <- loginInfoQuery(loginInfo)

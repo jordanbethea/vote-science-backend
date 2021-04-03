@@ -6,6 +6,7 @@ import models.dto._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.mvc._
+import services.UserService
 
 import scala.concurrent.ExecutionContext
 
@@ -14,7 +15,8 @@ class CreationWebController @Inject()(slatesRepo: SlateRepository, questionRepo:
                                       candidateRepo: CandidateRepository,
                                       ballotRepo: BallotRepository,
                                        val controllerComponents: ControllerComponents,
-                                      messagesAction: MessagesActionBuilder)
+                                      messagesAction: MessagesActionBuilder,
+                                      userService: UserService)
                                      (implicit ex: ExecutionContext) extends BaseController {
 
 

@@ -28,7 +28,8 @@ CREATE TABLE CANDIDATES (
 CREATE TABLE BALLOTS (
     id bigint(20) NOT NULL AUTO_INCREMENT,
     slate_id bigint(20) references SLATES(id),
-    voter varchar(255) NOT NULL
+    voter varchar(255) NOT NULL,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE FPTP_CHOICES (
@@ -43,13 +44,16 @@ CREATE TABLE USER (
     lastname varchar(255) NULL,
     fullname varchar(255) NULL,
     email varchar(255) NULL,
-    avatarurl varchar(255) NULL
+    avatarurl varchar(255) NULL,
+    activated boolean NOT NULL,
+    PRIMARY KEY (userid)
 );
 
 CREATE TABLE LOGIN_INFO (
     id bigint(20) NOT NULL AUTO_INCREMENT,
     providerid varchar(255) NOT NULL,
-    providerkey varchar(255) NOT NULL
+    providerkey varchar(255) NOT NULL,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE USER_LOGIN_INFO (
@@ -62,6 +66,36 @@ CREATE TABLE PASSWORD_INFO (
     password varchar(255) NOT NULL,
     salt varchar(255) NULL,
     logininfoid bigint(20) NOT NULL
+);
+
+CREATE TABLE OAUTH1INFO (
+    id bigint(20) NOT NULL AUTO_INCREMENT,
+    token varchar(255) NOT NULL,
+    secret varchar(255) NOT NULL,
+    logininfoid bigint(20) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE OAUTH2INFO (
+    id bigint(20) NOT NULL AUTO_INCREMENT,
+    accesstoken varchar(255) NOT NULL,
+    tokentype varchar(255) NULL,
+    expiresin int(20) NULL,
+    refreshtoken varchar(255) NULL,
+    logininfoid bigint(20) NOT NULL,
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE OPENIDINFO (
+    id varchar(255) NOT NULL,
+    logininfoid bigint(20) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE OPENIDATTRIBUTES (
+    id varchar(255) NOT NULL,
+    key varchar(255) NOT NULL,
+    value varchar(255) NOT NULL
 );
 
 
@@ -77,3 +111,7 @@ DROP TABLE USER;
 DROP TABLE LOGIN_INFO;
 DROP TABLE USER_LOGIN_INFO;
 DROP TABLE PASSWORD_INFO;
+DROP TABLE OAUTH1INFO;
+DROP TABLE OAUTH2INFO;
+DROP TABLE OPENIDINFO;
+DROP TABLE OPENIDATTRIBUTES;

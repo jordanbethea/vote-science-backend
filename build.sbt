@@ -21,7 +21,20 @@ libraryDependencies ++= Seq(
   "com.mohiva" %% "play-silhouette-password-bcrypt" % "7.0.0",
   "com.mohiva" %% "play-silhouette-crypto-jca" % "7.0.0",
   "com.mohiva" %% "play-silhouette-persistence" % "7.0.0",
-  "com.mohiva" %% "play-silhouette-testkit" % "7.0.0" % "test"
+  "com.mohiva" %% "play-silhouette-totp" % "7.0.0",
+  "com.typesafe.play" %% "play-mailer" % "7.0.1",
+  "com.typesafe.play" %% "play-mailer-guice" % "7.0.1",
+  "com.mohiva" %% "play-silhouette-testkit" % "7.0.0" % "test",
+  "net.codingwell" %% "scala-guice" % "4.2.6",
+  "com.iheart" %% "ficus" % "1.4.7",
+  "com.enragedginger" %% "akka-quartz-scheduler" % "1.8.3-akka-2.6.x",
+  "com.adrianhurt" %% "play-bootstrap" % "1.6.1-P28-B4"
+)
+
+libraryDependencies ++= Seq(
+  "org.webjars" %% "webjars-play" % "2.8.0",
+  "org.webjars" % "bootstrap" % "4.4.1" exclude("org.webjars", "jquery"),
+  "org.webjars" % "jquery" % "3.2.1"
 )
 
 // Adds additional packages into Twirl

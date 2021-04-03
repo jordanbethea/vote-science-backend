@@ -6,6 +6,39 @@
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index()
 
+# User/Authentication related tasks
+#GET     /signOut                    controllers.UserControllers.ApplicationController.signOut
+#GET     /authenticate/:provider     controllers.UserControllers.SocialAuthController.authenticate(provider)
+
+#GET     /signUp                     controllers.UserControllers.SignUpController.view
+#POST    /signUp                     controllers.UserControllers.SignUpController.submit
+
+#GET     /signIn                     controllers.UserControllers.SignInController.view
+#POST    /signIn                     controllers.UserControllers.SignInController.submit
+
+
+# Timebased OneTime Password functions
+#GET         /totp                            controllers.UserControllers.TotpController.view(userId: java.util.UUID, sharedKey: String, rememberMe: Boolean)
+#GET         /enableTotp                      controllers.UserControllers.TotpController.enableTotp
+#GET         /disableTotp                     controllers.UserControllers.TotpController.disableTotp
+#POST        /totpSubmit                      controllers.UserControllers.TotpController.submit
+#POST        /enableTotpSubmit                controllers.UserControllers.TotpController.enableTotpSubmit
+
+#GET         /totpRecovery                    controllers.UserControllers.TotpRecoveryController.view(userID: java.util.UUID, sharedKey: String, rememberMe: Boolean)
+#POST        /totpRecoverySubmit              controllers.UserControllers.TotpRecoveryController.submit
+
+# Password functions
+#GET         /password/forgot                 controllers.UserControllers.ForgotPasswordController.view
+#POST        /password/forgot                 controllers.UserControllers.ForgotPasswordController.submit
+#GET         /password/reset/:token           controllers.UserControllers.ResetPasswordController.view(token: java.util.UUID)
+#POST        /password/reset/:token           controllers.UserControllers.ResetPasswordController.submit(token: java.util.UUID)
+#GET         /password/change                 controllers.UserControllers.ChangePasswordController.view
+#POST        /password/change                 controllers.UserControllers.ChangePasswordController.submit
+
+#GET         /account/email/:email            controllers.UserControllers.ActivateAccountController.send(email: String)
+#GET         /account/activate/:token         controllers.UserControllers.ActivateAccountController.activate(token: java.util.UUID)
+
+
 # Load form for creating a new slate
 GET     /createSlate                controllers.CreationWebController.createSlateForm()
 
@@ -28,7 +61,7 @@ POST    /slates/:slateID/vote        controllers.VotingWebController.slateVote(s
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
-
+->      /webjars                    webjars.Routes
 
 #### FROM OLD VERSION. MIGHT NEED UPDATING
 # create Slate
