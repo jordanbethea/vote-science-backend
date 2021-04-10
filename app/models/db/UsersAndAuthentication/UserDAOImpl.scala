@@ -3,7 +3,6 @@ package models.db.UsersAndAuthentication
 import java.util.UUID
 import com.mohiva.play.silhouette.api.LoginInfo
 import models.User
-//import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.dbio.DBIOAction
 import javax.inject.Inject
 import play.api.db.slick.DatabaseConfigProvider

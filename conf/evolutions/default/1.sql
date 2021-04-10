@@ -38,30 +38,32 @@ CREATE TABLE FPTP_CHOICES (
 );
 
 CREATE TABLE USER (
-    userid varchar(255) NOT NULL,
-    firstname varchar(255) NULL,
-    lastname varchar(255) NULL,
-    fullname varchar(255) NULL,
+    user_id varchar(255) NOT NULL,
+    first_name varchar(255) NULL,
+    last_name varchar(255) NULL,
+    full_name varchar(255) NULL,
     email varchar(255) NULL,
-    avatarurl varchar(255) NULL
+    avatar_url varchar(255) NULL,
+    PRIMARY KEY(user_id)
 );
 
 CREATE TABLE LOGIN_INFO (
     id bigint(20) NOT NULL AUTO_INCREMENT,
-    providerid varchar(255) NOT NULL,
-    providerkey varchar(255) NOT NULL
+    provider_id varchar(255) NOT NULL,
+    provider_key varchar(255) NOT NULL,
+    PRIMARY KEY(id)
 );
 
 CREATE TABLE USER_LOGIN_INFO (
-    userid varchar(255) NOT NULL,
-    logininfoid bigint(20) NOT NULL
+    user_id varchar(255) NOT NULL,
+    login_info_id bigint(20) NOT NULL
 );
 
 CREATE TABLE PASSWORD_INFO (
     hasher varchar(255) NOT NULL,
     password varchar(255) NOT NULL,
     salt varchar(255) NULL,
-    logininfoid bigint(20) NOT NULL
+    login_info_id bigint(20) NOT NULL
 );
 
 

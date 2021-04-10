@@ -1,11 +1,10 @@
 package models.db.UsersAndAuthentication
 
 import com.mohiva.play.silhouette.api.LoginInfo
-//import com.mohiva.play.silhouette.impl.daos.DelegableAuthInfoDAO
-import com.mohiva.play.silhouette.persistence.daos.AuthInfoDAO
+import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.impl.providers.OAuth2Info
 import javax.inject.Inject
-//import play.api.libs.concurrent.Execution.Implicits._
+import scala.reflect.ClassTag
 import play.api.db.slick.DatabaseConfigProvider
 import scala.concurrent.{ExecutionContext, Future}
 import slick.jdbc.H2Profile.api._
@@ -14,8 +13,9 @@ import slick.jdbc.H2Profile.api._
  * The DAO to store the OAuth2 information.
  */
 class OAuth2InfoDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)
-                              (implicit executionContext: ExecutionContext)
-    extends AuthInfoDAO[OAuth2Info] with DAOSlick {
+                              (implicit executionContext: ExecutionContext,
+                               implicit val classTag: ClassTag[OAuth2Info])
+    extends DelegableAuthInfoDAO[OAuth2Info] with DAOSlick {
 
   protected def oAuth2InfoQuery(loginInfo: LoginInfo) = for {
     dbLoginInfo <- loginInfoQuery(loginInfo)
