@@ -6,6 +6,7 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.{EventBus, LoginInfo, SignUpEvent, Silhouette}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import controllers.AssetsFinder
 import forms.SignUpForm
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AnyContent, BaseController, ControllerComponents, MessagesActionBuilder, MessagesRequest, Request}
@@ -24,7 +25,7 @@ class SignUpController @Inject() (val controllerComponents: ControllerComponents
                                   val authInfoRepository: AuthInfoRepository,
                                   val authTokenService: AuthTokenService,
                                   val eventBus: EventBus)
-                                 (implicit ex: ExecutionContext) extends BaseController with I18nSupport {
+                                 (implicit ex: ExecutionContext, assets: AssetsFinder) extends BaseController with I18nSupport {
 
   def view = silhouette.UnsecuredAction.async {
     implicit request: Request[AnyContent] =>
