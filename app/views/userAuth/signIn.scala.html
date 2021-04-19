@@ -1,0 +1,29 @@
+@import forms.SignInForm.Data
+
+@(signInForm: Form[Data])(implicit request: RequestHeader, messages: Messages)
+
+@implicitFieldConstructor = @{ b4.vertical.fieldConstructor() }
+
+
+@main("Sign In")(play.twirl.api.HtmlFormat.empty){
+    <fieldset class="col-md-6 col-md-offset-3">
+        <legend>Sign In</legend>
+        @helper.form(controllers.userAuth.routes.SignInController.submit) {
+            @helper.CSRF.formField
+            @b4.email(signInForm("email"), Symbol("_label") -> messages("email"), Symbol("class") -> "form-control input-lg")
+            @b4.password(signInForm("password"), Symbol("_label") -> messages("password"), Symbol("class") -> "form-control input-lg")
+            @b4.checkbox(signInForm("rememberMe"), Symbol("_text") -> messages("remember.me"), Symbol("checked") -> true)
+            <div class="form-group">
+                <div>
+                    <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@messages("sign.in")</button>
+                </div>
+            </div>
+        }
+
+        <div>
+            <p class="not-a-member">@messages("not.a.member")
+                <a href="@controllers.userAuth.routes.SignUpController.view">@messages("sign.up.now")</a>
+                | @* <a href="@controllers.routes.ForgotPasswordController.view()" title="@messages("forgot.your.password")">@messages("forgot.your.password")</a> *@</p>
+        </div>
+    </fieldset>
+}

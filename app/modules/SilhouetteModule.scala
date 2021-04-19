@@ -9,12 +9,13 @@ import com.mohiva.play.silhouette.api.{Environment, EventBus, Silhouette, Silhou
 import com.mohiva.play.silhouette.api.util.{Clock, FingerprintGenerator, IDGenerator, PasswordHasherRegistry, PasswordInfo}
 import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings, JcaSigner, JcaSignerSettings}
 import com.mohiva.play.silhouette.impl.authenticators.{CookieAuthenticator, CookieAuthenticatorService, CookieAuthenticatorSettings}
-import com.mohiva.play.silhouette.impl.providers.{OAuth1Info, OAuth2Info, OpenIDInfo}
+import com.mohiva.play.silhouette.impl.providers.{CredentialsProvider, OAuth1Info, OAuth2Info, OpenIDInfo}
 import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, SecureRandomIDGenerator}
 import com.mohiva.play.silhouette.password.{BCryptPasswordHasher, BCryptSha256PasswordHasher}
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import com.typesafe.config.Config
+import controllers.{DefaultRememberMeConfig, DefaultSilhouetteControllerComponents, RememberMeConfig, SilhouetteControllerComponents}
 import javax.inject.Inject
 import models.db.UsersAndAuthentication.{AuthTokenDAO, AuthTokenDAOImpl, OAuth1InfoDAO, OAuth2InfoDAO, OpenIDInfoDAO, PasswordInfoDAO, UserDAO, UserDAOImpl}
 import net.codingwell.scalaguice.ScalaModule
@@ -28,6 +29,7 @@ import play.api.db.slick.DatabaseConfigProvider
 import play.api.mvc.{Cookie, CookieHeaderEncoding}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.FiniteDuration
 
 class SilhouetteModule extends AbstractModule with ScalaModule {
 
@@ -164,5 +166,28 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   @Provides
   def providePasswordHasherRegistry(): PasswordHasherRegistry = {
     PasswordHasherRegistry(new BCryptSha256PasswordHasher(), Seq(new BCryptPasswordHasher()))
+  }
+
+  @Provides
+  def provideCredentialsProvider(
+                                  authInfoRepository: AuthInfoRepository,
+                                  passwordHasherRegistry: PasswordHasherRegistry): CredentialsProvider = {
+
+    new CredentialsProvider(authInfoRepository, passwordHasherRegistry)
+  }
+
+  @Provides
+  def providesSilhouetteComponents(components: DefaultSilhouetteControllerComponents): SilhouetteControllerComponents = {
+    components
+  }
+
+  @Provides
+  def providesRememberMeConfig(configuration: Configuration): RememberMeConfig = {
+    val c = configuration.underlying
+    DefaultRememberMeConfig(
+      expiry = c.as[FiniteDuration]("silhouette.authenticator.rememberMe.authenticatorExpiry"),
+      idleTimeout = c.getAs[FiniteDuration]("silhouette.authenticator.rememberMe.authenticatorIdleTimeout"),
+      cookieMaxAge = c.getAs[FiniteDuration]("silhouette.authenticator.rememberMe.cookieMaxAge")
+    )
   }
 }

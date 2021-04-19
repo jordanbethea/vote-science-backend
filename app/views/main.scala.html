@@ -4,7 +4,7 @@
  * two arguments, a `String` for the title of the page and an `Html`
  * object to insert into the body of the page.
  *@
-@(title: String)(head: Html)(content: Html)
+@(title: String, user: Option[models.User] = None)(head: Html)(content: Html)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -16,7 +16,7 @@
         @head
     </head>
     <body>
-        @navigation()
+        @navigation(user)
         @* And here's where we render the `Html` object containing
          * the page content. *@
         @content
