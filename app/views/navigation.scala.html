@@ -1,5 +1,20 @@
-@()
+@(user: Option[models.User] = None)
 <div id="navHeader">
+    <a href="/">Home</a>
     <a href="/slateList">View all Slates</a>
-    <a href="/createSlate">Create a new Slate</a>
+    @user.map { u =>
+        <a href="/createSlate">Create a new Slate</a>
+    }
+    <span class="userSide">
+        @user.map { u =>
+            <a href="/">@u.fullName</a>
+            @if(u.loginInfo.providerID == com.mohiva.play.silhouette.impl.providers.CredentialsProvider.ID) {
+                <!--change password-->
+            }
+            <a href="/signOut">Sign Out</a>
+        }.getOrElse {
+            <a href="/signUp">Sign up for an account</a>
+            <a href="/signIn">Sign in to your account</a>
+        }
+    </span>
 </div>

@@ -1,4 +1,4 @@
-package controllers
+package controllers.api
 
 import javax.inject.{Inject, Singleton}
 import models.db._

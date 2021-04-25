@@ -1,10 +1,10 @@
 @import models.dto.SlateDTO
 @import models.dto.BallotDTO
-@(slateOption: Option[SlateDTO], ballots: Seq[BallotDTO])
+@(slateOption: Option[SlateDTO], ballots: Seq[BallotDTO], user: Option[models.User] = None)
 
 @title = @{if(slateOption.isDefined){s"Info for slate ${slateOption.get.title}"} else {"Not a valid slate!"}}
 
-@main(title)(play.twirl.api.HtmlFormat.empty) {
+@main(title, user)(play.twirl.api.HtmlFormat.empty) {
 
     @if(slateOption.isDefined) {
         @defining(slateOption.get) { slate =>

@@ -4,3 +4,7 @@
 #navHeader a {
     color: white;
 }
+
+.userSide {
+    float:right;
+}

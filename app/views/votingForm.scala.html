@@ -2,7 +2,7 @@
 @import views.html.helper.CSRF
 @import models.dto.BallotDTO
 @** @import scala.language.postfixOps **@
-@(slate: SlateDTO, ballotForm: Form[BallotDTO])(implicit request: MessagesRequestHeader)
+@(slate: SlateDTO, ballotForm: Form[BallotDTO], user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
 
 @main("Vote on this slate")(play.twirl.api.HtmlFormat.empty) {
     <h2>@(slate.title)</h2>
@@ -12,28 +12,15 @@
         <input type="hidden" name="@(s"details.slateID")" value="@(s"${slate.id.getOrElse(0)}")" />
         @helper.inputText(ballotForm("details.voter"), Symbol("_label") -> "Voter Name")
 
-        <!-- FPTP Model -->
-        @** @helper.repeatWithIndex(ballotForm("fptpModel.choices"), min = slate.questions.length){
-            (question, qIndex) =>
-            @helper.select(
-                field = question("candidateID"),
-                options = slate.questions.
-            )
-        } *@
-        @for(question <- slate.questions.zip((0 to slate.questions.length).toList)) {
-            <div>
 
+        @for(question <- slate.questions.zip((0 to slate.questions.length).toList)) {
+            <div><!-- FPTP Model -->
                 @helper.select(
                     field=ballotForm(s"fptpModel.choices[${question._2}].candidateID"),
                     options=question._1.candidates.map(c => c.id.getOrElse(0).toString -> c.name),
                     Symbol("_label") -> question._1.text
                 )
                 <input type="hidden" name="@(s"fptpModel.choices[${question._2}].questionID")" value="@(s"${question._1.id.getOrElse(0)}")" />
-                @** <select>
-                @for(candidate <- question.candidates) {
-                    <option id="@(candidate.id.get)">@(candidate.name) - @(candidate.description)</option>
-                }
-                </select> *@
             </div>
         }
         <button type="submit">Vote!</button>

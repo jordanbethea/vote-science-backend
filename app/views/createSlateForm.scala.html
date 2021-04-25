@@ -1,7 +1,7 @@
 @import models.dto.SlateDTO
 @import views.html.helper.CSRF
-@(slateForm: Form[SlateDTO])(implicit request: MessagesRequestHeader)
-@main("Create a new Slate"){
+@(slateForm: Form[SlateDTO], user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
+@main("Create a new Slate", user){
     <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/editSlate.css")">
 }{
     @helper.form(action = routes.CreationWebController.createSlate) {

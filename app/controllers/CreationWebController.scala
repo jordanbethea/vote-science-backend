@@ -13,23 +13,23 @@ import scala.concurrent.ExecutionContext
 class CreationWebController @Inject()(slatesRepo: SlateRepository, questionRepo: QuestionRepository,
                                       candidateRepo: CandidateRepository,
                                       ballotRepo: BallotRepository,
-                                       val controllerComponents: ControllerComponents,
+                                      scc: SilhouetteControllerComponents,
                                       messagesAction: MessagesActionBuilder)
-                                     (implicit ex: ExecutionContext) extends BaseController {
+                                     (implicit ex: ExecutionContext) extends AbstractAuthController(scc) {
 
 
-  def slateInfo(slateID: Long) = Action.async {
+  def slateInfo(slateID: Long) = silhouette.UserAwareAction.async { implicit request =>
 
     for {
       slateInfo <- slatesRepo.getFullSlate(slateID)
       ballots <- ballotRepo.getBallotsForSlate(slateID)
     } yield {
-      Ok(views.html.slateInfo(slateInfo, ballots))
+      Ok(views.html.slateInfo(slateInfo, ballots, request.identity))
     }
 
   }
 
-  def slateList() = Action.async {
+  def slateList() = silhouette.UserAwareAction.async { implicit request =>
     val allSlatesF = slatesRepo.listAll
     val allQuestionsF = questionRepo.listAll
     val allCandidatesF = candidateRepo.listAll
@@ -40,23 +40,19 @@ class CreationWebController @Inject()(slatesRepo: SlateRepository, questionRepo:
       candidates <- allCandidatesF
     } yield {
       Console.println("Running actual get slates: :")
-//      Console.println(Json.toJson(SlateRepository.constructSlateDTO(slates, questions, candidates)))
-//      val jsonSlate = Json.toJson(SlateRepository.constructSlateDTO(slates, questions, candidates))
-      val slateList = SlateRepository.constructSlateDTO(slates, questions, candidates)
-      Ok(views.html.slateList(slateList.toList))
+      val slateList = SlateRepository.constructSlateDTO(slates, questions, candidates).toList
+      Ok(views.html.slateList(slateList, request.identity))
     }
   }
 
   /**
    * Renders the form to create a new slate
    */
-  def createSlateForm() = messagesAction {
-    implicit request : MessagesRequest[AnyContent] =>
-    Ok(views.html.createSlateForm(slateForm))
+  def createSlateForm() = silhouette.UserAwareAction { implicit request =>
+    Ok(views.html.createSlateForm(slateForm, request.identity))
   }
 
-  def createSlate() = Action.async {
-    implicit request =>
+  def createSlate() = silhouette.UserAwareAction.async { implicit request =>
     val slateData = slateForm.bindFromRequest.get
 Console.println(s"Submitted slate: ${slateData.toString}")
     slatesRepo.fullAdd(slateData).map {

@@ -1,3 +1,5 @@
+-- noinspection SqlNoDataSourceInspectionForFile
+
 -- !Ups
 
 CREATE TABLE SLATES (
@@ -35,6 +37,35 @@ CREATE TABLE FPTP_CHOICES (
     candidate_id bigint(20) references CANDIDATES(id)
 );
 
+CREATE TABLE USER (
+    user_id varchar(255) NOT NULL,
+    first_name varchar(255) NULL,
+    last_name varchar(255) NULL,
+    full_name varchar(255) NULL,
+    email varchar(255) NULL,
+    avatar_url varchar(255) NULL,
+    PRIMARY KEY(user_id)
+);
+
+CREATE TABLE LOGIN_INFO (
+    id bigint(20) NOT NULL AUTO_INCREMENT,
+    provider_id varchar(255) NOT NULL,
+    provider_key varchar(255) NOT NULL,
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE USER_LOGIN_INFO (
+    user_id varchar(255) NOT NULL,
+    login_info_id bigint(20) NOT NULL
+);
+
+CREATE TABLE PASSWORD_INFO (
+    hasher varchar(255) NOT NULL,
+    password varchar(255) NOT NULL,
+    salt varchar(255) NULL,
+    login_info_id bigint(20) NOT NULL
+);
+
 
 
 -- !Downs
@@ -44,3 +75,7 @@ DROP TABLE QUESTIONS;
 DROP TABLE CANDIDATES;
 DROP TABLE BALLOTS;
 DROP TABLE FPTP_CHOICES;
+DROP TABLE USER;
+DROP TABLE LOGIN_INFO;
+DROP TABLE USER_LOGIN_INFO;
+DROP TABLE PASSWORD_INFO;
