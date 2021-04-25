@@ -39,17 +39,17 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 #### FROM OLD VERSION. MIGHT NEED UPDATING
 # create Slate
-#POST    /api/createSlate            controllers.CreationController.createSlate()
+#POST    /api/createSlate            controllers.api.CreationController.createSlate()
 
 # return list of all slates
-#GET     /api/slates                 controllers.CreationController.getSlates
+#GET     /api/slates                 controllers.api.CreationController.getSlates
 
 # load voting interface for a given slate
-#GET     /api/vote/:ballotID         controllers.VotingController.loadBallot(ballotID: Long)
+#GET     /api/vote/:ballotID         controllers.api.VotingController.loadBallot(ballotID: Long)
 
 # save vote data for a specific ballot
-#POST    /api/vote/:ballotID         controllers.VotingController.saveBallot(ballotID: Long)
+#POST    /api/vote/:ballotID         controllers.api.VotingController.saveBallot(ballotID: Long)
 
 # get results info for given slate (just testing purposes atm)
-#GET     /api/results/:slateID       controllers.VotingController.getSlateResults(slateID: Long)
+#GET     /api/results/:slateID       controllers.api.VotingController.getSlateResults(slateID: Long)
 

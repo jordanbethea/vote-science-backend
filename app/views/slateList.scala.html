@@ -1,7 +1,7 @@
 @import models.db.Slate
 @import models.dto.SlateDTO
-@(slates: List[SlateDTO])
-@main("List of all slates")(play.twirl.api.HtmlFormat.empty) {
+@(slates: List[SlateDTO], user: Option[models.User] = None)
+@main("List of all slates", user)(play.twirl.api.HtmlFormat.empty) {
     <ul>
     @for(slate <- slates) {
         <li>

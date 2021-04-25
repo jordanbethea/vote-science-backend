@@ -12,23 +12,21 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class VotingWebController @Inject() (slatesRepo: SlateRepository, ballotRepo: BallotRepository,
-                                     val controllerComponents: ControllerComponents,
-                                     messagesAction: MessagesActionBuilder)
-                                    (implicit ex: ExecutionContext) extends BaseController {
+                                     scc: SilhouetteControllerComponents)
+                                    (implicit ex: ExecutionContext) extends AbstractAuthController(scc) {
 
-  def slateVoteForm(slateID: Long) = messagesAction.async {
-    implicit request: MessagesRequest[AnyContent] =>
+  def slateVoteForm(slateID: Long) = silhouette.UserAwareAction.async { implicit request =>
     for {
       slate <- slatesRepo.getFullSlate(slateID)
     } yield {
       slate match {
-        case Some(x) => Ok(views.html.votingForm(slate.get, Form(ballotMapping)))
+        case Some(x) => Ok(views.html.votingForm(slate.get, Form(ballotMapping), request.identity))
         case None => NotFound
       }
     }
   }
 
-  def slateVote(slateID: Long) = Action.async {
+  def slateVote(slateID: Long) = silhouette.UserAwareAction.async {
     implicit request =>
     Form(ballotMapping).bindFromRequest.fold(
       formWithErrors => {

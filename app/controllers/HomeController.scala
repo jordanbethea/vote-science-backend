@@ -13,8 +13,7 @@ import scala.concurrent.ExecutionContext
  * application's home page.
  */
 @Singleton
-//class HomeController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
-  class HomeController @Inject() (scc: SilhouetteControllerComponents)
+class HomeController @Inject() (scc: SilhouetteControllerComponents)
                                  (implicit ex: ExecutionContext) extends AbstractAuthController(scc) {
 
   /**

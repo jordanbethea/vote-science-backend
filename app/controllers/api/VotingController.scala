@@ -1,8 +1,8 @@
-package controllers
+package controllers.api
 
 import javax.inject.{Inject, Singleton}
 import models.db.{BallotRepository, FPTPRepository, SlateRepository}
-import models.dto.{BallotDTO, BallotDetailsDTO, FPTPChoiceDTO, FPTPModelDTO}
+import models.dto.{BallotDetailsDTO, FPTPModelDTO}
 import play.api.libs.json.{JsResult, Json, _}
 import play.api.mvc.{AbstractController, ControllerComponents}
 
