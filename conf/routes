@@ -24,6 +24,8 @@ GET     /slates/:slateID/vote        controllers.VotingWebController.slateVoteFo
 # submit vote for slate
 POST    /slates/:slateID/vote        controllers.VotingWebController.slateVote(slateID: Long)
 
+GET     /signOut                     controllers.HomeController.signOut
+
 GET     /signUp                      controllers.userAuth.SignUpController.view
 POST    /signUp                      controllers.userAuth.SignUpController.submit
 

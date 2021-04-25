@@ -1,19 +1,12 @@
 package controllers.userAuth
 
-import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.exceptions.ProviderException
-import com.mohiva.play.silhouette.api.services.AuthenticatorResult
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.exceptions.IdentityNotFoundException
-import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.{AbstractAuthController, SilhouetteControllerComponents}
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.I18nSupport
-import play.api.mvc.{AnyContent, BaseController, Call, ControllerComponents, Request, RequestHeader}
+import play.api.mvc.{AnyContent, Request}
 import forms.SignInForm
-import models.User
-import services.UserService
-import utils.DefaultEnv
 
 import scala.concurrent.{ExecutionContext, Future}
 

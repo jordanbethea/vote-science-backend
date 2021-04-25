@@ -9,7 +9,7 @@ import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.AssetsFinder
 import forms.SignUpForm
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{AnyContent, BaseController, ControllerComponents, MessagesActionBuilder, MessagesRequest, Request}
+import play.api.mvc.{AnyContent, BaseController, ControllerComponents, Request}
 import utils.DefaultEnv
 import play.api.i18n.I18nSupport
 import services.{AuthTokenService, UserService}

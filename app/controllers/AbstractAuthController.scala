@@ -4,10 +4,7 @@ import com.mohiva.play.silhouette.api.Authenticator.Implicits._
 import com.mohiva.play.silhouette.api.LoginEvent
 import com.mohiva.play.silhouette.api.services.AuthenticatorResult
 import models.User
-import org.joda.time.DateTime
 import play.api.mvc.RequestHeader
-
-import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 
 abstract class AbstractAuthController(scc: SilhouetteControllerComponents)(implicit ex: ExecutionContext)
