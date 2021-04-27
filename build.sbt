@@ -25,7 +25,7 @@ libraryDependencies ++= Seq(
   "net.codingwell" %% "scala-guice" % "4.2.6",
   "org.webjars" %% "webjars-play" % "2.8.0",
   "org.webjars" % "bootstrap" % "4.4.1" exclude("org.webjars", "jquery"),
-  "org.webjars" % "jquery" % "3.2.1",
+  "org.webjars" % "jquery" % "3.6.0",
   "com.iheart" %% "ficus" % "1.4.7",
   "com.adrianhurt" %% "play-bootstrap" % "1.6.1-P28-B4"
 )
