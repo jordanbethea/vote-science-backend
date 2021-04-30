@@ -1,20 +1,27 @@
 @(user: Option[models.User] = None)
-<div id="navHeader">
-    <a href="/">Home</a>
-    <a href="/slateList">View all Slates</a>
-    @user.map { u =>
-        <a href="/createSlate">Create a new Slate</a>
-    }
-    <span class="userSide">
-        @user.map { u =>
-            <a href="/">@u.fullName</a>
-            @if(u.loginInfo.providerID == com.mohiva.play.silhouette.impl.providers.CredentialsProvider.ID) {
-                <!--change password-->
+<nav id="navHeader" class="nav navbar-expand-lg">
+    <a href="/" class="navbar-brand">Vote Science!</a>
+    <!--<div class="collapse navbar-collapse show">
+        <span class="navbar-nav mr-auto"> -->
+
+            <a href="/slateList" class="nav-link">View all Slates</a>
+            @user.map { u =>
+                <a href="/createSlate" class="nav-link">Create a new Slate</a>
             }
-            <a href="/signOut">Sign Out</a>
-        }.getOrElse {
-            <a href="/signUp">Sign up for an account</a>
-            <a href="/signIn">Sign in to your account</a>
+<!--        </span>
+    </div>-->
+<!--<div class="collapse navbar-collapse show">-->
+<span class="navbar-nav ml-auto">
+    @user.map { u =>
+        <a href="/" class="nav-link">@u.fullName</a>
+        @if(u.loginInfo.providerID == com.mohiva.play.silhouette.impl.providers.CredentialsProvider.ID) {
+            <!--change password-->
         }
-    </span>
-</div>
+        <a href="/signOut" class="nav-link">Sign Out</a>
+    }.getOrElse {
+        <a href="/signUp" class="nav-link">Sign up for an account</a>
+        <a href="/signIn" class="nav-link">Sign in to your account</a>
+    }
+</span>
+<!--</div>-->
+</nav>

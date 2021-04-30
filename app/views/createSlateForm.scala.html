@@ -1,43 +1,55 @@
 @import models.dto.SlateDTO
 @import views.html.helper.CSRF
-@(slateForm: Form[SlateDTO], user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
-@main("Create a new Slate", user){
-    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/editSlate.css")">
-}{
-    @helper.form(action = routes.CreationWebController.createSlate) {
-        @CSRF.formField
-        <div class="slateInfo">
-            <h2>Create New Slate:</h2>
-            @helper.inputText(slateForm("title"), Symbol("_label") -> "Title")
-            @helper.inputText(slateForm("creator"), Symbol("_label") -> "Creator")
-            <button id="saveSlateBtn" class="saveButton" type="submit">Save New Slate</button>
-        </div>
-        <div class="questionsContainer">
-            <div id="questionList">
-                <h4>Questions</h4>
 
-                @helper.repeatWithIndex(slateForm("questions"), min=1){ (question, qIndex) =>
-                    <div id="@(s"questionItem_${qIndex}")" class="questionItem">
-                        <div class="questionInfo">
-                            @helper.inputText(question("text"), Symbol("_label") -> "Text")
+@(slateForm: Form[SlateDTO], user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
+    @implicitFieldConstructor = @{ b4.vertical.fieldConstructor() }
+
+@main("Create a new Slate", user){
+    @* <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/editSlate.css")"> *@
+}{
+    <div class="container">
+
+    @b4.form(action = routes.CreationWebController.createSlate) {
+        @CSRF.formField
+        <div class="row">
+        <div class="col-4">
+            <fieldset class="">
+                <legend>Create a new Slate</legend>
+                @b4.text(slateForm("title"), Symbol("_label") -> "Title")
+                @b4.text(slateForm("creator"), Symbol("_label") -> "Creator")
+            </fieldset>
+
+        </div>
+        <div class="col-8">
+            <div id="questionList">
+                <fieldset>
+                    <legend>Questions</legend>
+                    @helper.repeatWithIndex(slateForm("questions"), min=1){ (question, qIndex) =>
+                    <div id="@(s"questionItem_${qIndex}")" class="row">
+                        <div class="col-6">
+                            @b4.text(question("text"), Symbol("_label") -> "Text")
                         </div>
-                        <div class="candidateContainer">
+                        <div class="candidateContainer col-6">
                             <div id="@(s"candidateList_${qIndex}")">
                                     @helper.repeatWithIndex(question("candidates"), min = 1) { (candidate, cIndex) =>
-                                        <div id="@(s"candidateItem_${qIndex}_${cIndex}")">
-                                            @helper.inputText(candidate("name"), Symbol("_label") -> "Name")
-                                            @helper.inputText(candidate("description"), Symbol("_label") -> "Description")
+                                        <div id="@(s"candidateItem_${qIndex}_${cIndex}")" class="">
+                                            @b4.text(candidate("name"), Symbol("_label") -> "Name")
+                                            @b4.text(candidate("description"), Symbol("_label") -> "Description")
                                         </div>
                                     }
                             </div>
-                            <button type="button" onclick="addCandidate(@(qIndex))">Add Candidate</button>
+                            <button type="button" class="btn btn-secondary" onclick="addCandidate(@(qIndex))">Add Candidate</button>
                         </div>
                     </div>
-                }
+                    }
+                </fieldset>
             </div>
-            <button type="button" onclick="addQuestion()">Add Question</button>
+            <button type="button" class="btn btn-secondary" onclick="addQuestion()">Add Question</button>
         </div>
+        <button id="saveSlateBtn" class="btn btn-primary btn-block" type="submit">Save New Slate</button>
+    </div>
     }
+    </div>
     <script type="text/javascript">
         let numQuestions = 1;
         let numCandidates = new Map();
@@ -45,53 +57,53 @@
 
         function addCandidate(question) {
             let prevCandidatesCount = numCandidates.get(question) + 1;
-            //let newCandidateClone = $("#candidateItem_0_0").clone();
-            //newCandidateClone.attr("id", "candidateItem_"+question+"_"+prevCandidatesCount);
-            let parseString = `<div id="candidateItem_${question}_${prevCandidatesCount}>
-                <dl class="" id="question_${question}_candidates_${prevCandidatesCount}_name_field">
-                    <dt><label for="questions_${question}_candidates_${prevCandidatesCount}_name">Name</label></dt>
-                    <dd><input type="text" id="questions_${question}_candidates_${prevCandidatesCount}_name" name="questions[${question}].candidates[${prevCandidatesCount}].name"></input></dd>
-                </dl>
-                <dl class="" id="question_${question}_candidates_${prevCandidatesCount}_description_field">
-                    <dt><label for="questions_${question}_candidates_${prevCandidatesCount}_description">Description</label></dt>
-                    <dd><input type="text" id="questions_${question}_candidates_${prevCandidatesCount}_description" name="questions[${question}].candidates[${prevCandidatesCount}].description"></input></dd>
-                </dl>
-            </div>`
+            let parseString = `<div id="candidateItem_${question}_${prevCandidatesCount}">
+                    <div class="form-group   " id="questions_${question}_candidates_${prevCandidatesCount}_name_field">
+                        <label for="questions_${question}_candidates_${prevCandidatesCount}_name">Name</label>
+                        <input type="text" id="questions_${question}_candidates_${prevCandidatesCount}_name" name="questions[${question}].candidates[${prevCandidatesCount}].name" value="" class="form-control">
+                    </div>
+                    <div class="form-group   " id="questions_${question}_candidates_${prevCandidatesCount}_description_field">
+                        <label for="questions_${question}_candidates_${prevCandidatesCount}_description">Description</label>
+                        <input type="text" id="questions_${question}_candidates_${prevCandidatesCount}_description" name="questions[${question}].candidates[${prevCandidatesCount}].description" value="" class="form-control">
+                    </div>
+                    </div>`;
             let newCForm = $.parseHTML(parseString);
-            $("#candidateList_"+question).append(newCForm);
+            $(`#candidateList_${question}`).append(newCForm);
             numCandidates.set(question, prevCandidatesCount);
         }
 
         function addQuestion() {
-            let parseString = `<div id="questionItem_${numQuestions}" class="questionItem">
-                <div class="questionInfo">
-                    <dl class="" id="questions_${numQuestions}_text_field">
-                        <dt><label for="questions_${numQuestions}_text">Text</label></dt>
-                        <dd><input type="text" id="questions_${numQuestions}_text" name="questions[${numQuestions}].text"></input></dd>
-                    </dl>
-                </div>
-                <div class="candidateContainer">
-                    <div id="candidateList_${numQuestions}">
-                        <div id="candidateItem_${numQuestions}_0>
-                            <dl class="" id="question_${numQuestions}_candidates_0_name_field">
-                                <dt><label for="questions_${numQuestions}_candidates_0_name">Name</label></dt>
-                                <dd><input type="text" id="questions_${numQuestions}_candidates_0_name" name="questions[${numQuestions}].candidates[0].name"></input></dd>
-                            </dl>
-                            <dl class="" id="question_${numQuestions}_candidates_0_description_field">
-                                <dt><label for="questions_${numQuestions}_candidates_0_description">Description</label></dt>
-                                <dd><input type="text" id="questions_${numQuestions}_candidates_0_description" name="questions[${numQuestions}].candidates[0].description"></input></dd>
-                            </dl>
+            //let newQForm = $("#questionItem_0");
+            let parseString = `<div id="questionItem_${numQuestions}" class="row">
+                    <div class="col-6">
+                        <div class="form-group   " id="questions_${numQuestions}_text_field">
+                            <label for="questions_${numQuestions}_text">Text</label>
+                            <input type="text" id="questions_${numQuestions}_text" name="questions[${numQuestions}].text" value="" class="form-control">
                         </div>
                     </div>
-                    <button type="button" onclick="addCandidate(${numQuestions})">Add Candidate</button>
-                </div>
-            </div>
-            `
+                    <div class="candidateContainer col-6">
+                        <div id="candidateList_${numQuestions}">
+                            <div id="candidateItem_${numQuestions}_0">
+                                <div class="form-group   " id="questions_${numQuestions}_candidates_0_name_field">
+                                    <label for="questions_${numQuestions}_candidates_0_name">Name</label>
+                                    <input type="text" id="questions_${numQuestions}_candidates_0_name" name="questions[${numQuestions}].candidates[0].name" value="" class="form-control">
+                                </div>
+                                <div class="form-group   " id="questions_${numQuestions}_candidates_0_description_field">
+                                    <label for="questions_${numQuestions}_candidates_0_description">Description</label>
+                                    <input type="text" id="questions_${numQuestions}_candidates_0_description" name="questions[${numQuestions}].candidates[0].description" value="" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="addCandidate(${numQuestions})">Add Candidate</button>
+                    </div>
+                </div>`;
             let newQForm = $.parseHTML(parseString);
             $("#questionList").append(newQForm);
             numCandidates.set(numQuestions, 0);
             numQuestions = numQuestions + 1;
         }
+
+
     </script>
     <script src="@routes.Assets.versioned("javascripts/editSlate.js")" type="text/javascript"></script>
 }

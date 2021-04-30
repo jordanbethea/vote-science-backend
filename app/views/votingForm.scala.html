@@ -4,18 +4,20 @@
 @** @import scala.language.postfixOps **@
 @(slate: SlateDTO, ballotForm: Form[BallotDTO], user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
 
+    @implicitFieldConstructor = @{ b4.vertical.fieldConstructor() }
+
 @main("Vote on this slate")(play.twirl.api.HtmlFormat.empty) {
+    <div class="container">
     <h2>@(slate.title)</h2>
-    @helper.form(action = routes.VotingWebController.slateVote(slate.id.getOrElse(0))) {
+    @b4.form(action = routes.VotingWebController.slateVote(slate.id.getOrElse(0))) {
         @CSRF.formField
 
         <input type="hidden" name="@(s"details.slateID")" value="@(s"${slate.id.getOrElse(0)}")" />
-        @helper.inputText(ballotForm("details.voter"), Symbol("_label") -> "Voter Name")
-
+        @b4.text(ballotForm("details.voter"), Symbol("_label") -> "Voter Name")
 
         @for(question <- slate.questions.zip((0 to slate.questions.length).toList)) {
             <div><!-- FPTP Model -->
-                @helper.select(
+                @b4.select(
                     field=ballotForm(s"fptpModel.choices[${question._2}].candidateID"),
                     options=question._1.candidates.map(c => c.id.getOrElse(0).toString -> c.name),
                     Symbol("_label") -> question._1.text
@@ -23,6 +25,7 @@
                 <input type="hidden" name="@(s"fptpModel.choices[${question._2}].questionID")" value="@(s"${question._1.id.getOrElse(0)}")" />
             </div>
         }
-        <button type="submit">Vote!</button>
+        <button type="submit" class="btn btn-primary">Vote!</button>
     }
+    </div>
 }
