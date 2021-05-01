@@ -8,16 +8,16 @@
 @main("Sign up for an account")(play.twirl.api.HtmlFormat.empty) {
     <div class="container">
     <fieldset class="col-md-6 col-md-offset-3">
-        <legend>Sign up for an account</legend>
+        <legend>@messages("signup.title")</legend>
             @b4.form(controllers.userAuth.routes.SignUpController.submit) {
                 @helper.CSRF.formField
-                @b4.text(signUpForm("firstName"), Symbol("_label") -> "First Name", Symbol("class") -> "form-control input-lg")
-                @b4.text(signUpForm("lastName"), Symbol("_label") -> "Last Name", Symbol("class") -> "form-control input-lg")
-                @b4.email(signUpForm("email"), Symbol("_label") -> "Email", Symbol("class") -> "form-control input-lg")
-                @passwordStrength(signUpForm("password"), Symbol("_label") -> "Password", Symbol("class") -> "form-control input-lg")
+                @b4.text(signUpForm("firstName"), Symbol("_label") -> messages("signup.firstname.title"), Symbol("class") -> "form-control input-lg")
+                @b4.text(signUpForm("lastName"), Symbol("_label") -> messages("signup.lastname.title"), Symbol("class") -> "form-control input-lg")
+                @b4.email(signUpForm("email"), Symbol("_label") -> messages("signup.email.title"), Symbol("class") -> "form-control input-lg")
+                @passwordStrength(signUpForm("password"), Symbol("_label") -> messages("signup.password.title"), Symbol("class") -> "form-control input-lg")
                 <div class="form-group">
                     <div>
-                        <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Sign Up</button>
+                        <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@messages("signup.submit")</button>
                     </div>
                 </div>
             }

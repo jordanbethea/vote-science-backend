@@ -1,0 +1,36 @@
+# https://www.playframework.com/documentation/latest/ScalaI18N
+
+nav.viewAll=View All Slates
+nav.createSlate=Create a new slate
+nav.signUp=Sign up for an account
+nav.signIn=Sign in to your account
+
+
+home.title=Vote Science
+home.content=Learn about different voting methods, try them out for yourself!
+
+signup.title=Sign up for an account
+signup.firstname.title=First Name
+signup.lastname.title=Last Name
+signup.email.title=Email
+signup.password.title=Password
+signup.submit=Sign Up
+
+signin.title=Sign In
+signin.email.title=Email
+signin.password.title=Password
+signin.rememberme=Remember Me
+signin.submit=Sign In
+signin.notAMember=Not a Member?
+signin.signUpNow=Sign up Now!
+
+createSlate.title=Create a new Slate
+createSlate.titleField.title=Title
+createSlate.creator.title=Creator
+createSlate.questions.title=Questions
+createSlate.text.title=Text
+createSlate.name.title=Name
+createSlate.description.title=Description
+createSlate.addCandidate=Add Candidate
+createSlate.addQuestion=Add Question
+createSlate.submit=Save New Slate
