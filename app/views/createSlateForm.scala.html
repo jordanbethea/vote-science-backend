@@ -14,39 +14,39 @@
         <div class="row">
         <div class="col-4">
             <fieldset class="">
-                <legend>Create a new Slate</legend>
-                @b4.text(slateForm("title"), Symbol("_label") -> "Title")
-                @b4.text(slateForm("creator"), Symbol("_label") -> "Creator")
+                <legend>@messages("createSlate.title")</legend>
+                @b4.text(slateForm("title"), Symbol("_label") -> messages("createSlate.titleField.title"))
+                @b4.text(slateForm("creator"), Symbol("_label") -> messages("createSlate.creator.title"))
             </fieldset>
 
         </div>
         <div class="col-8">
             <div id="questionList">
                 <fieldset>
-                    <legend>Questions</legend>
+                    <legend>@messages("createSlate.questions.title")</legend>
                     @helper.repeatWithIndex(slateForm("questions"), min=1){ (question, qIndex) =>
                     <div id="@(s"questionItem_${qIndex}")" class="row">
                         <div class="col-6">
-                            @b4.text(question("text"), Symbol("_label") -> "Text")
+                            @b4.text(question("text"), Symbol("_label") -> messages("createSlate.text.title"))
                         </div>
                         <div class="candidateContainer col-6">
                             <div id="@(s"candidateList_${qIndex}")">
                                     @helper.repeatWithIndex(question("candidates"), min = 1) { (candidate, cIndex) =>
                                         <div id="@(s"candidateItem_${qIndex}_${cIndex}")" class="">
-                                            @b4.text(candidate("name"), Symbol("_label") -> "Name")
-                                            @b4.text(candidate("description"), Symbol("_label") -> "Description")
+                                            @b4.text(candidate("name"), Symbol("_label") -> messages("createSlate.name.title"))
+                                            @b4.text(candidate("description"), Symbol("_label") -> messages("createSlate.description.title"))
                                         </div>
                                     }
                             </div>
-                            <button type="button" class="btn btn-secondary" onclick="addCandidate(@(qIndex))">Add Candidate</button>
+                            <button type="button" class="btn btn-secondary" onclick="addCandidate(@(qIndex))">@messages("createSlate.addCandidate")</button>
                         </div>
                     </div>
                     }
                 </fieldset>
             </div>
-            <button type="button" class="btn btn-secondary" onclick="addQuestion()">Add Question</button>
+            <button type="button" class="btn btn-secondary" onclick="addQuestion()">@messages("createSlate.addQuestion")</button>
         </div>
-        <button id="saveSlateBtn" class="btn btn-primary btn-block" type="submit">Save New Slate</button>
+        <button id="saveSlateBtn" class="btn btn-primary btn-block" type="submit">@messages("createSlate.submit")</button>
     </div>
     }
     </div>
@@ -59,11 +59,11 @@
             let prevCandidatesCount = numCandidates.get(question) + 1;
             let parseString = `<div id="candidateItem_${question}_${prevCandidatesCount}">
                     <div class="form-group   " id="questions_${question}_candidates_${prevCandidatesCount}_name_field">
-                        <label for="questions_${question}_candidates_${prevCandidatesCount}_name">Name</label>
+                        <label for="questions_${question}_candidates_${prevCandidatesCount}_name">@messages("createSlate.name.title")</label>
                         <input type="text" id="questions_${question}_candidates_${prevCandidatesCount}_name" name="questions[${question}].candidates[${prevCandidatesCount}].name" value="" class="form-control">
                     </div>
                     <div class="form-group   " id="questions_${question}_candidates_${prevCandidatesCount}_description_field">
-                        <label for="questions_${question}_candidates_${prevCandidatesCount}_description">Description</label>
+                        <label for="questions_${question}_candidates_${prevCandidatesCount}_description">@messages("createSlate.description.title")</label>
                         <input type="text" id="questions_${question}_candidates_${prevCandidatesCount}_description" name="questions[${question}].candidates[${prevCandidatesCount}].description" value="" class="form-control">
                     </div>
                     </div>`;
@@ -77,7 +77,7 @@
             let parseString = `<div id="questionItem_${numQuestions}" class="row">
                     <div class="col-6">
                         <div class="form-group   " id="questions_${numQuestions}_text_field">
-                            <label for="questions_${numQuestions}_text">Text</label>
+                            <label for="questions_${numQuestions}_text">@messages("createSlate.text.title")</label>
                             <input type="text" id="questions_${numQuestions}_text" name="questions[${numQuestions}].text" value="" class="form-control">
                         </div>
                     </div>
@@ -85,16 +85,16 @@
                         <div id="candidateList_${numQuestions}">
                             <div id="candidateItem_${numQuestions}_0">
                                 <div class="form-group   " id="questions_${numQuestions}_candidates_0_name_field">
-                                    <label for="questions_${numQuestions}_candidates_0_name">Name</label>
+                                    <label for="questions_${numQuestions}_candidates_0_name">@messages("createSlate.name.title")</label>
                                     <input type="text" id="questions_${numQuestions}_candidates_0_name" name="questions[${numQuestions}].candidates[0].name" value="" class="form-control">
                                 </div>
                                 <div class="form-group   " id="questions_${numQuestions}_candidates_0_description_field">
-                                    <label for="questions_${numQuestions}_candidates_0_description">Description</label>
+                                    <label for="questions_${numQuestions}_candidates_0_description">@messages("createSlate.description.title")</label>
                                     <input type="text" id="questions_${numQuestions}_candidates_0_description" name="questions[${numQuestions}].candidates[0].description" value="" class="form-control">
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-secondary" onclick="addCandidate(${numQuestions})">Add Candidate</button>
+                        <button type="button" class="btn btn-secondary" onclick="addCandidate(${numQuestions})">@messages("createSlate.addCandidate")</button>
                     </div>
                 </div>`;
             let newQForm = $.parseHTML(parseString);
