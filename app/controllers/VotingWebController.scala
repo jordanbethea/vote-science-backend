@@ -49,7 +49,8 @@ class VotingWebController @Inject() (slatesRepo: SlateRepository, ballotRepo: Ba
   val ballotDetailsMapping = mapping(
     "id" -> optional(longNumber),
     "voter" -> text,
-    "slateID" -> longNumber
+    "slateID" -> longNumber,
+    "anonymous" -> boolean
   )(BallotDetailsDTO.apply)(BallotDetailsDTO.unapply)
 
   val fptpMapping = mapping (

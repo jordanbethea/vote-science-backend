@@ -9,7 +9,7 @@ object BallotDTO {
   implicit val ballotReads: Reads[BallotDTO] = Json.reads[BallotDTO]
 }
 
-case class BallotDetailsDTO(id: Option[Long], voter: String, slateID: Long)
+case class BallotDetailsDTO(id: Option[Long], voter: String, slateID: Long, anonymous: Boolean)
 
 object BallotDetailsDTO {
   implicit val ballotDetailsWrites: Writes[BallotDetailsDTO] = Json.writes[BallotDetailsDTO]

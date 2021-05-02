@@ -16,7 +16,13 @@
             <fieldset class="">
                 <legend>@messages("createSlate.title")</legend>
                 @b4.text(slateForm("title"), Symbol("_label") -> messages("createSlate.titleField.title"))
-                @b4.text(slateForm("creator"), Symbol("_label") -> messages("createSlate.creator.title"))
+                @if(user.isEmpty) {
+                    @b4.text(slateForm("creator"), Symbol("_label") -> messages("createSlate.creator.title"))
+                    @b4.hidden(slateForm("anonymous"), Symbol("value") -> true)
+                } else {
+                    @b4.hidden(slateForm("creator"), Symbol("value") -> user.get.userID.toString)
+                    @b4.hidden(slateForm("anonymous"), Symbol("value") -> false)
+                }
             </fieldset>
 
         </div>

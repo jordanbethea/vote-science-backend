@@ -8,7 +8,7 @@ import play.api.libs.json._
 /**
   * Nested version of Slate data classes, for converting from json.
   */
-case class SlateDTO (id: Option[Long], title: String, creator: String, questions: Seq[QuestionDTO])
+case class SlateDTO (id: Option[Long], title: String, creator: String, anonymous: Boolean, questions: Seq[QuestionDTO])
 
 case class QuestionDTO  (id: Option[Long], text: String, candidates: Seq[CandidateDTO])
 
@@ -34,6 +34,7 @@ object SlateDTO {
     (JsPath \ "id").readNullable[Long] and
       (JsPath \ "title").read[String] and
       (JsPath \ "creator").read[String] and
+      (JsPath \ "anonymous").read[Boolean] and
       (JsPath \ "questions").read[Seq[QuestionDTO]]
     )(SlateDTO.apply _)
 

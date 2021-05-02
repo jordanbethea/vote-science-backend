@@ -6,6 +6,7 @@ CREATE TABLE SLATES (
     id bigint(20) NOT NULL AUTO_INCREMENT,
     title varchar(255) NOT NULL,
     creator varchar(255) NOT NULL,
+    anonymous boolean NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -28,7 +29,8 @@ CREATE TABLE CANDIDATES (
 CREATE TABLE BALLOTS (
     id bigint(20) NOT NULL AUTO_INCREMENT,
     slate_id bigint(20) references SLATES(id),
-    voter varchar(255) NOT NULL
+    voter varchar(255) NOT NULL,
+    anonymous boolean NOT NULL
 );
 
 CREATE TABLE FPTP_CHOICES (

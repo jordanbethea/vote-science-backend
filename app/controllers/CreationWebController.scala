@@ -67,6 +67,7 @@ Console.println(s"Submitted slate: ${slateData.toString}")
       "id" -> optional(longNumber),
       "title" -> text,
       "creator" -> text,
+      "anonymous" -> boolean,
       "questions" -> seq(mapping(
         "id" -> optional(longNumber),
         "text" -> text,

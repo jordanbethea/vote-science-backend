@@ -6,14 +6,20 @@
 
     @implicitFieldConstructor = @{ b4.vertical.fieldConstructor() }
 
-@main("Vote on this slate")(play.twirl.api.HtmlFormat.empty) {
+@main("Vote on this slate", user)(play.twirl.api.HtmlFormat.empty) {
     <div class="container">
     <h2>@(slate.title)</h2>
     @b4.form(action = routes.VotingWebController.slateVote(slate.id.getOrElse(0))) {
         @CSRF.formField
 
         <input type="hidden" name="@(s"details.slateID")" value="@(s"${slate.id.getOrElse(0)}")" />
-        @b4.text(ballotForm("details.voter"), Symbol("_label") -> "Voter Name")
+        @if(user.isEmpty) {
+            @b4.text(ballotForm("details.voter"), Symbol("_label") -> "Voter Name")
+            @b4.hidden(ballotForm("details.anonymous"), Symbol("value") -> true)
+        } else {
+            @b4.hidden(ballotForm("details.voter"), Symbol("value") -> user.get.userID.toString)
+            @b4.hidden(ballotForm("details.anonymous"), Symbol("value") -> false)
+        }
 
         @for(question <- slate.questions.zip((0 to slate.questions.length).toList)) {
             <div><!-- FPTP Model -->

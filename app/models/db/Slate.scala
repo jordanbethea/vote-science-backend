@@ -8,11 +8,11 @@ import slick.jdbc.JdbcProfile
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class Slate(id: Long, title: String, creator: String)
+case class Slate(id: Long, title: String, creator: String, anonymous: Boolean)
 
 object Slate {
   implicit def slateDTOToDB(dto: SlateDTO): Slate = {
-    return new Slate(dto.id.getOrElse(0), dto.title, dto.creator)
+    return new Slate(dto.id.getOrElse(0), dto.title, dto.creator, dto.anonymous)
   }
 
   //https://github.com/VirtusLab/unicorn/issues/11
@@ -23,8 +23,9 @@ class SlateTableDef(tag: Tag) extends Table[Slate](tag, "SLATES") {
   def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
   def title = column[String]("TITLE")
   def creator = column[String]("CREATOR")
+  def anonymous = column[Boolean]("ANONYMOUS")
 
-  override def * = (id, title, creator).mapTo[Slate]
+  override def * = (id, title, creator, anonymous).mapTo[Slate]
 }
 
 object SlateRepository {
@@ -35,7 +36,7 @@ object SlateRepository {
                         questions: Seq[Question],
                         candidates:Seq[Candidate]): Seq[SlateDTO] = {
     for(s <- slates) yield (
-      new SlateDTO(Option(s.id), s.title, s.creator,
+      new SlateDTO(Option(s.id), s.title, s.creator, s.anonymous,
         for(q <- questions.filter(_.slateID == s.id)) yield (
           new QuestionDTO(Option(q.id), q.text,
             candidates.filter(_.questionID == q.id).map(
@@ -102,7 +103,7 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     }
 
     def addSlateOnly(slate: SlateDTO) : DBIO[Long] = {
-      SlateRepository.slatesInserts += Slate(slate.id.getOrElse(0), slate.title, slate.creator)
+      SlateRepository.slatesInserts += Slate(slate.id.getOrElse(0), slate.title, slate.creator, slate.anonymous)
     }
 
     val tx = addSlateOnly(slate).flatMap {
