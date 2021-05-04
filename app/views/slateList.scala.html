@@ -2,15 +2,17 @@
 @import models.dto.SlateDTO
 @(slates: List[SlateDTO], user: Option[models.User] = None)
 @main("List of all slates", user)(play.twirl.api.HtmlFormat.empty) {
-    <ul>
-    @for(slate <- slates) {
-        <li>
-            <a href=@{
-                s"slates/${slate.id.getOrElse(0)}"
-            }>View Details for @(slate.title)</a>
-            Created by @slate.creator
-            <a href=@{s"slates/${slate.id.getOrElse(0)}/vote"}>Vote on @{slate.title}</a>
-        </li>
-    }
-    </ul>
+    <div class="component">
+        <ul class="list-group">
+        @for(slate <- slates) {
+            <li class="list-group-item">
+                <a href=@{
+                    s"slates/${slate.id.getOrElse(0)}"
+                }>@(slate.title)</a>
+                Created by @if(!slate.creatorUser.isEmpty){ @slate.creatorUser.get.fullName } else{  @slate.creator }
+                <a href=@{s"slates/${slate.id.getOrElse(0)}/vote"}>Vote on this slate</a>
+            </li>
+        }
+        </ul>
+    </div>
 }

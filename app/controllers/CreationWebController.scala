@@ -6,6 +6,8 @@ import models.dto._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.mvc._
+import java.util.UUID
+import models.User
 
 import scala.concurrent.ExecutionContext
 
@@ -38,9 +40,10 @@ class CreationWebController @Inject()(slatesRepo: SlateRepository, questionRepo:
       slates <- allSlatesF
       questions <- allQuestionsF
       candidates <- allCandidatesF
+      users <- userService.findAllProfiles(slates.filter(_.anonymous == false).map(s => UUID.fromString(s.creator)))
     } yield {
       Console.println("Running actual get slates: :")
-      val slateList = SlateRepository.constructSlateDTO(slates, questions, candidates).toList
+      val slateList = SlateRepository.constructSlateDTO(slates, questions, candidates, Option(users)).toList
       Ok(views.html.slateList(slateList, request.identity))
     }
   }
@@ -53,7 +56,7 @@ class CreationWebController @Inject()(slatesRepo: SlateRepository, questionRepo:
   }
 
   def createSlate() = silhouette.UserAwareAction.async { implicit request =>
-    val slateData = slateForm.bindFromRequest.get
+    val slateData = slateForm.bindFromRequest().get
 Console.println(s"Submitted slate: ${slateData.toString}")
     slatesRepo.fullAdd(slateData).map {
       result =>
@@ -76,7 +79,8 @@ Console.println(s"Submitted slate: ${slateData.toString}")
           "name" -> text,
           "description" -> text
         )(CandidateDTO.apply)(CandidateDTO.unapply))
-      )(QuestionDTO.apply)(QuestionDTO.unapply))
+      )(QuestionDTO.apply)(QuestionDTO.unapply)),
+      "creatorUser" -> ignored(Option.empty : Option[User])
     )(SlateDTO.apply)(SlateDTO.unapply)
   )
 

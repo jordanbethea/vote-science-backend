@@ -5,6 +5,7 @@ import models.dto.{CandidateDTO, QuestionDTO, SlateDTO}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.H2Profile.api._
 import slick.jdbc.JdbcProfile
+import models.User
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,14 +35,19 @@ object SlateRepository {
 
   def constructSlateDTO(slates: Seq[Slate],
                         questions: Seq[Question],
-                        candidates:Seq[Candidate]): Seq[SlateDTO] = {
+                        candidates:Seq[Candidate],
+                        creators:Option[Seq[User]] = None): Seq[SlateDTO] = {
     for(s <- slates) yield (
       new SlateDTO(Option(s.id), s.title, s.creator, s.anonymous,
         for(q <- questions.filter(_.slateID == s.id)) yield (
           new QuestionDTO(Option(q.id), q.text,
             candidates.filter(_.questionID == q.id).map(
               c => new CandidateDTO(Option(c.id), c.name, c.description)
-            )))))
+            ))),
+        if(creators.nonEmpty){
+          creators.get.find(_.userID.toString() == s.creator)
+        } else { None }
+        ))
   }
 }
 

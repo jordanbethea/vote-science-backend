@@ -2,7 +2,8 @@ package models
 
 import java.util.UUID
 
-import com.mohiva.play.silhouette.api.{ Identity, LoginInfo }
+import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
+import play.api.libs.json.{Json, Reads, Writes}
 
 /**
  * The user object.
@@ -23,3 +24,9 @@ case class User(
   fullName: Option[String],
   email: Option[String],
   avatarURL: Option[String]) extends Identity
+
+
+object User {
+  implicit val userReads: Reads[User] = Json.reads[User]
+  implicit val userWrites: Writes[User] = Json.writes[User]
+}

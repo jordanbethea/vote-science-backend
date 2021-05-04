@@ -16,7 +16,7 @@ class FPTPModelTest extends PlaySpec with DatabaseTemplate with GuiceOneAppPerSu
   val ballots = injector.instanceOf[BallotRepository]
   val fptpModel = injector.instanceOf[FPTPRepository]
 
-  val slate1 = new Slate(-1, "Slate 1", "Slate Maker")
+  val slate1 = new Slate(-1, "Slate 1", "Slate Maker", true)
   val question1 = (slateID:Long) => new Question(-1, slateID, "Pick a Candidate:")
   val candidate1 = (qID:Long, sID:Long) => new Candidate(-1, "Benjamin Franklin", "kite guy",sID, qID)
 
@@ -28,7 +28,7 @@ class FPTPModelTest extends PlaySpec with DatabaseTemplate with GuiceOneAppPerSu
         val candidate1ID = exec(candidates.add(Candidate(0, "Ben Franklin", "statesman", slateID, questionID)))
         val candidate2ID = exec(candidates.add(Candidate(0, "George Wash", "general", slateID, questionID)))
 
-        val ballotID = exec(ballots.add(Ballot(0, slateID, "voter1")))
+        val ballotID = exec(ballots.add(Ballot(0, slateID, "voter1", true)))
         val fptpChoice1 = exec(fptpModel.addRun(FPTPChoice(ballotID, questionID, candidate1ID)))
     }
   }

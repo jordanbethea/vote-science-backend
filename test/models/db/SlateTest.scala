@@ -9,14 +9,14 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 class SlateTest extends PlaySpec with DatabaseTemplate with GuiceOneAppPerSuite {
 
 
-  val insert1:Slate = new Slate(-20, "Slate 1", "Slate Maker")
-  val insert2:Slate = new Slate(-21, "Slate 2", "Slate Maker")
-  val insert3:Slate = new Slate(-22, "Slate 3", "Other Slate Maker")
-  val insert4:Slate = new Slate(-23, "Slate 4", "Other Slate Maker")
+  val insert1:Slate = new Slate(-20, "Slate 1", "Slate Maker", true)
+  val insert2:Slate = new Slate(-21, "Slate 2", "Slate Maker", true)
+  val insert3:Slate = new Slate(-22, "Slate 3", "Other Slate Maker", true)
+  val insert4:Slate = new Slate(-23, "Slate 4", "Other Slate Maker", true)
 
-  val insertResult = (slateID:Long) => new Slate(slateID, "Slate 1", "Slate Maker")
+  val insertResult = (slateID:Long) => new Slate(slateID, "Slate 1", "Slate Maker", true)
 
-  val slateDTOInsert:SlateDTO = new SlateDTO(None, "Slate 1", "Slate Maker", Seq(
+  val slateDTOInsert:SlateDTO = new SlateDTO(None, "Slate 1", "Slate Maker", true, Seq(
     new QuestionDTO(None, "How you doing?", Seq(
       new CandidateDTO(None, "Good", "Actually it should be well"),
       new CandidateDTO(None, "Bad", "Poorly, actually"))),

@@ -8,7 +8,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 
 class QuestionTest extends PlaySpec with DatabaseTemplate with GuiceOneAppPerSuite {
 
-  val slate1 = new Slate(-1, "Slate 1", "Slate Maker")
+  val slate1 = new Slate(-1, "Slate 1", "Slate Maker", true)
 
   val question1 = (slateID:Long) => new Question(-20, slateID, "Pick a Candidate:")
   val question2 = (slateID:Long) => new Question(-21, slateID, "Pick another one:")

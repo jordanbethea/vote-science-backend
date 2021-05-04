@@ -28,7 +28,7 @@ class VotingWebController @Inject() (slatesRepo: SlateRepository, ballotRepo: Ba
 
   def slateVote(slateID: Long) = silhouette.UserAwareAction.async {
     implicit request =>
-    Form(ballotMapping).bindFromRequest.fold(
+    Form(ballotMapping).bindFromRequest().fold(
       formWithErrors => {
         Console.println(s"bad form: ${formWithErrors}")
         Future(BadRequest("Bad Form"))

@@ -65,4 +65,9 @@ class UserServiceImpl @Inject() (userDAO: UserDAO)(implicit val executionContext
         ))
     }
   }
+
+  def findAllProfiles(userIDs: Seq[UUID]): Future[Seq[User]] = {
+    userDAO.findAllProfiles(userIDs)
+  }
+
 }

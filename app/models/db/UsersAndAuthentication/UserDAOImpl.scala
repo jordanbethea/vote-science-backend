@@ -62,6 +62,28 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
     }
   }
 
+  def findAllProfiles(userIDs: Seq[UUID]): Future[Seq[User]] = {
+    val userIDStrings = userIDs.map(_.toString)
+    val query = for {
+      dbUsers <- slickUsers.filter(_.id.inSet(userIDStrings))
+    } yield (dbUsers)
+
+    db.run(query.result).map{ resultOption =>
+      resultOption.map {
+        user =>
+          User(
+            UUID.fromString(user.userID),
+            null,
+            user.firstName,
+            user.lastName,
+            user.fullName,
+            user.email,
+            user.avatarURL
+          )
+      }
+    }
+  }
+
   /**
    * Saves a user.
    *

@@ -29,6 +29,13 @@ trait UserDAO {
   def find(userID: UUID): Future[Option[User]]
 
   /**
+   * Takes list of user ids, returns list of users, minus login info
+   * @param userIDs list of guids of users to find
+   * @return  list of all users found from list
+   */
+  def findAllProfiles(userIDs: Seq[UUID]): Future[Seq[User]]
+
+  /**
    * Saves a user.
    *
    * @param user The user to save.

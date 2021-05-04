@@ -17,7 +17,7 @@ class BallotTest extends PlaySpec with DatabaseTemplate with GuiceOneAppPerSuite
   val questions = injector.instanceOf[QuestionRepository]
   val candidates = injector.instanceOf[CandidateRepository]
 
-  val slateDTOInsert:SlateDTO = new SlateDTO(None, "Slate 1", "Slate Maker", Seq(
+  val slateDTOInsert:SlateDTO = new SlateDTO(None, "Slate 1", "Slate Maker", true, Seq(
     new QuestionDTO(None, "How you doing?", Seq(
       new CandidateDTO(None, "Good", "Actually it should be well"),
       new CandidateDTO(None, "Bad", "Poorly, actually"))),
@@ -26,11 +26,11 @@ class BallotTest extends PlaySpec with DatabaseTemplate with GuiceOneAppPerSuite
       new CandidateDTO(None, "Sweet Potato", "Best choice")))
   ))
 
-  val ballotStandaloneInsert = (sID: Long) => BallotDetailsDTO(None, "The Phantom Stranger", sID)
+  val ballotStandaloneInsert = (sID: Long) => BallotDetailsDTO(None, "The Phantom Stranger", sID, false)
 
   "Ballots table schema" must {
     "create without error" in {
-      exec(ballots.listAll)
+      exec(ballots.listAll())
     }
 
     "add raw ballot data" in {
@@ -41,7 +41,7 @@ class BallotTest extends PlaySpec with DatabaseTemplate with GuiceOneAppPerSuite
     "save ballot with fptp vote model" in {
       //have to insert test slate to use with ballot
       //val insertSlateResult = exec(slates.fullAdd(slateDTOInsert))
-      val slateID = exec(slates.add(Slate(0, "Test Slate 2", "Slate Maker")))
+      val slateID = exec(slates.add(Slate(0, "Test Slate 2", "Slate Maker", false)))
       val q1ID = exec(questions.add(Question(0, slateID, "Pick a number")))
       val q2ID = exec(questions.add(Question(0, slateID, "Pick a pie")))
 
@@ -53,10 +53,10 @@ class BallotTest extends PlaySpec with DatabaseTemplate with GuiceOneAppPerSuite
       val q2c2ID = exec(candidates.add(Candidate(0, "sweet potato", "is good", slateID, q2ID)))
       val q2c3ID = exec(candidates.add(Candidate(0, "boston creme", "is good", slateID, q2ID)))
 
-      val ballotDTOInsert: BallotDetailsDTO = BallotDetailsDTO(None, "Benjamin Franklin", 1l)
+      val ballotDTOInsert: BallotDetailsDTO = BallotDetailsDTO(None, "Benjamin Franklin", 1L, false)
       val fptpDTOInsert: FPTPModelDTO = FPTPModelDTO(Seq(
-        FPTPChoiceDTO(0, q1ID, q1c2ID),
-        FPTPChoiceDTO(0, q2ID, q2c3ID)
+        FPTPChoiceDTO(q1ID, q1c2ID),
+        FPTPChoiceDTO(q2ID, q2c3ID)
       ))
 
       val insertBallotResult = exec(ballots.addBallotAndModelData(ballotDTOInsert, Option(fptpDTOInsert)))

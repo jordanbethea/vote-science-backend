@@ -13,7 +13,7 @@ class CandidateTest extends PlaySpec with DatabaseTemplate with GuiceOneAppPerSu
   val questions = app.injector.instanceOf[QuestionRepository]
   val candidates = app.injector.instanceOf[CandidateRepository]
 
-  val slate1 = new Slate(-1, "Slate 1", "Slate Maker")
+  val slate1 = new Slate(-1, "Slate 1", "Slate Maker", true)
   val question1 = (slateID:Long) => new Question(-1, slateID, "Pick a Candidate:")
   val candidate1 = (qID:Long, sID:Long) => new Candidate(-1, "Benjamin Franklin", "kite guy",sID, qID)
 
