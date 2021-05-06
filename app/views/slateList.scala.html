@@ -1,6 +1,5 @@
-@import models.db.Slate
-@import models.dto.SlateDTO
-@(slates: List[SlateDTO], user: Option[models.User] = None)
+@import models.dto.SlateLoadDTO
+@(slates: List[SlateLoadDTO], user: Option[models.User] = None)
 @main("List of all slates", user)(play.twirl.api.HtmlFormat.empty) {
     <div class="component">
         <ul class="list-group">
@@ -9,7 +8,12 @@
                 <a href=@{
                     s"slates/${slate.id.getOrElse(0)}"
                 }>@(slate.title)</a>
-                Created by @if(!slate.creatorUser.isEmpty){ @slate.creatorUser.get.fullName } else{  @slate.creator }
+                Created by @{
+                    slate.creator match {
+                        case Left(name) => name
+                        case Right(user) => user.fullName
+                    }
+                }
                 <a href=@{s"slates/${slate.id.getOrElse(0)}/vote"}>Vote on this slate</a>
             </li>
         }

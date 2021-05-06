@@ -1,7 +1,8 @@
 @import models.dto.SlateDTO
 @import views.html.helper.CSRF
 
-@(slateForm: Form[SlateDTO], user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
+@import models.dto.SlateSaveDTO
+@(slateForm: Form[SlateSaveDTO], user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
     @implicitFieldConstructor = @{ b4.vertical.fieldConstructor() }
 
 @main("Create a new Slate", user){

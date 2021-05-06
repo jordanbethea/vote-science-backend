@@ -17,7 +17,7 @@ class BallotTest extends PlaySpec with DatabaseTemplate with GuiceOneAppPerSuite
   val questions = injector.instanceOf[QuestionRepository]
   val candidates = injector.instanceOf[CandidateRepository]
 
-  val slateDTOInsert:SlateDTO = new SlateDTO(None, "Slate 1", "Slate Maker", true, Seq(
+  val slateDTOInsert:SlateSaveDTO = new SlateSaveDTO(None, "Slate 1", "Slate Maker", true, Seq(
     new QuestionDTO(None, "How you doing?", Seq(
       new CandidateDTO(None, "Good", "Actually it should be well"),
       new CandidateDTO(None, "Bad", "Poorly, actually"))),

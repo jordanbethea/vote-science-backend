@@ -8,8 +8,12 @@ import models.User
 /**
   * Nested version of Slate data classes, for converting from json.
   */
-case class SlateDTO (id: Option[Long], title: String, creator: String, anonymous: Boolean,
-                     questions: Seq[QuestionDTO], creatorUser: Option[User] = None)
+/* For taking in new slates and then saving them to db */
+case class SlateSaveDTO(id: Option[Long], title: String, creator: String, anonymous: Boolean,
+                        questions: Seq[QuestionDTO])
+
+case class SlateLoadDTO (id: Option[Long], title: String, creator: Either[String, User],
+                     questions: Seq[QuestionDTO])
 
 case class QuestionDTO  (id: Option[Long], text: String, candidates: Seq[CandidateDTO])
 
@@ -19,30 +23,15 @@ case class CandidateDTO (id: Option[Long], name: String, description: String)
 
 object SlateDTO {
 
-  implicit val candidateReads: Reads[CandidateDTO] = (
-    (JsPath \ "id").readNullable[Long] and
-      (JsPath \ "name").read[String] and
-      (JsPath \ "description").read[String]
-    )(CandidateDTO.apply _)
+  //reads
+  implicit val candidateReads: Reads[CandidateDTO] = Json.reads[CandidateDTO]
+  implicit val questionReads: Reads[QuestionDTO] = Json.reads[QuestionDTO]
+  implicit val slateSaveReads: Reads[SlateSaveDTO] = Json.reads[SlateSaveDTO]
+  //implicit val slateLoadReads: Reads[SlateLoadDTO] = Json.reads[SlateLoadDTO]
 
-  implicit val questionReads: Reads[QuestionDTO] = (
-    (JsPath \ "id").readNullable[Long] and
-      (JsPath \ "text").read[String] and
-      (JsPath \ "candidates").read[Seq[CandidateDTO]]
-    )(QuestionDTO.apply _ )
-
-  implicit val slateReads: Reads[SlateDTO] = (
-    (JsPath \ "id").readNullable[Long] and
-      (JsPath \ "title").read[String] and
-      (JsPath \ "creator").read[String] and
-      (JsPath \ "anonymous").read[Boolean] and
-      (JsPath \ "questions").read[Seq[QuestionDTO]] and
-      (JsPath \ "creatorUser").readNullable[User]
-    )(SlateDTO.apply _)
-
+  //writes
   implicit val candidateWrites: Writes[CandidateDTO] = Json.writes[CandidateDTO]
-
   implicit val questionWrites: Writes[QuestionDTO] = Json.writes[QuestionDTO]
-
-  implicit val slateWrites: Writes[SlateDTO] = Json.writes[SlateDTO]
+  implicit val slateSaveWrites: Writes[SlateSaveDTO] = Json.writes[SlateSaveDTO]
+  //implicit val slateLoadWrites: Writes[SlateLoadDTO] = Json.writes[SlateLoadDTO]
 }

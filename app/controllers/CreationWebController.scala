@@ -79,9 +79,8 @@ Console.println(s"Submitted slate: ${slateData.toString}")
           "name" -> text,
           "description" -> text
         )(CandidateDTO.apply)(CandidateDTO.unapply))
-      )(QuestionDTO.apply)(QuestionDTO.unapply)),
-      "creatorUser" -> ignored(Option.empty : Option[User])
-    )(SlateDTO.apply)(SlateDTO.unapply)
+      )(QuestionDTO.apply)(QuestionDTO.unapply))
+    )(SlateSaveDTO.apply)(SlateSaveDTO.unapply)
   )
 
 }

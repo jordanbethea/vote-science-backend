@@ -1,7 +1,7 @@
 package models.db
 
 import framework.DatabaseTemplate
-import models.dto.{CandidateDTO, QuestionDTO, SlateDTO}
+import models.dto.{CandidateDTO, QuestionDTO, SlateDTO, SlateSaveDTO}
 import org.scalatest.Suite
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -16,7 +16,7 @@ class SlateTest extends PlaySpec with DatabaseTemplate with GuiceOneAppPerSuite 
 
   val insertResult = (slateID:Long) => new Slate(slateID, "Slate 1", "Slate Maker", true)
 
-  val slateDTOInsert:SlateDTO = new SlateDTO(None, "Slate 1", "Slate Maker", true, Seq(
+  val slateDTOInsert:SlateSaveDTO = new SlateSaveDTO(None, "Slate 1", "Slate Maker", true, Seq(
     new QuestionDTO(None, "How you doing?", Seq(
       new CandidateDTO(None, "Good", "Actually it should be well"),
       new CandidateDTO(None, "Bad", "Poorly, actually"))),

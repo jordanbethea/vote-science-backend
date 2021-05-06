@@ -18,7 +18,7 @@ class VotingController @Inject()(slatesRepo: SlateRepository, ballotRepo: Ballot
       slate <- slatesRepo.getFullSlate(ballotID)
     } yield {
       slate match {
-        case Some(x) => Ok(Json.toJson(x))
+        case Some(x) => Ok("") //Ok(Json.toJson(x))
         case None => NotFound
       }
     }

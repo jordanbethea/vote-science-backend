@@ -1,7 +1,7 @@
 package models.db
 
 import javax.inject.Inject
-import models.dto.{CandidateDTO, QuestionDTO, SlateDTO}
+import models.dto.{CandidateDTO, QuestionDTO, SlateDTO, SlateLoadDTO, SlateSaveDTO}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.H2Profile.api._
 import slick.jdbc.JdbcProfile
@@ -12,9 +12,9 @@ import scala.concurrent.{ExecutionContext, Future}
 case class Slate(id: Long, title: String, creator: String, anonymous: Boolean)
 
 object Slate {
-  implicit def slateDTOToDB(dto: SlateDTO): Slate = {
+  /*implicit def slateDTOToDB(dto: SlateDTO): Slate = {
     return new Slate(dto.id.getOrElse(0), dto.title, dto.creator, dto.anonymous)
-  }
+  }*/
 
   //https://github.com/VirtusLab/unicorn/issues/11
   val tupled = (this.apply _).tupled
@@ -36,17 +36,18 @@ object SlateRepository {
   def constructSlateDTO(slates: Seq[Slate],
                         questions: Seq[Question],
                         candidates:Seq[Candidate],
-                        creators:Option[Seq[User]] = None): Seq[SlateDTO] = {
+                        creators:Option[Seq[User]] = None): Seq[SlateLoadDTO] = {
     for(s <- slates) yield (
-      new SlateDTO(Option(s.id), s.title, s.creator, s.anonymous,
+      new SlateLoadDTO(Option(s.id), s.title,
+      if(creators.nonEmpty){
+        val result = creators.get.find(_.userID.toString() == s.creator);
+        if(result.nonEmpty){ Right(result.get)} else {Left(s.creator)}
+        } else { Left(s.creator) },
         for(q <- questions.filter(_.slateID == s.id)) yield (
           new QuestionDTO(Option(q.id), q.text,
             candidates.filter(_.questionID == q.id).map(
               c => new CandidateDTO(Option(c.id), c.name, c.description)
-            ))),
-        if(creators.nonEmpty){
-          creators.get.find(_.userID.toString() == s.creator)
-        } else { None }
+            )))
         ))
   }
 }
@@ -81,7 +82,7 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     db.run(SlateRepository.slates.filter(_.id === id).result.headOption)
   }
 
-  def getFullSlate(id: Long) : Future[Option[SlateDTO]] = {
+  def getFullSlate(id: Long) : Future[Option[SlateLoadDTO]] = {
     val slatesF: Future[Seq[Slate]] = db.run(SlateRepository.slates.filter(_.id === id).result)
     val questionsF: Future[Seq[Question]] = db.run(QuestionRepository.questions.filter(_.slateID === id).result)
     val candidatesF: Future[Seq[Candidate]] = db.run(CandidateRepository.candidates.filter(_.slateID === id).result)
@@ -94,7 +95,7 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     }
   }
 
-  def fullAdd(slate: SlateDTO): Future[Long] = {
+  def fullAdd(slate: SlateSaveDTO): Future[Long] = {
     def addCandidates(sID: Long, qID: Long, candidates: Seq[CandidateDTO]) : DBIO[Option[Int]] = {
       val dbCandidates = candidates.map(cDTO => Candidate(cDTO.id.getOrElse(0), cDTO.name, cDTO.description, questionID = qID, slateID = sID))
       CandidateRepository.candidates ++= dbCandidates
@@ -108,7 +109,7 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
       } yield ()
     }
 
-    def addSlateOnly(slate: SlateDTO) : DBIO[Long] = {
+    def addSlateOnly(slate: SlateSaveDTO) : DBIO[Long] = {
       SlateRepository.slatesInserts += Slate(slate.id.getOrElse(0), slate.title, slate.creator, slate.anonymous)
     }
 

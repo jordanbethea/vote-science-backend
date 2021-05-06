@@ -2,7 +2,8 @@
 @import views.html.helper.CSRF
 @import models.dto.BallotDTO
 @** @import scala.language.postfixOps **@
-@(slate: SlateDTO, ballotForm: Form[BallotDTO], user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
+@import models.dto.SlateLoadDTO
+@(slate: SlateLoadDTO, ballotForm: Form[BallotDTO], user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
 
     @implicitFieldConstructor = @{ b4.vertical.fieldConstructor() }
 

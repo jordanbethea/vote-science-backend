@@ -2,7 +2,8 @@ package controllers.api
 
 import javax.inject.{Inject, Singleton}
 import models.db._
-import models.dto.SlateDTO
+import models.dto.{SlateSaveDTO}
+import models.dto.SlateDTO._
 import play.api.libs.json.{JsResult, Json, _}
 import play.api.mvc.{AbstractController, ControllerComponents}
 
@@ -16,9 +17,9 @@ class CreationController @Inject()(slatesRepo: SlateRepository,
                                   (implicit ex: ExecutionContext) extends AbstractController(cc) {
 
   def createSlate = Action.async(parse.json) { request =>
-    val newSlateParsing: JsResult[SlateDTO] = Json.fromJson[SlateDTO](request.body);
-    val newSlate:SlateDTO = newSlateParsing match {
-      case JsSuccess(value: SlateDTO, path: JsPath) => value
+    val newSlateParsing: JsResult[SlateSaveDTO] = Json.fromJson[SlateSaveDTO](request.body);
+    val newSlate:SlateSaveDTO = newSlateParsing match {
+      case JsSuccess(value: SlateSaveDTO, path: JsPath) => value
       case e @ JsError(_) =>
         Console.println(s"Parse errors: ${JsError.toJson(e).toString()} ")
         null
@@ -46,9 +47,10 @@ class CreationController @Inject()(slatesRepo: SlateRepository,
       candidates <- allCandidatesF
     } yield {
       Console.println("Running actual get slates: :")
-      Console.println(Json.toJson(SlateRepository.constructSlateDTO(slates, questions, candidates)))
-      val jsonSlate = Json.toJson(SlateRepository.constructSlateDTO(slates, questions, candidates))
-      Ok(jsonSlate)
+      //Console.println(Json.toJson(SlateRepository.constructSlateDTO(slates, questions, candidates)))
+      //val jsonSlate = Json.toJson(SlateRepository.constructSlateDTO(slates, questions, candidates))
+      //Ok(jsonSlate)
+      Ok("")
     }
 
   }
