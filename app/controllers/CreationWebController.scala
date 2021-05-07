@@ -32,19 +32,10 @@ class CreationWebController @Inject()(slatesRepo: SlateRepository, questionRepo:
   }
 
   def slateList() = silhouette.UserAwareAction.async { implicit request =>
-    val allSlatesF = slatesRepo.listAll
-    val allQuestionsF = questionRepo.listAll
-    val allCandidatesF = candidateRepo.listAll
-
-    for {
-      slates <- allSlatesF
-      questions <- allQuestionsF
-      candidates <- allCandidatesF
-      users <- userService.findAllProfiles(slates.filter(_.anonymous == false).map(s => UUID.fromString(s.creator)))
-    } yield {
-      Console.println("Running actual get slates: :")
-      val slateList = SlateRepository.constructSlateDTO(slates, questions, candidates, Option(users)).toList
-      Ok(views.html.slateList(slateList, request.identity))
+      for {
+        slateList <- slatesRepo.getAllFullSlates()
+      } yield {
+        Ok(views.html.slateList(slateList.toList, request.identity))
     }
   }
 
