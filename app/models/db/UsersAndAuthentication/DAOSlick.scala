@@ -1,5 +1,6 @@
 package models.db.UsersAndAuthentication
 
+import models.db.DBTableDefinitions
 import slick.jdbc.JdbcProfile
 import play.api.db.slick.HasDatabaseConfigProvider
 
