@@ -42,6 +42,7 @@ class BallotRepository @Inject()(protected val dbConfigProvider: DatabaseConfigP
     dbConfig.db.run(ballots.result)
   }
 
+  //TODO - is this needed any more? Will we ever need to load raw ballot data not part of the results?
   def getBallotsForSlate(slateID: Long): Future[Seq[BallotDTO]] = {
     val ballotsQ: DBIO[Seq[Ballot]] = ballots.filter(_.slateID === slateID).result
 

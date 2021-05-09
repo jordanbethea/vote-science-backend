@@ -1,7 +1,7 @@
 package controllers
 
 import javax.inject._
-import models.db.{BallotRepository, CandidateRepository, QuestionRepository, SlateRepository, SlateResultsRepository}
+import models.db.{BallotRepository, CandidateRepository, QuestionRepository, SlateRepository, VotingResultsRepository}
 import models.dto._
 import play.api.data._
 import play.api.data.Forms._
@@ -16,7 +16,7 @@ import scala.concurrent.ExecutionContext
 class CreationWebController @Inject()(slatesRepo: SlateRepository, questionRepo: QuestionRepository,
                                       candidateRepo: CandidateRepository,
                                       ballotRepo: BallotRepository,
-                                      resultsRepo: SlateResultsRepository,
+                                      resultsRepo: VotingResultsRepository,
                                       scc: SilhouetteControllerComponents,
                                       messagesAction: MessagesActionBuilder)
                                      (implicit ex: ExecutionContext) extends AbstractAuthController(scc) {

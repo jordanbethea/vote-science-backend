@@ -193,6 +193,47 @@ trait DBTableDefinitions {
     def candidateKey = foreignKey("FPTP_CANDIDATE_FK", candidateID, candidates)(_.id)
   }
 
+  case class ApprovalChoice(ballotID:Long, questionID:Long, candidateID:Long)
+
+  class ApprovalTableDef(tag: Tag) extends Table[ApprovalChoice](tag, "APPROVAL_CHOICES"){
+    def ballotID = column[Long]("BALLOT_ID")
+    def questionID = column[Long]("QUESTION_ID")
+    def candidateID = column[Long]("CANDIDATE_ID")
+
+    override def * = (ballotID, questionID, candidateID).mapTo[ApprovalChoice]
+    def ballotKey = foreignKey("FPTP_BALLOT_FK", ballotID, ballots)(_.id)
+    def questionKey = foreignKey("FPTP_QUESTION_FK", questionID, questions)(_.id)
+    def candidateKey = foreignKey("FPTP_CANDIDATE_FK", candidateID, candidates)(_.id)
+  }
+
+  case class RankedChoice(ballotID:Long, questionID:Long, candidateID:Long, rank:Int)
+
+  class RankedTableDef(tag: Tag) extends Table[RankedChoice](tag, "RANKED_CHOICES"){
+    def ballotID = column[Long]("BALLOT_ID")
+    def questionID = column[Long]("QUESTION_ID")
+    def candidateID = column[Long]("CANDIDATE_ID")
+    def rank = column[Int]("RANK")
+
+    override def * = (ballotID, questionID, candidateID, rank).mapTo[RankedChoice]
+    def ballotKey = foreignKey("FPTP_BALLOT_FK", ballotID, ballots)(_.id)
+    def questionKey = foreignKey("FPTP_QUESTION_FK", questionID, questions)(_.id)
+    def candidateKey = foreignKey("FPTP_CANDIDATE_FK", candidateID, candidates)(_.id)
+  }
+
+  case class RangeChoice(ballotID:Long, questionID:Long, candidateID:Long, score:Int)
+
+  class RangeTableDef(tag: Tag) extends Table[RangeChoice](tag, "RANGE_CHOICES"){
+    def ballotID = column[Long]("BALLOT_ID")
+    def questionID = column[Long]("QUESTION_ID")
+    def candidateID = column[Long]("CANDIDATE_ID")
+    def score = column[Int]("SCORE")
+
+    override def * = (ballotID, questionID, candidateID, score).mapTo[RangeChoice]
+    def ballotKey = foreignKey("FPTP_BALLOT_FK", ballotID, ballots)(_.id)
+    def questionKey = foreignKey("FPTP_QUESTION_FK", questionID, questions)(_.id)
+    def candidateKey = foreignKey("FPTP_CANDIDATE_FK", candidateID, candidates)(_.id)
+  }
+
   // table query definitions
   val slickUsers = TableQuery[Users]
   val slickLoginInfos = TableQuery[LoginInfos]
@@ -212,6 +253,9 @@ trait DBTableDefinitions {
   val ballots = TableQuery[BallotTableDef]
   val ballotsInserts = ballots returning ballots.map(_.id)
   val fptpResults = TableQuery[FPTPTableDef]
+  val approvalResults = TableQuery[ApprovalTableDef]
+  val rankedResults = TableQuery[RankedTableDef]
+  val rangeResults = TableQuery[RangeTableDef]
 
 
   // queries used in multiple places

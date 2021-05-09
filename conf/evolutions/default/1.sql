@@ -36,7 +36,30 @@ CREATE TABLE BALLOTS (
 CREATE TABLE FPTP_CHOICES (
     ballot_id bigint(20) references BALLOTS(id),
     question_id bigint(20) references QUESTIONS(id),
+    candidate_id bigint(20) references CANDIDATES(id)//,
+    //PRIMARY KEY (ballot_id, question_id)
+);
+
+CREATE TABLE APPROVAL_CHOICES(
+    ballot_id bigint(20) references BALLOTS(id),
+    question_id bigint(20) references QUESTIONS(id),
     candidate_id bigint(20) references CANDIDATES(id)
+);
+
+CREATE TABLE RANKED_CHOICES(
+    ballot_id bigint(20) references BALLOTS(id),
+    question_id bigint(20) references QUESTIONS(id),
+    candidate_id bigint(20) references CANDIDATES(id),
+    rank bigint(20) NOT NULL//,
+    //PRIMARY KEY (ballot_id, question_id, candidate_id)
+);
+
+CREATE TABLE RANGE_CHOICES(
+   ballot_id bigint(20) references BALLOTS(id),
+   question_id bigint(20) references QUESTIONS(id),
+   candidate_id bigint(20) references CANDIDATES(id),
+   score bigint(20) NOT NULL//,
+   //PRIMARY KEY (ballot_id, question_id, candidate_id)
 );
 
 CREATE TABLE USER (
@@ -77,6 +100,9 @@ DROP TABLE QUESTIONS;
 DROP TABLE CANDIDATES;
 DROP TABLE BALLOTS;
 DROP TABLE FPTP_CHOICES;
+DROP TABLE APPROVAL_CHOICES;
+DROP TABLE RANKED_CHOICES;
+DROP TABLE RANGE_CHOICES;
 DROP TABLE USER;
 DROP TABLE LOGIN_INFO;
 DROP TABLE USER_LOGIN_INFO;

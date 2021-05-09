@@ -2,7 +2,8 @@ package models.dto
 
 import play.api.libs.json._
 
-case class BallotDTO(details: BallotDetailsDTO, fptpModel: Option[FPTPModelDTO])
+case class BallotDTO(details: BallotDetailsDTO, fptpModel: Option[FPTPModelDTO] = None, approvalModel: Option[ApprovalModelDTO] = None,
+                     rankedModel: Option[RankedModelDTO] = None, rangeModelDTO: Option[RangeModelDTO] = None)
 
 object BallotDTO {
   implicit val ballotWrites: Writes[BallotDTO] = Json.writes[BallotDTO]
@@ -28,4 +29,46 @@ case class FPTPChoiceDTO (questionID: Long, candidateID: Long)
 object FPTPChoiceDTO {
   implicit val fptpChoiceWrites: Writes[FPTPChoiceDTO] = Json.writes[FPTPChoiceDTO]
   implicit val fptpChoiceReads: Reads[FPTPChoiceDTO] = Json.reads[FPTPChoiceDTO]
+}
+
+case class ApprovalModelDTO (choices: Seq[ApprovalChoiceDTO])
+
+object ApprovalModelDTO {
+  implicit val approvalModelWrites: Writes[ApprovalModelDTO] = Json.writes[ApprovalModelDTO]
+  implicit val approvalModelReads: Reads[ApprovalModelDTO] = Json.reads[ApprovalModelDTO]
+}
+
+case class ApprovalChoiceDTO (questionID:Long, candidateID:Long)
+
+object ApprovalChoiceDTO{
+  implicit val approvalChoiceWrites: Writes[ApprovalChoiceDTO] = Json.writes[ApprovalChoiceDTO]
+  implicit val approvalChoiceReads: Reads[ApprovalChoiceDTO] = Json.reads[ApprovalChoiceDTO]
+}
+
+case class RankedModelDTO (choices: Seq[RankedChoiceDTO])
+
+object RankedModelDTO {
+  implicit val rankedModelWrites: Writes[RankedModelDTO] = Json.writes[RankedModelDTO]
+  implicit val rankedModelReads: Reads[RankedModelDTO] = Json.reads[RankedModelDTO]
+}
+
+case class RankedChoiceDTO (questionID:Long, candidateID:Long, rank:Int)
+
+object RankedChoiceDTO {
+  implicit val rankedChoiceWrites: Writes[RankedChoiceDTO] = Json.writes[RankedChoiceDTO]
+  implicit val rankedChoiceReads: Reads[RankedChoiceDTO] = Json.reads[RankedChoiceDTO]
+}
+
+case class RangeModelDTO (choices: Seq[RangeChoiceDTO])
+
+object RangeModelDTO {
+  implicit val rangeModelWrites: Writes[RangeModelDTO] = Json.writes[RangeModelDTO]
+  implicit val rangeModelReads: Reads[RangeModelDTO] = Json.reads[RangeModelDTO]
+}
+
+case class RangeChoiceDTO (questionID:Long, candidateID:Long, score:Int)
+
+object RangeChoiceDTO {
+  implicit val rangeChoiceWrites: Writes[RangeChoiceDTO] = Json.writes[RangeChoiceDTO]
+  implicit val rangeChoiceReads: Reads[RangeChoiceDTO] = Json.reads[RangeChoiceDTO]
 }

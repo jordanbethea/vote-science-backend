@@ -7,7 +7,7 @@ import slick.jdbc.H2Profile.api._
 import slick.jdbc.JdbcProfile
 
 import scala.concurrent.{ExecutionContext, Future}
-
+//TODO - is this class needed at all any more?
 class FPTPRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
                               (implicit executionContext: ExecutionContext)
                 extends HasDatabaseConfigProvider[JdbcProfile] with DBTableDefinitions {

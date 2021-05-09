@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 import models.db.{BallotRepository, FPTPRepository, SlateRepository}
-import models.dto.{BallotDTO, BallotDetailsDTO, FPTPChoiceDTO, FPTPModelDTO}
+import models.dto._
 import play.api.libs.json.{JsResult, Json, _}
 import play.api.data._
 import play.api.data.Forms._
@@ -60,8 +60,34 @@ class VotingWebController @Inject() (slatesRepo: SlateRepository, ballotRepo: Ba
     )(FPTPChoiceDTO.apply)(FPTPChoiceDTO.unapply))
   )(FPTPModelDTO.apply)(FPTPModelDTO.unapply)
 
+  val approvalMapping = mapping(
+    "choices" -> seq(mapping(
+      "questionID" -> longNumber,
+      "candidateID" -> longNumber
+    )(ApprovalChoiceDTO.apply)(ApprovalChoiceDTO.unapply))
+  )(ApprovalModelDTO.apply)(ApprovalModelDTO.unapply)
+
+  val rankedMapping = mapping(
+    "choices" -> seq(mapping(
+      "questionID" -> longNumber,
+      "candidateID" -> longNumber,
+      "rank" -> number
+    )(RankedChoiceDTO.apply)(RankedChoiceDTO.unapply))
+  )(RankedModelDTO.apply)(RankedModelDTO.unapply)
+
+  val rangeMapping = mapping(
+    "choices" -> seq(mapping(
+      "questionID" -> longNumber,
+      "candidateID" -> longNumber,
+      "score" -> number
+    )(RangeChoiceDTO.apply)(RangeChoiceDTO.unapply))
+  )(RangeModelDTO.apply)(RangeModelDTO.unapply)
+
   val ballotMapping = mapping(
     "details" -> ballotDetailsMapping,
-    "fptpModel" -> optional(fptpMapping)
+    "fptpModel" -> optional(fptpMapping),
+    "approvalModel" -> optional(approvalMapping),
+    "rankedModel" -> optional(rankedMapping),
+    "rangeModel" -> optional(rangeMapping)
   )(BallotDTO.apply)(BallotDTO.unapply)
 }

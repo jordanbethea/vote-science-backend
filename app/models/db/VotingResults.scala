@@ -6,14 +6,14 @@ import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.H2Profile.api._
 
-import scala.collection.View.Empty.toMap
 import scala.concurrent.{ExecutionContext, Future}
 
-class SlateResultsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
-                            (implicit executionContext: ExecutionContext)
+class VotingResultsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
+                                       (implicit executionContext: ExecutionContext)
   extends HasDatabaseConfigProvider[JdbcProfile] with DBTableDefinitions {
 
   //TODO - update this to use slick aggregations? Not sure if it's worth it yet
+  //Simple version first
   def getSlateResults(slateID: Long):Future[SlateResultsDTO] = {
     val query = for {
       ballotIDs <- ballots.filter(_.slateID === slateID).map(_.id).result
