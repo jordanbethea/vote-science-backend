@@ -34,3 +34,10 @@ createSlate.description.title=Description
 createSlate.addCandidate=Add Candidate
 createSlate.addQuestion=Add Question
 createSlate.submit=Save New Slate
+
+slate.info.title=Title:
+slate.info.creator=Creator:
+slate.info.fptpResults=First Past the Post Results
+slate.info.totalBallots=Total Ballots Cast
+slate.info.questions=Questions:
+slate.info.fptpVotesCast=Votes Cast:

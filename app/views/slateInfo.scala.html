@@ -1,25 +1,35 @@
 @import models.dto.SlateDTO
 @import models.dto.BallotDTO
 @import models.dto.SlateLoadDTO
-@(slateOption: Option[SlateLoadDTO], ballots: Seq[BallotDTO], user: Option[models.User] = None)
+@import models.dto.SlateResultsDTO
+@(slateOption: Option[SlateLoadDTO], ballots: Seq[BallotDTO], results: SlateResultsDTO, user: Option[models.User] = None)(implicit messages: Messages)
 
 @title = @{if(slateOption.isDefined){s"Info for slate ${slateOption.get.title}"} else {"Not a valid slate!"}}
 
 @main(title, user)(play.twirl.api.HtmlFormat.empty) {
-
+    <div class="container">
     @if(slateOption.isDefined) {
         @defining(slateOption.get) { slate =>
-            @* @slate = slateOption.get *@
-            <p>Title: @slate.title</p>
-            <p>Creator: @slate.creator</p>
-            <p>Questions</p>
-            @for(question <- slate.questions) {
-                <h6>Text: @question.text</h6>
-                @for(candidate <- question.candidates) {
-                    <p>@candidate.name - @candidate.description</p>
+
+            <p>@messages("slate.info.title") @slate.title</p>
+            <p>@messages("slate.info.creator") @slate.creator</p>
+
+            <div id="fptpResults">
+                <h3>@messages("slate.info.fptpResults")</h3>
+                <p>@messages("slate.info.totalBallots") @results.fptpResults.totalBallots</p>
+                <p>@messages("slate.info.questions")</p>
+                @for(question <- slate.questions) {
+                    <h6>@question.text</h6>
+                    @for(candidate <- question.candidates) {
+                        <div>
+                            <span>@candidate.name - @candidate.description</span>
+                            <span>@{messages("slate.info.fptpVotesCast")} @{results.fptpResults.getCountForCandidate(question.id, candidate.id)}</span>
+                        </div>
+                    }
                 }
-            }
-            Ballots Cast: @ballots.length
+            </div>
+
+            @* Ballots Cast: @ballots.length
             @for(ballot <- ballots) {
                 <p>Cast by @ballot.details.voter</p>
                 @if(ballot.fptpModel.nonEmpty) {
@@ -28,9 +38,10 @@
                         <p>Question: @choice.questionID , Choice: @choice.candidateID</p>
                     }
                 }
-            }
+            } *@
         }
     } else {
         <p>No slate was found, are you sure you have the right id?</p>
     }
+    </div>
 }

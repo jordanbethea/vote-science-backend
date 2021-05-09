@@ -1,12 +1,13 @@
 package controllers
 
 import javax.inject._
-import models.db.{BallotRepository, CandidateRepository, QuestionRepository, SlateRepository}
+import models.db.{BallotRepository, CandidateRepository, QuestionRepository, SlateRepository, SlateResultsRepository}
 import models.dto._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.mvc._
 import java.util.UUID
+
 import models.User
 
 import scala.concurrent.ExecutionContext
@@ -15,6 +16,7 @@ import scala.concurrent.ExecutionContext
 class CreationWebController @Inject()(slatesRepo: SlateRepository, questionRepo: QuestionRepository,
                                       candidateRepo: CandidateRepository,
                                       ballotRepo: BallotRepository,
+                                      resultsRepo: SlateResultsRepository,
                                       scc: SilhouetteControllerComponents,
                                       messagesAction: MessagesActionBuilder)
                                      (implicit ex: ExecutionContext) extends AbstractAuthController(scc) {
@@ -25,8 +27,9 @@ class CreationWebController @Inject()(slatesRepo: SlateRepository, questionRepo:
     for {
       slateInfo <- slatesRepo.getFullSlate(slateID)
       ballots <- ballotRepo.getBallotsForSlate(slateID)
+      slateResults <- resultsRepo.getSlateResults(slateID)
     } yield {
-      Ok(views.html.slateInfo(slateInfo, ballots, request.identity))
+      Ok(views.html.slateInfo(slateInfo, ballots, slateResults, request.identity))
     }
 
   }
