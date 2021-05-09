@@ -2,11 +2,21 @@ package controllers.api
 
 import javax.inject.{Inject, Singleton}
 import models.db.{BallotRepository, FPTPRepository, SlateRepository}
-import models.dto.{BallotDetailsDTO, FPTPModelDTO}
+import models.dto.{BallotDTO, BallotDetailsDTO, FPTPModelDTO}
 import play.api.libs.json.{JsResult, Json, _}
 import play.api.mvc.{AbstractController, ControllerComponents}
 
 import scala.concurrent.ExecutionContext
+
+/**
+ *
+ * OUT OF DATE, this needs to be updated later. For now ignore this
+ * @param slatesRepo
+ * @param ballotRepo
+ * @param fptpRepo
+ * @param cc
+ * @param ex
+ */
 
 @Singleton
 class VotingController @Inject()(slatesRepo: SlateRepository, ballotRepo: BallotRepository,
@@ -49,7 +59,7 @@ class VotingController @Inject()(slatesRepo: SlateRepository, ballotRepo: Ballot
     } else None
 
     //save all data, return result
-    for( ballotResult <- ballotRepo.addBallotAndModelData(ballot, fptpResult))
+    for( ballotResult <- ballotRepo.saveBallot(BallotDTO(ballot)))
       yield {
         Ok(Json.toJson(ballotResult))
       }

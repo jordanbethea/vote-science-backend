@@ -35,9 +35,16 @@ createSlate.addCandidate=Add Candidate
 createSlate.addQuestion=Add Question
 createSlate.submit=Save New Slate
 
+voting.fptpModel=First Past the Post Voting
+voting.approvalModel=Approval Voting
+voting.rankedModel=Ranked Choice Voting
+voting.rangeModel=Range Voting
+
 slate.info.title=Title:
 slate.info.creator=Creator:
 slate.info.fptpResults=First Past the Post Results
 slate.info.totalBallots=Total Ballots Cast
 slate.info.questions=Questions:
 slate.info.fptpVotesCast=Votes Cast:
+slate.info.approvalResults=Approval Results
+slate.info.approvalVotesCast=Total Approvals

@@ -28,6 +28,21 @@
                     }
                 }
             </div>
+
+          <div id="approvalResults">
+              <h3>@messages("slate.info.approvalResults")</h3>
+              <p>@messages("slate.info.totalBallots") @results.approvalResults.totalBallots</p>
+              <p>@messages("slate.info.questions")</p>
+              @for(question <- slate.questions) {
+                  <h6>@question.text</h6>
+                  @for(candidate <- question.candidates) {
+                      <div>
+                          <span>@candidate.name - @candidate.description</span>
+                          <span>@{messages("slate.info.approvalVotesCast")} @{results.approvalResults.getCountForCandidate(question.id, candidate.id)}</span>
+                      </div>
+                  }
+              }
+          </div>
         }
     } else {
         <p>No slate was found, are you sure you have the right id?</p>

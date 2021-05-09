@@ -22,8 +22,10 @@
             @b4.hidden(ballotForm("details.anonymous"), Symbol("value") -> false)
         }
 
+        <!-- FPTP Model -->
+        <h2>@messages("voting.fptpModel")</h2>
         @for(question <- slate.questions.zip((0 to slate.questions.length).toList)) {
-            <div><!-- FPTP Model -->
+            <div>
                 @b4.select(
                     field=ballotForm(s"fptpModel.choices[${question._2}].candidateID"),
                     options=question._1.candidates.map(c => c.id.getOrElse(0).toString -> c.name),
@@ -32,6 +34,23 @@
                 <input type="hidden" name="@(s"fptpModel.choices[${question._2}].questionID")" value="@(s"${question._1.id.getOrElse(0)}")" />
             </div>
         }
+
+        <!-- Approval Model -->
+        <h2>@messages("voting.approvalModel")</h2>
+        @for(question <- slate.questions.zip((0 to slate.questions.length).toList)) {
+            <div>
+                <h3>@question._1.text</h3>
+            @for(candidate <- question._1.candidates.zip((0 to question._1.candidates.length).toList)){
+                @b4.checkbox(
+                    field=ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].approved"),
+                    Symbol("_text") -> candidate._1.name
+                )
+                @b4.hidden(ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].questionID"), Symbol("value") -> question._1.id.getOrElse(0))
+                @b4.hidden(ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].candidateID"), Symbol("value") -> candidate._1.id.getOrElse(0))
+            }
+            </div>
+        }
+
         <button type="submit" class="btn btn-primary">Vote!</button>
     }
     </div>

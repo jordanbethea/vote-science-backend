@@ -3,7 +3,7 @@ package models.dto
 import play.api.libs.json._
 
 case class BallotDTO(details: BallotDetailsDTO, fptpModel: Option[FPTPModelDTO] = None, approvalModel: Option[ApprovalModelDTO] = None,
-                     rankedModel: Option[RankedModelDTO] = None, rangeModelDTO: Option[RangeModelDTO] = None)
+                     rankedModel: Option[RankedModelDTO] = None, rangeModel: Option[RangeModelDTO] = None)
 
 object BallotDTO {
   implicit val ballotWrites: Writes[BallotDTO] = Json.writes[BallotDTO]
@@ -31,14 +31,14 @@ object FPTPChoiceDTO {
   implicit val fptpChoiceReads: Reads[FPTPChoiceDTO] = Json.reads[FPTPChoiceDTO]
 }
 
-case class ApprovalModelDTO (choices: Seq[ApprovalChoiceDTO])
+case class ApprovalModelDTO (choices: Seq[Seq[ApprovalChoiceDTO]])
 
 object ApprovalModelDTO {
   implicit val approvalModelWrites: Writes[ApprovalModelDTO] = Json.writes[ApprovalModelDTO]
   implicit val approvalModelReads: Reads[ApprovalModelDTO] = Json.reads[ApprovalModelDTO]
 }
 
-case class ApprovalChoiceDTO (questionID:Long, candidateID:Long)
+case class ApprovalChoiceDTO (questionID:Long, candidateID:Long, approved:Boolean)
 
 object ApprovalChoiceDTO{
   implicit val approvalChoiceWrites: Writes[ApprovalChoiceDTO] = Json.writes[ApprovalChoiceDTO]

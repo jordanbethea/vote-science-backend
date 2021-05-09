@@ -61,10 +61,11 @@ class VotingWebController @Inject() (slatesRepo: SlateRepository, ballotRepo: Ba
   )(FPTPModelDTO.apply)(FPTPModelDTO.unapply)
 
   val approvalMapping = mapping(
-    "choices" -> seq(mapping(
+    "choices" -> seq(seq(mapping(
       "questionID" -> longNumber,
-      "candidateID" -> longNumber
-    )(ApprovalChoiceDTO.apply)(ApprovalChoiceDTO.unapply))
+      "candidateID" -> longNumber,
+      "approved" -> boolean
+    )(ApprovalChoiceDTO.apply)(ApprovalChoiceDTO.unapply)))
   )(ApprovalModelDTO.apply)(ApprovalModelDTO.unapply)
 
   val rankedMapping = mapping(
