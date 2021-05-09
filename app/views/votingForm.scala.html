@@ -5,7 +5,7 @@
 @import models.dto.SlateLoadDTO
 @(slate: SlateLoadDTO, ballotForm: Form[BallotDTO], user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
 
-    @implicitFieldConstructor = @{ b4.vertical.fieldConstructor() }
+    @implicitFieldConstructor = @{ b4.horizontal.fieldConstructor("col-md-2", "col-md-10") }
 
 @main("Vote on this slate", user)(play.twirl.api.HtmlFormat.empty) {
     <div class="container">
@@ -43,11 +43,37 @@
             @for(candidate <- question._1.candidates.zip((0 to question._1.candidates.length).toList)){
                 @b4.checkbox(
                     field=ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].approved"),
-                    Symbol("_text") -> candidate._1.name
+                    Symbol("_label") -> candidate._1.name
                 )
                 @b4.hidden(ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].questionID"), Symbol("value") -> question._1.id.getOrElse(0))
                 @b4.hidden(ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].candidateID"), Symbol("value") -> candidate._1.id.getOrElse(0))
             }
+            </div>
+        }
+
+        <!-- Ranked Model -->
+        <h2>@messages("voting.rankedModel")</h2>
+        @for(question <- slate.questions.zip((0 to slate.questions.length).toList)) {
+            <div>
+                <h3>@question._1.text</h3>
+                @for(candidate <- question._1.candidates.zip((0 to question._1.candidates.length).toList)){
+                    @b4.text(ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].rank"), Symbol("_label") -> candidate._1.name)
+                    @b4.hidden(ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].questionID"), Symbol("value") -> question._1.id.getOrElse(0))
+                    @b4.hidden(ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].candidateID"), Symbol("value") -> candidate._1.id.getOrElse(0))
+                }
+            </div>
+        }
+
+        <!-- Range Model -->
+        <h2>@messages("voting.rangeModel")</h2>
+        @for(question <- slate.questions.zip((0 to slate.questions.length).toList)) {
+            <div>
+                <h3>@question._1.text</h3>
+                @for(candidate <- question._1.candidates.zip((0 to question._1.candidates.length).toList)){
+                    @b4.text(ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].rank"), Symbol("_label") -> candidate._1.name)
+                    @b4.hidden(ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].questionID"), Symbol("value") -> question._1.id.getOrElse(0))
+                    @b4.hidden(ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].candidateID"), Symbol("value") -> candidate._1.id.getOrElse(0))
+                }
             </div>
         }
 

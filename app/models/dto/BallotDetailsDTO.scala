@@ -45,7 +45,7 @@ object ApprovalChoiceDTO{
   implicit val approvalChoiceReads: Reads[ApprovalChoiceDTO] = Json.reads[ApprovalChoiceDTO]
 }
 
-case class RankedModelDTO (choices: Seq[RankedChoiceDTO])
+case class RankedModelDTO (choices: Seq[Seq[RankedChoiceDTO]])
 
 object RankedModelDTO {
   implicit val rankedModelWrites: Writes[RankedModelDTO] = Json.writes[RankedModelDTO]
@@ -59,7 +59,7 @@ object RankedChoiceDTO {
   implicit val rankedChoiceReads: Reads[RankedChoiceDTO] = Json.reads[RankedChoiceDTO]
 }
 
-case class RangeModelDTO (choices: Seq[RangeChoiceDTO])
+case class RangeModelDTO (choices: Seq[Seq[RangeChoiceDTO]])
 
 object RangeModelDTO {
   implicit val rangeModelWrites: Writes[RangeModelDTO] = Json.writes[RangeModelDTO]

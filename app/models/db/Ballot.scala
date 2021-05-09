@@ -27,9 +27,9 @@ class BallotRepository @Inject()(protected val dbConfigProvider: DatabaseConfigP
               else DBIOAction.successful()}
       _ <- { if(approvalData.isDefined) approvalResults ++= approvalData.get.choices.flatten.filter(_.approved).map(entry => ApprovalChoice(newBallotId,entry.questionID, entry.candidateID))
             else DBIOAction.successful()}
-      _ <- { if(rankedData.isDefined) rankedResults ++= rankedData.get.choices.map(entry => RankedChoice(newBallotId, entry.questionID, entry.candidateID, entry.rank))
+      _ <- { if(rankedData.isDefined) rankedResults ++= rankedData.get.choices.flatten.map(entry => RankedChoice(newBallotId, entry.questionID, entry.candidateID, entry.rank))
             else DBIOAction.successful()}
-      _ <- { if(rangeData.isDefined) rangeResults ++= rangeData.get.choices.map(entry => RangeChoice(newBallotId, entry.questionID, entry.candidateID, entry.score))
+      _ <- { if(rangeData.isDefined) rangeResults ++= rangeData.get.choices.flatten.map(entry => RangeChoice(newBallotId, entry.questionID, entry.candidateID, entry.score))
             else DBIOAction.successful()}
     } yield(newBallotId)
 

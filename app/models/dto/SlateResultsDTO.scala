@@ -10,3 +10,6 @@ case class NonscoredResultsDTO(totalBallots:Int, totalCounts:Map[Long, Nonscored
 }
 case class NonscoredQuestionResult(questionID:Long, candidateCounts:Map[Long, NonscoredCandidateResult])
 case class NonscoredCandidateResult(candidateID:Long, totalVotes:Int)
+
+
+case class RankedCandidateResult

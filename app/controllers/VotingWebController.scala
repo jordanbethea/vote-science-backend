@@ -69,19 +69,19 @@ class VotingWebController @Inject() (slatesRepo: SlateRepository, ballotRepo: Ba
   )(ApprovalModelDTO.apply)(ApprovalModelDTO.unapply)
 
   val rankedMapping = mapping(
-    "choices" -> seq(mapping(
+    "choices" -> seq(seq(mapping(
       "questionID" -> longNumber,
       "candidateID" -> longNumber,
       "rank" -> number
-    )(RankedChoiceDTO.apply)(RankedChoiceDTO.unapply))
+    )(RankedChoiceDTO.apply)(RankedChoiceDTO.unapply)))
   )(RankedModelDTO.apply)(RankedModelDTO.unapply)
 
   val rangeMapping = mapping(
-    "choices" -> seq(mapping(
+    "choices" -> seq(seq(mapping(
       "questionID" -> longNumber,
       "candidateID" -> longNumber,
       "score" -> number
-    )(RangeChoiceDTO.apply)(RangeChoiceDTO.unapply))
+    )(RangeChoiceDTO.apply)(RangeChoiceDTO.unapply)))
   )(RangeModelDTO.apply)(RangeModelDTO.unapply)
 
   val ballotMapping = mapping(
