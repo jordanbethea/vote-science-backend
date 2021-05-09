@@ -46,6 +46,4 @@ class VotingResultsRepository @Inject()(protected val dbConfigProvider: Database
     }
     NonscoredResultsDTO(approvalResults.length, answerCounts.toMap)
   }
-
-  private def getRankedResults(rankedResults: Seq[RankedChoice]):
 }
