@@ -24,6 +24,7 @@ class CreationWebController @Inject()(slatesRepo: SlateRepository, questionRepo:
 
   def slateInfo(slateID: Long) = silhouette.UserAwareAction.async { implicit request =>
 
+    Console.println(s"Controller - slate info request: ${request.identity}")
     for {
       slateInfo <- slatesRepo.getFullSlate(slateID)
       ballots <- ballotRepo.getBallotsForSlate(slateID)
@@ -36,7 +37,7 @@ class CreationWebController @Inject()(slatesRepo: SlateRepository, questionRepo:
 
   def slateList() = silhouette.UserAwareAction.async { implicit request =>
       for {
-        slateList <- slatesRepo.getAllFullSlates()
+        slateList <- slatesRepo.getFullSlates()
       } yield {
         Ok(views.html.slateList(slateList.toList, request.identity))
     }

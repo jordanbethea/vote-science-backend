@@ -42,16 +42,15 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
   }
 
   def getFullSlate(id: Long) : Future[Option[SlateLoadDTO]] = {
-    val slatesF: Future[Seq[Slate]] = db.run(slates.filter(_.id === id).result)
-    val questionsF: Future[Seq[Question]] = db.run(questions.filter(_.slateID === id).result)
-    val candidatesF: Future[Seq[Candidate]] = db.run(candidates.filter(_.slateID === id).result)
-    for {
-      slate <- slatesF
-      question <- questionsF
-      candidates <- candidatesF
+    val q = for {
+      slate <- slates.filter(_.id === id).result
+      question <- questions.filter(_.slateID === id).result
+      candidates <- candidates.filter(_.slateID === id).result
+      user <- slickUsers.filter(u => u.id === slate.head.creator).result
     } yield {
-      Option(constructSlateDTO(slate, question, candidates).head)
+      Option(constructSlateDTO(slate, question, candidates, Option(user)).head)
     }
+    db.run(q)
   }
 
   def fullAdd(slate: SlateSaveDTO): Future[Long] = {
@@ -97,7 +96,7 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     db.run(slates.delete)
   }
 
-  def getAllFullSlates(): Future[Seq[SlateLoadDTO]] ={
+  def getFullSlates(): Future[Seq[SlateLoadDTO]] ={
     val query = for {
       slates <- slates.result
       questions <- questions.result
@@ -105,9 +104,7 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
       userIDStrings = slates.filter(_.anonymous == false).map(s => s.creator)
       dbUsers <- slickUsers.filter(_.id.inSet(userIDStrings)).result
     } yield {
-      val users = dbUsers.map { user => User(UUID.fromString(user.userID), null,
-           user.firstName, user.lastName, user.fullName, user.email, user.avatarURL)}
-      constructSlateDTO(slates, questions, candidates, Option(users)).toList
+      constructSlateDTO(slates, questions, candidates, Option(dbUsers)).toList
     }
 
     db.run(query)
@@ -116,11 +113,11 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
   def constructSlateDTO(slates: Seq[Slate],
                         questions: Seq[Question],
                         candidates:Seq[Candidate],
-                        creators:Option[Seq[User]] = None): Seq[SlateLoadDTO] = {
+                        creators:Option[Seq[DBUser]] = None): Seq[SlateLoadDTO] = {
     for(s <- slates) yield (
       new SlateLoadDTO(Option(s.id), s.title,
         if(creators.nonEmpty){
-          val result = creators.get.find(_.userID.toString() == s.creator);
+          val result = creators.get.find(_.userID == s.creator);
           if(result.nonEmpty){ Right(result.get)} else {Left(s.creator)}
         } else { Left(s.creator) },
         for(q <- questions.filter(_.slateID == s.id)) yield (
@@ -129,5 +126,13 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
               c => new CandidateDTO(Option(c.id), c.name, c.description)
             )))
       ))
+  }
+
+  //Might not be best practice, but I just want user info to pass through to slate,
+  //I don't want to use DB object, and don't need login info
+  //TODO - think about a better solution for this
+  private implicit def dbUserToGenUser(user: DBUser):User = {
+    User(UUID.fromString(user.userID), null,
+      user.firstName, user.lastName, user.fullName, user.email, user.avatarURL)
   }
 }

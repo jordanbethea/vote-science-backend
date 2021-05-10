@@ -12,7 +12,7 @@
         @defining(slateOption.get) { slate =>
 
             <p>@messages("slate.info.title") @slate.title</p>
-            <p>@messages("slate.info.creator") @slate.creator</p>
+            <p>@messages("slate.info.creator") @slate.creatorName()</p>
 
             <div id="fptpResults">
                 <h3>@messages("slate.info.fptpResults")</h3>

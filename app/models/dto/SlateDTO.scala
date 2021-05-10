@@ -13,7 +13,15 @@ case class SlateSaveDTO(id: Option[Long], title: String, creator: String, anonym
                         questions: Seq[QuestionDTO])
 
 case class SlateLoadDTO (id: Option[Long], title: String, creator: Either[String, User],
-                     questions: Seq[QuestionDTO])
+                     questions: Seq[QuestionDTO]) {
+  def creatorName():String = {
+    Console.println(s"creator name: ${creator}")
+    creator match {
+      case Left(name) => name
+      case Right(user) => user.fullName.getOrElse("")
+    }
+  }
+}
 
 case class QuestionDTO  (id: Option[Long], text: String, candidates: Seq[CandidateDTO])
 
