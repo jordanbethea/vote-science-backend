@@ -65,22 +65,22 @@ class VotingController @Inject()(slatesRepo: SlateRepository, ballotRepo: Ballot
       }
   }
 
-  def getSlateResults(slateID: Long) = Action.async {
-    Console.println("running getSlateResults")
-    for {
-      voteResults <- ballotRepo.getBallotsForSlate(slateID)
-      //fptpResults <- fptpRepo.getChoicesForBallots(voteResults.map(_.id))
-
-    } yield {
-      //val details: Seq[BallotDetailsDTO] = voteResults.map(ballot => BallotDetailsDTO(Option(ballot.id), ballot.voter, ballot.slateID))
-      //val fptpModel : Seq[FPTPChoiceDTO] = fptpResults.map(choices => FPTPChoiceDTO(choices.questionID, choices.candidateID))
-      //TODO - update to use the updated FPTPChoiceDTO without the ballot ID
-      //val ballots = constructFullBallots(details, fptpModel)
-      //Console.println(s"slate results length: ${ballots.length}, full value: ${ballots.mkString(" ")}")
-      //Ok(Json.toJson(ballots))
-      Ok("TODO: Fix Later")
-    }
-  }
+//  def getSlateResults(slateID: Long) = Action.async {
+//    Console.println("running getSlateResults")
+//    //for {
+//      //voteResults <- ballotRepo.getBallotsForSlate(slateID)
+//      //fptpResults <- fptpRepo.getChoicesForBallots(voteResults.map(_.id))
+//
+//    } yield {
+//      //val details: Seq[BallotDetailsDTO] = voteResults.map(ballot => BallotDetailsDTO(Option(ballot.id), ballot.voter, ballot.slateID))
+//      //val fptpModel : Seq[FPTPChoiceDTO] = fptpResults.map(choices => FPTPChoiceDTO(choices.questionID, choices.candidateID))
+//      //TODO - update to use the updated FPTPChoiceDTO without the ballot ID
+//      //val ballots = constructFullBallots(details, fptpModel)
+//      //Console.println(s"slate results length: ${ballots.length}, full value: ${ballots.mkString(" ")}")
+//      //Ok(Json.toJson(ballots))
+//      Ok("TODO: Fix Later")
+//    }
+//  }
 
   //TODO - update to use the updated FPTPChoiceDTO without the ballot ID
 //  def constructFullBallots(ballotDetails: Seq[BallotDetailsDTO], fptpChoices: Seq[FPTPChoiceDTO]) : Seq[BallotDTO] = {

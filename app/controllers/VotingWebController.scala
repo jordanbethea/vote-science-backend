@@ -1,12 +1,10 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
-import models.db.{BallotRepository, FPTPRepository, SlateRepository}
+import models.db.{BallotRepository, SlateRepository}
 import models.dto._
-import play.api.libs.json.{JsResult, Json, _}
 import play.api.data._
 import play.api.data.Forms._
-import play.api.mvc.{AbstractController, AnyContent, BaseController, ControllerComponents, MessagesActionBuilder, MessagesRequest}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -17,10 +15,10 @@ class VotingWebController @Inject() (slatesRepo: SlateRepository, ballotRepo: Ba
 
   def slateVoteForm(slateID: Long) = silhouette.UserAwareAction.async { implicit request =>
     for {
-      slate <- slatesRepo.getFullSlate(slateID)
+      slateO <- slatesRepo.getFullSlate(slateID)
     } yield {
-      slate match {
-        case Some(x) => Ok(views.html.votingForm(slate.get, Form(ballotMapping), request.identity))
+      slateO match {
+        case Some(slate) => Ok(views.html.votingForm(slate, Form(ballotMapping), request.identity))
         case None => NotFound
       }
     }
@@ -30,14 +28,14 @@ class VotingWebController @Inject() (slatesRepo: SlateRepository, ballotRepo: Ba
     implicit request =>
     Form(ballotMapping).bindFromRequest().fold(
       formWithErrors => {
-        Console.println(s"bad form: ${formWithErrors}")
+        Console.println(s"bad form: $formWithErrors")
         Future(BadRequest("Bad Form"))
         //BadRequest(views.html.votingForm(null, formWithErrors))
       },
       ballotData => {
         ballotRepo.saveBallot(ballotData).map {
           result =>
-            Console.println(s"Voted on slate. Result: ${result}")
+            Console.println(s"Voted on slate. Result: $result")
             Redirect(routes.CreationWebController.slateInfo(slateID))
         }
       }

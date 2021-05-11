@@ -10,10 +10,7 @@ import play.api.mvc.{AbstractController, ControllerComponents}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class CreationController @Inject()(slatesRepo: SlateRepository,
-                                   questionRepo: QuestionRepository,
-                                   candidateRepo: CandidateRepository,
-                                   cc: ControllerComponents)
+class CreationController @Inject()(slatesRepo: SlateRepository, cc: ControllerComponents)
                                   (implicit ex: ExecutionContext) extends AbstractController(cc) {
 
   def createSlate = Action.async(parse.json) { request =>
@@ -38,21 +35,14 @@ class CreationController @Inject()(slatesRepo: SlateRepository,
   }
 
   def getSlates = Action.async {val allSlatesF = slatesRepo.listAll
-    val allQuestionsF = questionRepo.listAll
-    val allCandidatesF = candidateRepo.listAll
-
     for {
-      slates <- allSlatesF
-      questions <- allQuestionsF
-      candidates <- allCandidatesF
+      slateList <- slatesRepo.getFullSlates()
     } yield {
       Console.println("Running actual get slates: :")
-      //Console.println(Json.toJson(SlateRepository.constructSlateDTO(slates, questions, candidates)))
-      //val jsonSlate = Json.toJson(SlateRepository.constructSlateDTO(slates, questions, candidates))
+      //val jsonSlate = Json.toJson(slateList)
       //Ok(jsonSlate)
       Ok("")
     }
-
   }
 
 }

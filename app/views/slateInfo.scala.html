@@ -1,8 +1,6 @@
-@import models.dto.SlateDTO
-@import models.dto.BallotDTO
 @import models.dto.SlateLoadDTO
 @import models.dto.SlateResultsDTO
-@(slateOption: Option[SlateLoadDTO], ballots: Seq[BallotDTO], results: SlateResultsDTO, user: Option[models.User] = None)(implicit messages: Messages)
+@(slateOption: Option[SlateLoadDTO], results: SlateResultsDTO, user: Option[models.User] = None)(implicit messages: Messages)
 
 @title = @{if(slateOption.isDefined){s"Info for slate ${slateOption.get.title}"} else {"Not a valid slate!"}}
 

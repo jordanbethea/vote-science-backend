@@ -16,7 +16,6 @@ import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import com.typesafe.config.Config
 import controllers.{DefaultRememberMeConfig, DefaultSilhouetteControllerComponents, RememberMeConfig, SilhouetteControllerComponents}
-import javax.inject.Inject
 import models.db.UsersAndAuthentication.{AuthTokenDAO, AuthTokenDAOImpl, OAuth1InfoDAO, OAuth2InfoDAO, OpenIDInfoDAO, PasswordInfoDAO, UserDAO, UserDAOImpl}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration

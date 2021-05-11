@@ -2,32 +2,21 @@ package controllers.userAuth
 
 import java.util.UUID
 
-import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
-import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
-import com.mohiva.play.silhouette.api.{EventBus, LoginInfo, SignUpEvent, Silhouette}
+import com.mohiva.play.silhouette.api.{LoginInfo, SignUpEvent}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import controllers.AssetsFinder
+import controllers.{AbstractAuthController, AssetsFinder, SilhouetteControllerComponents}
 import forms.SignUpForm
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{AnyContent, BaseController, ControllerComponents, Request}
-import utils.DefaultEnv
-import play.api.i18n.I18nSupport
-import services.{AuthTokenService, UserService}
+import play.api.mvc.{AnyContent, Request}
 import models.User
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SignUpController @Inject() (val controllerComponents: ControllerComponents,
-                                  val silhouette: Silhouette[DefaultEnv],
-                                  val userService: UserService,
-                                  val passwordHasherRegistry: PasswordHasherRegistry,
-                                  val authInfoRepository: AuthInfoRepository,
-                                  val authTokenService: AuthTokenService,
-                                  val eventBus: EventBus)
-                                 (implicit ex: ExecutionContext, assets: AssetsFinder) extends BaseController with I18nSupport {
+class SignUpController @Inject() (scc: SilhouetteControllerComponents)
+                                 (implicit ex: ExecutionContext, assets: AssetsFinder) extends AbstractAuthController(scc) {
 
-  def view = silhouette.UnsecuredAction.async {
+  def view = UnsecuredAction.async {
     implicit request: Request[AnyContent] =>
     Future.successful(Ok(views.html.userAuth.signUpPage(SignUpForm.form)))
   }

@@ -1,24 +1,17 @@
 package controllers
 
 import javax.inject._
-import models.db.{BallotRepository, CandidateRepository, QuestionRepository, SlateRepository, VotingResultsRepository}
+import models.db.{BallotRepository, SlateRepository, VotingResultsRepository}
 import models.dto._
 import play.api.data._
 import play.api.data.Forms._
-import play.api.mvc._
-import java.util.UUID
-
-import models.User
-
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class CreationWebController @Inject()(slatesRepo: SlateRepository, questionRepo: QuestionRepository,
-                                      candidateRepo: CandidateRepository,
+class CreationWebController @Inject()(slatesRepo: SlateRepository,
                                       ballotRepo: BallotRepository,
                                       resultsRepo: VotingResultsRepository,
-                                      scc: SilhouetteControllerComponents,
-                                      messagesAction: MessagesActionBuilder)
+                                      scc: SilhouetteControllerComponents)
                                      (implicit ex: ExecutionContext) extends AbstractAuthController(scc) {
 
 
@@ -27,12 +20,10 @@ class CreationWebController @Inject()(slatesRepo: SlateRepository, questionRepo:
     Console.println(s"Controller - slate info request: ${request.identity}")
     for {
       slateInfo <- slatesRepo.getFullSlate(slateID)
-      ballots <- ballotRepo.getBallotsForSlate(slateID)
       slateResults <- resultsRepo.getSlateResults(slateID)
     } yield {
-      Ok(views.html.slateInfo(slateInfo, ballots, slateResults, request.identity))
+      Ok(views.html.slateInfo(slateInfo, slateResults, request.identity))
     }
-
   }
 
   def slateList() = silhouette.UserAwareAction.async { implicit request =>

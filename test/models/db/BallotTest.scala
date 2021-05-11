@@ -53,13 +53,14 @@ class BallotTest extends PlaySpec with DatabaseTemplate with GuiceOneAppPerSuite
       val q2c2ID = exec(candidates.add(Candidate(0, "sweet potato", "is good", slateID, q2ID)))
       val q2c3ID = exec(candidates.add(Candidate(0, "boston creme", "is good", slateID, q2ID)))
 
-      val ballotDTOInsert: BallotDetailsDTO = BallotDetailsDTO(None, "Benjamin Franklin", 1L, false)
+      val ballotDetailsDTOInsert: BallotDetailsDTO = BallotDetailsDTO(None, "Benjamin Franklin", 1L, false)
       val fptpDTOInsert: FPTPModelDTO = FPTPModelDTO(Seq(
         FPTPChoiceDTO(q1ID, q1c2ID),
         FPTPChoiceDTO(q2ID, q2c3ID)
       ))
+      val ballotDTO: BallotDTO = BallotDTO(ballotDetailsDTOInsert, Option(fptpDTOInsert))
 
-      val insertBallotResult = exec(ballots.addBallotAndModelData(ballotDTOInsert, Option(fptpDTOInsert)))
+      val insertBallotResult = exec(ballots.saveBallot(ballotDTO))
 
       val ballot = exec(ballots.get(insertBallotResult))
       ballot.isDefined must be (true)
