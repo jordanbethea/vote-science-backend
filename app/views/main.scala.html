@@ -1,26 +1,42 @@
-@*
- * This template is called from the `index` template. This template
- * handles the rendering of the page header and body tags. It takes
- * two arguments, a `String` for the title of the page and an `Html`
- * object to insert into the body of the page.
- *@
-@(title: String, user: Option[models.User] = None)(head: Html)(content: Html)
+@import play.api.mvc.RequestHeader
+
+@(title: String, user: Option[models.User] = None)(content: Html)(implicit request: RequestHeader, messages:Messages)
 
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        @* Here's where we render the page title `String`. *@
         <title>@title</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/bootstrap/css/bootstrap.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
-        @head
     </head>
     <body>
         @navigation(user)
-        @* And here's where we render the `Html` object containing
-         * the page content. *@
-        @content
+
+        <main class="container">
+            <div class="">
+                @request.flash.get("error").map { msg =>
+                    <div class="col-md-6 col-md-offset-3 alert alert-danger">
+                        <a href="#" class="close" data-dismiss="alert">&times;</a>
+                        <strong>@messages("error")</strong> @msg
+                    </div>
+                }
+                @request.flash.get("info").map { msg =>
+                    <div class="col-md-6 col-md-offset-3 alert alert-info">
+                        <a href="#" class="close" data-dismiss="alert">&times;</a>
+                        <strong>@messages("info")</strong> @msg
+                    </div>
+                }
+                @request.flash.get("success").map { msg =>
+                    <div class="col-md-6 col-md-offset-3 alert alert-success">
+                        <a href="#" class="close" data-dismiss="alert">&times;</a>
+                        <strong>@messages("success")</strong> @msg
+                    </div>
+                }
+                @content
+            </div>
+        @* @content *@
+        </main>
 
         <script src="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript"></script>
         <script src="@routes.Assets.versioned("lib/jquery/jquery.js")" type="text/javascript"></script>

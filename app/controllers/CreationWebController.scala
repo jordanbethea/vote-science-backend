@@ -5,6 +5,8 @@ import models.db.{BallotRepository, SlateRepository, VotingResultsRepository}
 import models.dto._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.i18n.Messages
+
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -47,7 +49,7 @@ Console.println(s"Submitted slate: ${slateData.toString}")
     slatesRepo.fullAdd(slateData).map {
       result =>
         Console.println(s"Saves slate. Result: ${result}")
-        Redirect(routes.CreationWebController.slateInfo(result))
+        Redirect(routes.CreationWebController.slateInfo(result)).flashing("info" -> Messages("createSlate.success"))
     }
   }
 

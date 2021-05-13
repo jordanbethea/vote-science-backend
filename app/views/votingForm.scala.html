@@ -7,8 +7,7 @@
 
     @implicitFieldConstructor = @{ b4.horizontal.fieldConstructor("col-md-2", "col-md-10") }
 
-@main("Vote on this slate", user)(play.twirl.api.HtmlFormat.empty) {
-    <div class="container">
+@main("Vote on this slate", user) {
     <h2>@(slate.title)</h2>
     @b4.form(action = routes.VotingWebController.slateVote(slate.id.getOrElse(0))) {
         @CSRF.formField
@@ -79,5 +78,4 @@
 
         <button type="submit" class="btn btn-primary">Vote!</button>
     }
-    </div>
 }

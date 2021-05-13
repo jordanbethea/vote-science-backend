@@ -15,6 +15,7 @@ signup.lastname.title=Last Name
 signup.email.title=Email
 signup.password.title=Password
 signup.submit=Sign Up
+signup.email.sent=Account Created for {0} email. We can't send activation emails....YET. So don't expect one.
 
 signin.title=Sign In
 signin.email.title=Email
@@ -34,6 +35,7 @@ createSlate.description.title=Description
 createSlate.addCandidate=Add Candidate
 createSlate.addQuestion=Add Question
 createSlate.submit=Save New Slate
+createSlate.success=Slate Created Successfully
 
 voting.fptpModel=First Past the Post Voting
 voting.approvalModel=Approval Voting

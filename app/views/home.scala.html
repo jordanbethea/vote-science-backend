@@ -1,7 +1,5 @@
-@(user: Option[models.User])(implicit messages: Messages)
-@main("Vote Science", user)(play.twirl.api.HtmlFormat.empty){
-  <div class="container">
+@(user: Option[models.User])(implicit request: RequestHeader, messages:Messages)
+@main("Vote Science", user){
   <h1>@messages("home.title")</h1>
   <p>@messages("home.content")</p>
-  </div>
 }

@@ -1,11 +1,10 @@
 @import models.dto.SlateLoadDTO
 @import models.dto.SlateResultsDTO
-@(slateOption: Option[SlateLoadDTO], results: SlateResultsDTO, user: Option[models.User] = None)(implicit messages: Messages)
+@(slateOption: Option[SlateLoadDTO], results: SlateResultsDTO, user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
 
 @title = @{if(slateOption.isDefined){s"Info for slate ${slateOption.get.title}"} else {"Not a valid slate!"}}
 
-@main(title, user)(play.twirl.api.HtmlFormat.empty) {
-    <div class="container">
+@main(title, user){
     @if(slateOption.isDefined) {
         @defining(slateOption.get) { slate =>
 
@@ -45,5 +44,4 @@
     } else {
         <p>No slate was found, are you sure you have the right id?</p>
     }
-    </div>
 }

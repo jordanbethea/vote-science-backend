@@ -6,10 +6,6 @@
     @implicitFieldConstructor = @{ b4.vertical.fieldConstructor() }
 
 @main("Create a new Slate", user){
-    @* <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/editSlate.css")"> *@
-}{
-    <div class="container">
-
     @b4.form(action = routes.CreationWebController.createSlate) {
         @CSRF.formField
         <div class="row">
@@ -56,7 +52,6 @@
         <button id="saveSlateBtn" class="btn btn-primary btn-block" type="submit">@messages("createSlate.submit")</button>
     </div>
     }
-    </div>
     <script type="text/javascript">
         let numQuestions = 1;
         let numCandidates = new Map();
