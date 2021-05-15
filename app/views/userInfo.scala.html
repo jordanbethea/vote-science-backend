@@ -1,0 +1,23 @@
+@import models.dto.BallotDTO
+@import models.dto.SlateLoadDTO
+@(user:models.User, slates: Seq[SlateLoadDTO],ballots: Seq[BallotDTO])(implicit request: RequestHeader, messages:Messages)
+
+@main("User Info", Option(user)){
+    <div>
+        <h2>Password Reset Section</h2>
+    </div>
+    <ul class="list-group">
+        @for(slate <- slates) {
+            <li class="list-group-item">
+                <a href=@{s"slates/${slate.id.getOrElse(0)}/info"}>@{slate.title}</a>
+            </li>
+        }
+    </ul>
+    <ul class="list-group">
+        @for(ballot <- ballots) {
+            <li class="list-group-item">
+                <a href=@{s"slates/${ballot.details.slateID}/info"}>@{ballot.details.slateID}....load slate name later or something</a>
+            </li>
+        }
+    </ul>
+}

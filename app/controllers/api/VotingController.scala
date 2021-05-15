@@ -25,7 +25,7 @@ class VotingController @Inject()(slatesRepo: SlateRepository, ballotRepo: Ballot
 
   def loadBallot(ballotID: Long) = Action.async {
     for {
-      slate <- slatesRepo.getFullSlate(ballotID)
+      slate <- slatesRepo.getSingleSlate(ballotID)
     } yield {
       slate match {
         case Some(x) => Ok("") //Ok(Json.toJson(x))

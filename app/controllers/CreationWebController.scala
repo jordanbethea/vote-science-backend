@@ -21,7 +21,7 @@ class CreationWebController @Inject()(slatesRepo: SlateRepository,
 
     Console.println(s"Controller - slate info request: ${request.identity}")
     for {
-      slateInfo <- slatesRepo.getFullSlate(slateID)
+      slateInfo <- slatesRepo.getSingleSlate(slateID)
       slateResults <- resultsRepo.getSlateResults(slateID)
     } yield {
       Ok(views.html.slateInfo(slateInfo, slateResults, request.identity))
@@ -56,8 +56,8 @@ Console.println(s"Submitted slate: ${slateData.toString}")
   val slateForm = Form(
     mapping(
       "id" -> optional(longNumber),
-      "title" -> text,
-      "creator" -> text,
+      "title" -> nonEmptyText(maxLength=250),
+      "creator" -> nonEmptyText(maxLength=250),
       "anonymous" -> boolean,
       "questions" -> seq(mapping(
         "id" -> optional(longNumber),
@@ -70,5 +70,4 @@ Console.println(s"Submitted slate: ${slateData.toString}")
       )(QuestionDTO.apply)(QuestionDTO.unapply))
     )(SlateSaveDTO.apply)(SlateSaveDTO.unapply)
   )
-
 }

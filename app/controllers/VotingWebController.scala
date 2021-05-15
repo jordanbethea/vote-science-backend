@@ -15,7 +15,7 @@ class VotingWebController @Inject() (slatesRepo: SlateRepository, ballotRepo: Ba
 
   def slateVoteForm(slateID: Long) = silhouette.UserAwareAction.async { implicit request =>
     for {
-      slateO <- slatesRepo.getFullSlate(slateID)
+      slateO <- slatesRepo.getSingleSlate(slateID)
     } yield {
       slateO match {
         case Some(slate) => Ok(views.html.votingForm(slate, Form(ballotMapping), request.identity))

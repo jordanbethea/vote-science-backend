@@ -41,17 +41,48 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     db.run(slates.filter(_.id === id).result.headOption)
   }
 
-  def getFullSlate(id: Long) : Future[Option[SlateLoadDTO]] = {
+  def getSlatesMadeByUser(user:User) : Future[Seq[SlateLoadDTO]] =  {
+    val r = for {
+      slateIDList <- slates.filter(_.creator === user.userID.toString).result
+      slateLoads <- getFullSlatesHelper(slateIDList.map(_.id))
+    } yield {
+      slateLoads
+    }
+    db.run(r)
+  }
+
+  def getSingleSlate(id: Long) : Future[Option[SlateLoadDTO]] = {
     val q = for {
       slate <- slates.filter(_.id === id).result
-      question <- questions.filter(_.slateID === id).result
-      candidates <- candidates.filter(_.slateID === id).result
-      user <- slickUsers.filter(u => u.id === slate.head.creator).result
+      slateLoads <- getFullSlatesHelper(slate.map(_.id))
     } yield {
-      Option(constructSlateDTO(slate, question, candidates, Option(user)).head)
+      Option(slateLoads.head)
     }
     db.run(q)
   }
+
+  def getFullSlates(): Future[Seq[SlateLoadDTO]] ={
+    val query = for {
+      slates <- slates.result
+      slateLoads <- getFullSlatesHelper(slates.map(_.id))
+    } yield {
+      slateLoads
+    }
+
+    db.run(query)
+  }
+
+  private def getFullSlatesHelper(slateIDs: Seq[Long]): DBIOAction[Seq[SlateLoadDTO], NoStream, Effect.Read] = {
+    for {
+      slate <- slates.filter(_.id.inSet(slateIDs)).result
+      question <- questions.filter(_.slateID.inSet(slateIDs)).result
+      candidates <- candidates.filter(_.slateID.inSet(slateIDs)).result
+      user <- slickUsers.filter(_.id.inSet(slate.map(_.creator))).result
+    } yield {
+      constructSlateDTO(slate, question, candidates, Option(user))
+    }
+  }
+
 
   def fullAdd(slate: SlateSaveDTO): Future[Long] = {
     def addCandidates(sID: Long, qID: Long, inputcandidates: Seq[CandidateDTO]) : DBIO[Option[Int]] = {
@@ -96,19 +127,7 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     db.run(slates.delete)
   }
 
-  def getFullSlates(): Future[Seq[SlateLoadDTO]] ={
-    val query = for {
-      slates <- slates.result
-      questions <- questions.result
-      candidates <- candidates.result
-      userIDStrings = slates.filter(_.anonymous == false).map(s => s.creator)
-      dbUsers <- slickUsers.filter(_.id.inSet(userIDStrings)).result
-    } yield {
-      constructSlateDTO(slates, questions, candidates, Option(dbUsers)).toList
-    }
 
-    db.run(query)
-  }
 
   def constructSlateDTO(slates: Seq[Slate],
                         questions: Seq[Question],

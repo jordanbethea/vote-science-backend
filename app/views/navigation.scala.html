@@ -13,7 +13,7 @@
 <!--<div class="collapse navbar-collapse show">-->
 <span class="navbar-nav ml-auto">
     @user.map { u =>
-        <a href="/" class="nav-link">@u.fullName</a>
+        <a href="/home" class="nav-link">@u.fullName</a>
         @if(u.loginInfo.providerID == com.mohiva.play.silhouette.impl.providers.CredentialsProvider.ID) {
             <!--change password-->
         }

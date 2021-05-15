@@ -6,6 +6,7 @@ import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.dbio.DBIOAction
 import slick.jdbc.H2Profile.api._
 import slick.jdbc.JdbcProfile
+import models.User
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -46,6 +47,15 @@ class BallotRepository @Inject()(protected val dbConfigProvider: DatabaseConfigP
 
   def listAll() = {
     dbConfig.db.run(ballots.result)
+  }
+
+  def getBallotsForUser(user: User) = {
+    val q = for {
+      ballotIDs <- ballots.filter(_.voter === user.userID.toString).result
+    } yield {
+      ballotIDs.map(b => BallotDTO(BallotDetailsDTO(Option(b.id), b.voter, b.slateID, b.anonymous)))
+    }
+    db.run(q)
   }
 
 //  //TODO - is this needed any more? Will we ever need to load raw ballot data not part of the results?
