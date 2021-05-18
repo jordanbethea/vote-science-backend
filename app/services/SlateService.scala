@@ -26,7 +26,7 @@ trait SlateService {
   def slateList(): Future[Seq[SlateLoadDTO]]
 
   /**
-   *
+   * Retrieve all slates created by a given user
    */
   def slatesByUser(user:User): Future[Seq[SlateLoadDTO]]
 
