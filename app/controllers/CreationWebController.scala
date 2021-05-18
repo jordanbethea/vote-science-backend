@@ -6,12 +6,12 @@ import models.dto._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.i18n.Messages
+import services.SlateService
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class CreationWebController @Inject()(slatesRepo: SlateRepository,
-                                      ballotRepo: BallotRepository,
+class CreationWebController @Inject()(slateService: SlateService,
                                       resultsRepo: VotingResultsRepository,
                                       scc: SilhouetteControllerComponents)
                                      (implicit ex: ExecutionContext) extends AbstractAuthController(scc) {
@@ -21,7 +21,7 @@ class CreationWebController @Inject()(slatesRepo: SlateRepository,
 
     Console.println(s"Controller - slate info request: ${request.identity}")
     for {
-      slateInfo <- slatesRepo.getSingleSlate(slateID)
+      slateInfo <- slateService.slateInfo(slateID)
       slateResults <- resultsRepo.getSlateResults(slateID)
     } yield {
       Ok(views.html.slateInfo(slateInfo, slateResults, request.identity))
@@ -30,7 +30,7 @@ class CreationWebController @Inject()(slatesRepo: SlateRepository,
 
   def slateList() = silhouette.UserAwareAction.async { implicit request =>
       for {
-        slateList <- slatesRepo.getFullSlates()
+        slateList <- slateService.slateList()
       } yield {
         Ok(views.html.slateList(slateList.toList, request.identity))
     }
@@ -46,7 +46,7 @@ class CreationWebController @Inject()(slatesRepo: SlateRepository,
   def createSlate() = silhouette.UserAwareAction.async { implicit request =>
     val slateData = slateForm.bindFromRequest().get
 Console.println(s"Submitted slate: ${slateData.toString}")
-    slatesRepo.fullAdd(slateData).map {
+    slateService.saveSlate(slateData).map {
       result =>
         Console.println(s"Saves slate. Result: ${result}")
         Redirect(routes.CreationWebController.slateInfo(result)).flashing("info" -> Messages("createSlate.success"))

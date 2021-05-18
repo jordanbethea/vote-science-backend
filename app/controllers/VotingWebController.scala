@@ -1,21 +1,22 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
-import models.db.{BallotRepository, SlateRepository}
 import models.dto._
 import play.api.data._
 import play.api.data.Forms._
+import services.{BallotService, SlateService}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class VotingWebController @Inject() (slatesRepo: SlateRepository, ballotRepo: BallotRepository,
+class VotingWebController @Inject() (slateService: SlateService,
+                                     ballotService: BallotService,
                                      scc: SilhouetteControllerComponents)
                                     (implicit ex: ExecutionContext) extends AbstractAuthController(scc) {
 
   def slateVoteForm(slateID: Long) = silhouette.UserAwareAction.async { implicit request =>
     for {
-      slateO <- slatesRepo.getSingleSlate(slateID)
+      slateO <- slateService.slateInfo(slateID)
     } yield {
       slateO match {
         case Some(slate) => Ok(views.html.votingForm(slate, Form(ballotMapping), request.identity))
@@ -33,7 +34,7 @@ class VotingWebController @Inject() (slatesRepo: SlateRepository, ballotRepo: Ba
         //BadRequest(views.html.votingForm(null, formWithErrors))
       },
       ballotData => {
-        ballotRepo.saveBallot(ballotData).map {
+        ballotService.saveBallot(ballotData).map {
           result =>
             Console.println(s"Voted on slate. Result: $result")
             Redirect(routes.CreationWebController.slateInfo(slateID))
