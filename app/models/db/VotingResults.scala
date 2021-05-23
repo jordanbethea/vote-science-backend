@@ -1,7 +1,7 @@
 package models.db
 
 import javax.inject.Inject
-import models.dto.{NonscoredCandidateResult, NonscoredQuestionResult, NonscoredResultsDTO, SlateResultsDTO}
+import models.dto.{NonscoredCandidateResult, NonscoredQuestionResult, NonscoredResultsDTO, RankedChoiceCandidateResult, RankedChoiceQuestionResult, RankedResultsDTO, SlateResultsDTO}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.H2Profile.api._
@@ -19,10 +19,12 @@ class VotingResultsRepository @Inject()(protected val dbConfigProvider: Database
       ballotIDs <- ballots.filter(_.slateID === slateID).map(_.id).result
       fptpResultsQ <- fptpResults.filter(_.ballotID.inSet(ballotIDs)).result
       approvalResultsQ <- approvalResults.filter(_.ballotID.inSet(ballotIDs)).result
+      rankedResultsQ <- rankedResults.filter(_.ballotID.inSet(ballotIDs)).result
     } yield {
       val FPTPresult = getFPTPResults(fptpResultsQ)
       val approvalResult = getApprovalResults(approvalResultsQ)
-      SlateResultsDTO(slateID, FPTPresult, approvalResult)
+      val rankedResult = getRankedResults(rankedResultsQ)
+      SlateResultsDTO(slateID, FPTPresult, approvalResult, rankedResult)
     }
     db.run(query)
   }
@@ -45,5 +47,22 @@ class VotingResultsRepository @Inject()(protected val dbConfigProvider: Database
       (qid -> NonscoredQuestionResult(qid, aCounts.toMap))
     }
     NonscoredResultsDTO(approvalResults.length, answerCounts.toMap)
+  }
+
+  private def getRankedResults(rankedResults: Seq[RankedChoice]): RankedResultsDTO = {
+    val questionIDs = rankedResults.map(_.questionID).distinct
+    val choicesByQuestion = (for(qid <- questionIDs) yield {
+      val questionChoices = rankedResults.filter(_.questionID == qid)
+      val allRanks = questionChoices.map(_.rank).distinct
+      val candidateIDs = questionChoices.map(_.candidateID).distinct
+      val rankedChoices = (for{cid <- candidateIDs
+          rank <- allRanks
+          } yield {
+        val count = questionChoices.filter(q => q.rank == rank && q.candidateID == cid).length
+        RankedChoiceCandidateResult(cid, rank, count)
+      }).groupBy(_.candidateID)
+      qid -> RankedChoiceQuestionResult(qid, rankedChoices)
+    }).toMap
+    RankedResultsDTO(choicesByQuestion)
   }
 }

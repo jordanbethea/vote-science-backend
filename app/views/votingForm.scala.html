@@ -70,7 +70,7 @@
             <div>
                 <h3>@question._1.text</h3>
                 @for(candidate <- question._1.candidates.zip((0 to question._1.candidates.length).toList)){
-                    @b4.text(ballotForm(s"rangeModel.choices[${question._2}][${candidate._2}].rank"), Symbol("_label") -> candidate._1.name)
+                    @b4.text(ballotForm(s"rangeModel.choices[${question._2}][${candidate._2}].score"), Symbol("_label") -> candidate._1.name)
                     @b4.hidden(ballotForm(s"rangeModel.choices[${question._2}][${candidate._2}].questionID"), Symbol("value") -> question._1.id.getOrElse(0))
                     @b4.hidden(ballotForm(s"rangeModel.choices[${question._2}][${candidate._2}].candidateID"), Symbol("value") -> candidate._1.id.getOrElse(0))
                 }

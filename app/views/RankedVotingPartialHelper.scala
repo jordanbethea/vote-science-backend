@@ -16,7 +16,7 @@ object RankedVotingPartialHelper {
   }
 
   def radioOptionsHelper(question: QuestionDTO, showLabel: Boolean): Seq[(String, Any)] = {
-    question.candidates.map(c => (c.id.toString, if(showLabel) c.name else ""))
+    question.candidates.map(c => (c.id.getOrElse(0).toString, if(showLabel) c.name else ""))
   }
 
   def createFields(ballotForm: Form[BallotDTO], question: QuestionDTO, questionCount: Int): List[Field] = {

@@ -40,6 +40,20 @@
                   }
               }
           </div>
+
+          <div id="rankedResults">
+              <h3>@messages("slate.info.rankedResults")</h3>
+              <p>@messages("slate.info.questions")</p>
+              @for(question <- slate.questions){
+                  <h4>@question.text</h4>
+                  @for(candidate <- question.candidates) {
+                      <h5>@candidate.name</h5>
+                      @for(rank <- results.rankedResults.getOrderedRanksForCandidates(question.id.getOrElse(0), candidate.id.getOrElse(0))){
+                          @{s"Rank ${rank.rankChosen} choices: ${rank.totalVotes}"}
+                      }
+                  }
+              }
+          </div>
         }
     } else {
         <p>No slate was found, are you sure you have the right id?</p>
