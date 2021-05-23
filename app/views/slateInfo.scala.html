@@ -49,8 +49,11 @@
                   @for(candidate <- question.candidates) {
                       <h5>@candidate.name</h5>
                       @for(rank <- results.rankedResults.getOrderedRanksForCandidates(question.id.getOrElse(0), candidate.id.getOrElse(0))){
-                          @{s"Rank ${rank.rankChosen} choices: ${rank.totalVotes}"}
+                          <p>@{s"Rank ${rank.rankChosen} choices: ${rank.totalVotes}"}</p>
                       }
+                      <p>@{s"Borda Score: ${results.rankedResults.getBordaScoreForCandidate(question.id.getOrElse(0), candidate.id.getOrElse(0))}"}</p>
+                      <p>@{s"Dowdall Score: ${results.rankedResults.getDowdallScoreForCandidate(question.id.getOrElse(0), candidate.id.getOrElse(0))}"}</p>
+
                   }
               }
           </div>

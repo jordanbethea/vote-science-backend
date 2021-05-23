@@ -1,7 +1,7 @@
 package models.db
 
 import javax.inject.Inject
-import models.dto.{NonscoredCandidateResult, NonscoredQuestionResult, NonscoredResultsDTO, RankedChoiceCandidateResult, RankedChoiceQuestionResult, RankedResultsDTO, SlateResultsDTO}
+import models.dto.{NonscoredCandidateResult, NonscoredQuestionResult, NonscoredResultsDTO, RankedChoiceCandidateResult, RankedChoiceQuestionResult, ScoredRankResultsDTO, SlateResultsDTO}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.H2Profile.api._
@@ -49,7 +49,7 @@ class VotingResultsRepository @Inject()(protected val dbConfigProvider: Database
     NonscoredResultsDTO(approvalResults.length, answerCounts.toMap)
   }
 
-  private def getRankedResults(rankedResults: Seq[RankedChoice]): RankedResultsDTO = {
+  private def getRankedResults(rankedResults: Seq[RankedChoice]): ScoredRankResultsDTO = {
     val questionIDs = rankedResults.map(_.questionID).distinct
     val choicesByQuestion = (for(qid <- questionIDs) yield {
       val questionChoices = rankedResults.filter(_.questionID == qid)
@@ -61,8 +61,8 @@ class VotingResultsRepository @Inject()(protected val dbConfigProvider: Database
         val count = questionChoices.filter(q => q.rank == rank && q.candidateID == cid).length
         RankedChoiceCandidateResult(cid, rank, count)
       }).groupBy(_.candidateID)
-      qid -> RankedChoiceQuestionResult(qid, rankedChoices)
+      qid -> RankedChoiceQuestionResult(qid, allRanks.length, rankedChoices)
     }).toMap
-    RankedResultsDTO(choicesByQuestion)
+    ScoredRankResultsDTO(choicesByQuestion)
   }
 }
