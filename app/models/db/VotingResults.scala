@@ -1,7 +1,7 @@
 package models.db
 
 import javax.inject.Inject
-import models.dto.{NonscoredCandidateResult, NonscoredQuestionResult, NonscoredResultsDTO, RankedChoiceCandidateResult, RankedChoiceQuestionResult, ScoredRankResultsDTO, SlateResultsDTO}
+import models.dto.{IRVDataSingleQuestionAllBallots, IRVDataSingleQuestionSingleBallot, IRVResult, IRVSingleRank, NonscoredCandidateResult, NonscoredQuestionResult, NonscoredResultsDTO, RankedChoiceCandidateResult, RankedChoiceIRVData, RankedChoiceQuestionResult, ScoredRankResultsDTO, SlateResultsDTO}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.H2Profile.api._
@@ -24,7 +24,8 @@ class VotingResultsRepository @Inject()(protected val dbConfigProvider: Database
       val FPTPresult = getFPTPResults(fptpResultsQ)
       val approvalResult = getApprovalResults(approvalResultsQ)
       val rankedResult = getRankedResults(rankedResultsQ)
-      SlateResultsDTO(slateID, FPTPresult, approvalResult, rankedResult)
+      val rankedIRVResult = getIRVModel(rankedResultsQ)
+      SlateResultsDTO(slateID, FPTPresult, approvalResult, rankedResult, rankedIRVResult)
     }
     db.run(query)
   }
@@ -64,5 +65,19 @@ class VotingResultsRepository @Inject()(protected val dbConfigProvider: Database
       qid -> RankedChoiceQuestionResult(qid, allRanks.length, rankedChoices)
     }).toMap
     ScoredRankResultsDTO(choicesByQuestion)
+  }
+
+  private def getIRVModel(rankedResults: Seq[RankedChoice]): RankedChoiceIRVData = {
+    val questionIDs = rankedResults.map(_.questionID).distinct
+    val choices = for(qid <- questionIDs) yield {
+      val questionChoices = rankedResults.filter(_.questionID == qid)
+      val ballotIDs = questionChoices.map(_.ballotID).distinct
+      val singleVoterQuestionChoices = for(ballotID <- ballotIDs) yield {
+        val questionRankings: Seq[IRVSingleRank] = questionChoices.filter(_.ballotID == ballotID).map(choice => IRVSingleRank(choice.candidateID, choice.rank))
+        IRVDataSingleQuestionSingleBallot(questionRankings)
+      }
+      IRVDataSingleQuestionAllBallots(qid, singleVoterQuestionChoices)
+    }
+    RankedChoiceIRVData(choices)
   }
 }

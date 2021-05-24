@@ -56,6 +56,19 @@
 
                   }
               }
+              <h3>@messages("slate.info.IRVResults")</h3>
+              @for(question <- slate.questions){
+                  <h4>@{question.text}</h4>
+                  @for(result <- results.irvResult.singleQuestionIRVResults(question.id.getOrElse(0))){
+                      @for(roundResult <- result.roundResults){
+                          <p>@{s"Round ${roundResult.round}: Winner: ${roundResult.winner}"}</p>
+                          @for(voteTotal <- roundResult.voteTotals){
+                              <p>@{s"Candidate ${voteTotal.candidateID}: ${voteTotal.voteCount} votes"}</p>
+                          }
+                          @if(roundResult.winner.isEmpty){ <p>@{s"No Winner, candidate ${roundResult.eliminated} has been eliminated"}</p> }
+                      }
+                  }
+              }
           </div>
         }
     } else {
