@@ -7,9 +7,26 @@
 @for(question <- slate.questions.zip((0 to slate.questions.length).toList)) {
     <div>
         <h3>@question._1.text</h3>
-        @multifieldRadioRanking(ballotForm, question._1, question._2)
+        @* @multifieldRadioRanking(ballotForm, question._1, question._2) *@
+        @multifieldDropdownRanking(ballotForm, question._1, question._2)
     </div>
 }
+
+    @multifieldDropdownRanking(ballotForm: Form[BallotDTO], question: QuestionDTO, questionCount:Int) = {
+        @b4.multifield(fields = createFields(ballotForm, question, questionCount): _*)(Nil, createFieldOptions(question)) { implicit cfc =>
+                <div>
+            @for(rank <- (1 to question.candidates.length)){
+                @b4.select(
+                    field=ballotForm(s"rankedModel.choices[$questionCount][$rank].candidateID"),
+                    options = ("" -> "No Preference") +: question.candidates.map(c => c.id.getOrElse(0).toString -> c.name),
+                    Symbol("_label") -> question.text
+                )
+                @b4.hidden(ballotForm(s"rankedModel.choices[$questionCount][$rank].questionID"), Symbol("value") -> question.id.getOrElse(0))
+                @b4.hidden(ballotForm(s"rankedModel.choices[$questionCount][$rank].rank"), Symbol("value") -> rank)
+            }
+                </div>
+        }
+    }
 
 @multifieldRadioRanking(ballotForm: Form[BallotDTO], question: QuestionDTO, questionCount: Int) = {
     @b4.multifield(fields = createFields(ballotForm, question, questionCount): _*)(Nil, createFieldOptions(question)){ implicit cfc =>
