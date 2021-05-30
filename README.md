@@ -15,10 +15,14 @@ This is an app to implement and experiment with different voting methods.
 3. Allow users to create simulations of votes on slates using large numbers of generated voters and votes.  
 
  
-Used 
-* Scala 2.13
-* [Play Framework: 2.8.0](https://www.playframework.com/documentation/2.8.x/Home)
-* Play-Slick integration
+Made Using:
+* [Scala 2.13](https://www.scala-lang.org/) as the core language
+* [Play Framework: 2.8.0](https://www.playframework.com/documentation/2.8.x/Home) as the web framework
+* [Slick 3.3](https://scala-slick.org/doc/3.3.3/) as the database FRM (functional relation mapper)
+* [Play-Slick Framework: 4.0.2](https://www.playframework.com/documentation/2.8.x/PlaySlick) for better Play integration
+* [Silhouette 7.0](https://www.silhouette.rocks/) as the user authentication framework
+* [Bootstrap 4.4.1](https://getbootstrap.com/docs/4.6/getting-started/introduction/) for web interface design and functionality
+* [Play-Bootstrap 1.6.1-P28-B4](https://adrianhurt.github.io/play-bootstrap/) for better integration between Play templates and bootstrap
 
 
 ### Useful Info (for myself):
