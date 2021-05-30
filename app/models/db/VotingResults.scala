@@ -20,11 +20,13 @@ class VotingResultsRepository @Inject()(protected val dbConfigProvider: Database
       fptpResultsQ <- fptpResults.filter(_.ballotID.inSet(ballotIDs)).result
       approvalResultsQ <- approvalResults.filter(_.ballotID.inSet(ballotIDs)).result
       rankedResultsQ <- rankedResults.filter(_.ballotID.inSet(ballotIDs)).result
+      questionInfoQ <- (questions.filter(_.slateID === slateID) join candidates on (_.id === _.questionID)).result
     } yield {
+      val totalBallots = ballotIDs.length
       val FPTPresult = getFPTPResults(fptpResultsQ)
       val approvalResult = getApprovalResults(approvalResultsQ)
       val rankedResult = getRankedResults(rankedResultsQ)
-      val rankedIRVResult = getIRVModel(rankedResultsQ)
+      val rankedIRVResult = getIRVModel(rankedResultsQ, questionInfoQ, totalBallots)
       SlateResultsDTO(slateID, FPTPresult, approvalResult, rankedResult, rankedIRVResult)
     }
     db.run(query)
@@ -67,7 +69,10 @@ class VotingResultsRepository @Inject()(protected val dbConfigProvider: Database
     ScoredRankResultsDTO(choicesByQuestion)
   }
 
-  private def getIRVModel(rankedResults: Seq[RankedChoice]): RankedChoiceIRVData = {
+  private def getIRVModel(rankedResults: Seq[RankedChoice], questionInfo: Seq[(Question, Candidate)], totalBallots:Int): RankedChoiceIRVData = {
+    val allQuestionIDs: Seq[Long] = questionInfo.distinctBy(_._1.id).map(_._1.id)
+    val questionCandidateCountMap: Map[Long, Seq[Long]] = allQuestionIDs.map(id => (id -> questionInfo.filter(_._1.id == id).map(_._2.id))).toMap
+
     val questionIDs = rankedResults.map(_.questionID).distinct
     val choices = for(qid <- questionIDs) yield {
       val questionChoices = rankedResults.filter(_.questionID == qid)
@@ -76,8 +81,9 @@ class VotingResultsRepository @Inject()(protected val dbConfigProvider: Database
         val questionRankings: Seq[IRVSingleRank] = questionChoices.filter(_.ballotID == ballotID).map(choice => IRVSingleRank(choice.candidateID, choice.rank))
         IRVDataSingleQuestionSingleBallot(questionRankings)
       }
-      IRVDataSingleQuestionAllBallots(qid, singleVoterQuestionChoices)
+      IRVDataSingleQuestionAllBallots(qid, questionCandidateCountMap.get(qid).getOrElse(Nil), singleVoterQuestionChoices)
     }
-    RankedChoiceIRVData(choices)
+
+    RankedChoiceIRVData(choices, allQuestionIDs, totalBallots)
   }
 }

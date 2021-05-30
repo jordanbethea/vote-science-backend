@@ -61,9 +61,9 @@
                   <h4>@{question.text}</h4>
                   @for(result <- results.irvResult.singleQuestionIRVResults(question.id.getOrElse(0))){
                       @for(roundResult <- result.roundResults){
-                          <p>@{s"Round ${roundResult.round}: Winner: ${roundResult.winner}"}</p>
+                          <p>@{s"Round ${roundResult.round}: Winner: ${roundResult.winner.getOrElse(None)}"}</p>
                           @for(voteTotal <- roundResult.voteTotals){
-                              <p>@{s"Candidate ${voteTotal.candidateID}: ${voteTotal.voteCount} votes"}</p>
+                              <p>@{s"Candidate ${voteTotal.candidateID}: ${voteTotal.voteCount} votes  (${voteTotal.percent}%)"}</p>
                           }
                           @if(roundResult.winner.isEmpty){ <p>@{s"No Winner, candidate ${roundResult.eliminated} has been eliminated"}</p> }
                       }
