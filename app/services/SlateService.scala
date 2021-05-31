@@ -30,4 +30,9 @@ trait SlateService {
    */
   def slatesByUser(user:User): Future[Seq[SlateLoadDTO]]
 
+  /**
+   * Retrieve all slates based on input list of slate ids
+   */
+  def slatesFromList(slateIDs: Seq[Long]): Future[Seq[SlateLoadDTO]]
+
 }

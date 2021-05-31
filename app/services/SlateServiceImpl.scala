@@ -26,5 +26,9 @@ class SlateServiceImpl @Inject() (slateRepo: SlateRepository) (implicit val Exec
     slateRepo.getSlatesMadeByUser(user)
   }
 
+  override def slatesFromList(slateIDs: Seq[Long]): Future[Seq[SlateLoadDTO]] = {
+    slateRepo.getSlatesFromList(slateIDs)
+  }
+
 
 }

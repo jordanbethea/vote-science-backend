@@ -50,3 +50,8 @@ slate.info.questions=Questions:
 slate.info.fptpVotesCast=Votes Cast:
 slate.info.approvalResults=Approval Results
 slate.info.approvalVotesCast=Total Approvals
+
+user.info.votedSlates=Slates Voted On:
+user.info.createdSlates=Slates Created:
+user.info.passwordResetTitle=Reset Password
+user.info.voted=Voted!

@@ -68,7 +68,16 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     } yield {
       slateLoads
     }
+    db.run(query)
+  }
 
+  def getSlatesFromList(slateIDs: Seq[Long]): Future[Seq[SlateLoadDTO]] = {
+    val query = for {
+      slates <- slates.filter(_.id.inSet(slateIDs)).result
+      slateLoads <- getFullSlatesHelper(slates.map(_.id))
+    } yield {
+      slateLoads
+    }
     db.run(query)
   }
 

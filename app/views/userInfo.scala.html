@@ -1,23 +1,34 @@
 @import models.dto.BallotDTO
 @import models.dto.SlateLoadDTO
-@(user:models.User, slates: Seq[SlateLoadDTO],ballots: Seq[BallotDTO])(implicit request: RequestHeader, messages:Messages)
+@import models.dto.BallotDetailsDTO
+@(user:models.User, createdSlates: Seq[SlateLoadDTO], votedSlates: Seq[SlateLoadDTO], ballots: Seq[BallotDTO])(implicit request: RequestHeader, messages:Messages)
 
 @main("User Info", Option(user)){
-    <div>
-        <h2>Password Reset Section</h2>
-    </div>
+
+    <h2>@messages("user.info.createdSlates")</h2>
     <ul class="list-group">
-        @for(slate <- slates) {
+        @for(slate <- createdSlates) {
             <li class="list-group-item">
                 <a href=@{s"slates/${slate.id.getOrElse(0)}/info"}>@{slate.title}</a>
+                @if(ballots.exists(_.details.slateID == slate.id.getOrElse(0))) {
+                    <span>@messages("user.info.voted")</span>
+                }
             </li>
         }
     </ul>
+    <h2>@messages("user.info.votedSlates")</h2>
     <ul class="list-group">
-        @for(ballot <- ballots) {
+        @for(slate <- votedSlates) {
             <li class="list-group-item">
-                <a href=@{s"slates/${ballot.details.slateID}/info"}>@{ballot.details.slateID}....load slate name later or something</a>
+                <a href=@{s"slates/${slate.id.getOrElse(0)}/info"}>@{slate.title}</a>
+                    @if(ballots.exists(_.details.slateID == slate.id.getOrElse(0))) {
+                <span>@messages("user.info.voted")</span>
+                }
             </li>
         }
     </ul>
+
+    <div>
+        <h2>@messages("user.info.passwordResetTitle")</h2>
+    </div>
 }

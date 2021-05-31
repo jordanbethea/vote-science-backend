@@ -15,10 +15,11 @@ class UserController @Inject()(scc: SilhouetteControllerComponents,
   def userInfo(): Action[AnyContent] = silhouette.SecuredAction.async {
     implicit request =>
       for{
-        slates <- slateService.slatesByUser(request.identity)
+        createdSlates <- slateService.slatesByUser(request.identity)
         ballots <- ballotService.ballotsByVoter(request.identity)
+        votedSlates <- slateService.slatesFromList(ballots.map(_.details.slateID))
       } yield {
-        Ok(views.html.userInfo(request.identity, slates, ballots))
+        Ok(views.html.userInfo(request.identity, createdSlates, votedSlates, ballots))
       }
   }
 
