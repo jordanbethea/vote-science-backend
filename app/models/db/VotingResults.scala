@@ -1,7 +1,7 @@
 package models.db
 
 import javax.inject.Inject
-import models.dto.{IRVDataSingleQuestionAllBallots, IRVDataSingleQuestionSingleBallot, IRVResult, IRVSingleRank, NonscoredCandidateResult, NonscoredQuestionResult, NonscoredResultsDTO, RankedChoiceCandidateResult, RankedChoiceIRVData, RankedChoiceQuestionResult, ScoredRankResultsDTO, SlateResultsDTO}
+import models.dto.{IRVDataSingleQuestionAllBallots, IRVDataSingleQuestionSingleBallot, IRVResult, IRVSingleRank, NonscoredCandidateResult, NonscoredQuestionResult, NonscoredResultsDTO, RangeResultByCandidate, RangeResultByQuestion, RangeResultByScore, RangeResultBySlate, RankedChoiceCandidateResult, RankedChoiceIRVData, RankedChoiceQuestionResult, ScoredRankResultsDTO, SlateResultsDTO}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.H2Profile.api._
@@ -20,6 +20,7 @@ class VotingResultsRepository @Inject()(protected val dbConfigProvider: Database
       fptpResultsQ <- fptpResults.filter(_.ballotID.inSet(ballotIDs)).result
       approvalResultsQ <- approvalResults.filter(_.ballotID.inSet(ballotIDs)).result
       rankedResultsQ <- rankedResults.filter(_.ballotID.inSet(ballotIDs)).result
+      rangeResultsQ <- rangeResults.filter(_.ballotID.inSet(ballotIDs)).result
       questionInfoQ <- (questions.filter(_.slateID === slateID) join candidates on (_.id === _.questionID)).result
     } yield {
       val totalBallots = ballotIDs.length
@@ -27,7 +28,10 @@ class VotingResultsRepository @Inject()(protected val dbConfigProvider: Database
       val approvalResult = getApprovalResults(approvalResultsQ)
       val rankedResult = getRankedResults(rankedResultsQ)
       val rankedIRVResult = getIRVModel(rankedResultsQ, questionInfoQ, totalBallots)
-      SlateResultsDTO(slateID, FPTPresult, approvalResult, rankedResult, rankedIRVResult)
+      val rangeResult = getRangeModel(rangeResultsQ)
+      val result = SlateResultsDTO(slateID, FPTPresult, approvalResult, rankedResult, rankedIRVResult, rangeResult)
+      Console.println(result.toString())
+      result
     }
     db.run(query)
   }
@@ -85,5 +89,30 @@ class VotingResultsRepository @Inject()(protected val dbConfigProvider: Database
     }
 
     RankedChoiceIRVData(choices, allQuestionIDs, totalBallots)
+  }
+
+  private def getRangeModel(rangeResults: Seq[RangeChoice]):RangeResultBySlate = {
+    val qIDs = rangeResults.map(_.questionID).distinct
+    val qResults = for {
+      qID <- qIDs
+      qChoices: Seq[RangeChoice] = rangeResults.filter(_.questionID == qID)
+    } yield {
+      val cIDs = qChoices.map(_.candidateID).distinct
+      val candidateResults = for {
+        cID <- cIDs
+        cChoices: Seq[RangeChoice] = qChoices.filter(_.candidateID == cID)
+      } yield {
+        val scores = cChoices.map(_.score).distinct
+        val scoreResults = for {
+          score <- scores
+          sChoices = cChoices.filter(_.score == score)
+        } yield {
+          RangeResultByScore(score, sChoices.length)
+        }
+        RangeResultByCandidate(cID, scoreResults)
+      }
+      RangeResultByQuestion(qID, candidateResults)
+    }
+    RangeResultBySlate(qResults)
   }
 }

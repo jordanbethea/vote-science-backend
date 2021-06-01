@@ -70,6 +70,24 @@
                   }
               }
           </div>
+
+          <div id="rangeResults">
+              <h3>@messages("slate.info.rangeResults")</h3>
+              @for(question <- slate.questions){
+                  <h4>@{question.text}</h4>
+                  @for(candidate <- question.candidates){
+                      <h5>@candidate.name</h5>
+                      <p>@messages("slate.info.candidateTotal")
+                        <span>@{results.rangeResult.getScore(question.id.getOrElse(0), candidate.id.getOrElse(0))}</span>
+                      </p>
+                      <h6>@messages("slate.info.rawRangeResults")</h6>
+                      @for(result <- results.rangeResult.getRawResults(question.id.getOrElse(0), candidate.id.getOrElse(0))){
+                          <p>@{s"Score ${result.score} chosen ${result.votes} times"}  (Not intlzd)</p>
+                      }
+                  }
+              }
+
+          </div>
         }
     } else {
         <p>No slate was found, are you sure you have the right id?</p>
