@@ -30,8 +30,14 @@ class VotingWebController @Inject() (slateService: SlateService,
     Form(ballotMapping).bindFromRequest().fold(
       formWithErrors => {
         Console.println(s"bad form: $formWithErrors")
-        Future(BadRequest("Bad Form"))
-        //BadRequest(views.html.votingForm(null, formWithErrors))
+        for {
+          slate <- slateService.slateInfo(slateID)
+        } yield {
+          slate match {
+            case Some(slate) => BadRequest (views.html.votingForm (slate, formWithErrors) )
+            case None => NotFound
+          }
+        }
       },
       ballotData => {
         ballotService.saveBallot(ballotData).map {
@@ -73,13 +79,13 @@ class VotingWebController @Inject() (slateService: SlateService,
       "candidateID" -> longNumber,
       "rank" -> number
     )(RankedChoiceDTO.apply)(RankedChoiceDTO.unapply)))
-  )(RankedModelDTO.apply)(RankedModelDTO.unapply)
+  )(RankedModelDTO.apply)(RankedModelDTO.unapply).verifying(RankedModelDTO.rankedValuesConstraint)
 
   val rangeMapping = mapping(
     "choices" -> seq(seq(mapping(
       "questionID" -> longNumber,
       "candidateID" -> longNumber,
-      "score" -> number
+      "score" -> number(min=1, max=10)
     )(RangeChoiceDTO.apply)(RangeChoiceDTO.unapply)))
   )(RangeModelDTO.apply)(RangeModelDTO.unapply)
 

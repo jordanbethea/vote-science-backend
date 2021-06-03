@@ -1,5 +1,6 @@
 package models.dto
 
+import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.libs.json._
 
 case class BallotDTO(details: BallotDetailsDTO, fptpModel: Option[FPTPModelDTO] = None, approvalModel: Option[ApprovalModelDTO] = None,
@@ -50,6 +51,35 @@ case class RankedModelDTO (choices: Seq[Seq[RankedChoiceDTO]])
 object RankedModelDTO {
   implicit val rankedModelWrites: Writes[RankedModelDTO] = Json.writes[RankedModelDTO]
   implicit val rankedModelReads: Reads[RankedModelDTO] = Json.reads[RankedModelDTO]
+
+  val rankedValuesConstraint: Constraint[RankedModelDTO] = Constraint("constraints.rankedCheck")({
+    rankedModel =>
+      val errors: Seq[ValidationError] = rankedModel.choices.flatMap { qChoices =>
+        def checkDuplicates(remainingChoices:Seq[RankedChoiceDTO],
+                            ranksUsed: Set[Int], candidatesUsed: Set[Long],
+                            accruedErrors: Seq[ValidationError]): Seq[ValidationError] = {
+          if(remainingChoices == Nil) accruedErrors
+          else {
+            val duplicateRank = if(ranksUsed.contains(remainingChoices.head.rank)){
+              Option(ValidationError(s"Question ${remainingChoices.head.questionID} contains duplicate rank ${remainingChoices.head.rank}"))
+            } else None
+            val duplicateCandidate = if(candidatesUsed.contains(remainingChoices.head.candidateID)){
+              Option(ValidationError(s"Question ${remainingChoices.head.questionID} contains duplicate candidate ${remainingChoices.head.candidateID}"))
+            } else None
+            val updatedErrors = accruedErrors ++ duplicateRank ++ duplicateCandidate
+            checkDuplicates(remainingChoices.tail, ranksUsed + remainingChoices.head.rank,
+              candidatesUsed + remainingChoices.head.candidateID, updatedErrors)
+          }
+        }
+        checkDuplicates(qChoices, Set(), Set(), Nil)
+      }
+
+      if(errors.isEmpty) {
+        Valid
+      } else {
+        Invalid(errors)
+      }
+  })
 }
 
 case class RankedChoiceDTO (questionID:Long, candidateID:Long, rank:Int)
