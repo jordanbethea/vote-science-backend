@@ -1,7 +1,7 @@
 package controllers.api
 
 import javax.inject.{Inject, Singleton}
-import models.db.{BallotRepository, FPTPRepository, SlateRepository}
+import models.db.{BallotRepository, SlateRepository}
 import models.dto.{BallotDTO, BallotDetailsDTO, FPTPModelDTO}
 import play.api.libs.json.{JsResult, Json, _}
 import play.api.mvc.{AbstractController, ControllerComponents}
@@ -13,14 +13,13 @@ import scala.concurrent.ExecutionContext
  * OUT OF DATE, this needs to be updated later. For now ignore this
  * @param slatesRepo
  * @param ballotRepo
- * @param fptpRepo
  * @param cc
  * @param ex
  */
 
 @Singleton
 class VotingController @Inject()(slatesRepo: SlateRepository, ballotRepo: BallotRepository,
-                                 fptpRepo: FPTPRepository, cc: ControllerComponents)
+                                 cc: ControllerComponents)
 (implicit ex: ExecutionContext) extends AbstractController(cc){
 
   def loadBallot(ballotID: Long) = Action.async {

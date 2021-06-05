@@ -143,13 +143,13 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
                         candidates:Seq[Candidate],
                         creators:Option[Seq[DBUser]] = None): Seq[SlateLoadDTO] = {
     for(s <- slates) yield (
-      new SlateLoadDTO(Option(s.id), s.title,
+      SlateLoadDTO(Option(s.id), s.title,
         if(creators.nonEmpty){
           val result = creators.get.find(_.userID == s.creator);
           if(result.nonEmpty){ Right(result.get)} else {Left(s.creator)}
         } else { Left(s.creator) },
         for(q <- questions.filter(_.slateID == s.id)) yield (
-          new QuestionDTO(Option(q.id), q.text,
+          QuestionDTO(Option(q.id), q.text,
             candidates.filter(_.questionID == q.id).map(
               c => new CandidateDTO(Option(c.id), c.name, c.description)
             )))

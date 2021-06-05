@@ -41,6 +41,11 @@ class BallotRepository @Inject()(protected val dbConfigProvider: DatabaseConfigP
     dbConfig.db.run(ballotsInserts += ballot)
   }
 
+  def addDTO(ballot: BallotDTO) : Future[Long] = {
+    dbConfig.db.run(ballotsInserts += Ballot(ballot.details.id.getOrElse(0), ballot.details.slateID,
+      ballot.details.voter, ballot.details.anonymous))
+  }
+
   def get(id: Long): Future[Option[Ballot]] = {
     dbConfig.db.run(ballots.filter(_.id === id).result.headOption)
   }
