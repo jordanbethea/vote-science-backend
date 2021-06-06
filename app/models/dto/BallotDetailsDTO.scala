@@ -54,11 +54,26 @@ object RankedModelDTO {
 
   val rankedValuesConstraint: Constraint[RankedModelDTO] = Constraint("constraints.rankedCheck")({
     rankedModel =>
-      val errors: Seq[ValidationError] = rankedModel.choices.flatMap { qChoices =>
+      val errorsByQuestion = rankedModel.choices.map { qChoices =>
         def checkDuplicates(remainingChoices:Seq[RankedChoiceDTO],
                             ranksUsed: Set[Int], candidatesUsed: Set[Long],
                             accruedErrors: Seq[ValidationError]): Seq[ValidationError] = {
-          if(remainingChoices == Nil) accruedErrors
+          if(remainingChoices == Nil) {
+            val expectedRanks = 1 to qChoices.size
+            val unexpectedRankErrors = for(
+              rank <- ranksUsed
+              if !expectedRanks.contains(rank))
+              yield
+                ValidationError(s"Question ${qChoices.head.questionID} had ${qChoices.size} ranks submitted. The submitted rank ${rank} is outside of that range.")
+
+            /* val missingRankErrors = for(  //superfluous?
+              rank <- expectedRanks
+              if !ranksUsed.contains(rank))
+              yield
+                ValidationError(s"Question ${qChoices.head.questionID} had ${ranksUsed.size} ranks submitted. The expected rank ${rank} is missing.") */
+
+             unexpectedRankErrors.toSeq ++ accruedErrors
+          }
           else {
             val duplicateRank = if(ranksUsed.contains(remainingChoices.head.rank)){
               Option(ValidationError(s"Question ${remainingChoices.head.questionID} contains duplicate rank ${remainingChoices.head.rank}"))
@@ -73,6 +88,7 @@ object RankedModelDTO {
         }
         checkDuplicates(qChoices, Set(), Set(), Nil)
       }
+      val errors = errorsByQuestion.flatten
 
       if(errors.isEmpty) {
         Valid
