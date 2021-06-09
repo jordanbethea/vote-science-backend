@@ -74,12 +74,14 @@ class VotingWebController @Inject() (slateService: SlateService,
   )(ApprovalModelDTO.apply)(ApprovalModelDTO.unapply)
 
   val rankedMapping = mapping(
-    "choices" -> seq(seq(mapping(
+    "questions" -> seq(
+      mapping("choices" -> seq(mapping(
       "questionID" -> longNumber,
       "candidateID" -> longNumber,
       "rank" -> number
-    )(RankedChoiceDTO.apply)(RankedChoiceDTO.unapply)))
-  )(RankedModelDTO.apply)(RankedModelDTO.unapply).verifying(RankedModelDTO.rankedValuesConstraint)
+      )(RankedChoiceDTO.apply)(RankedChoiceDTO.unapply))
+      )(RankedChoiceQuestionDTO.apply)(RankedChoiceQuestionDTO.unapply).verifying(RankedChoiceQuestionDTO.rankedValuesConstraint)
+    ))(RankedModelDTO.apply)(RankedModelDTO.unapply)
 
   val rangeMapping = mapping(
     "choices" -> seq(seq(mapping(

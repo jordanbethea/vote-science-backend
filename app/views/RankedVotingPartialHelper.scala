@@ -1,7 +1,7 @@
 package views
 
 import models.dto.{BallotDTO, QuestionDTO}
-import play.api.data.{Field, Form}
+import play.api.data.{Field, Form, FormError}
 
 case class radioRankingData(rank: Int, showLabel:Boolean, candidateIDOptions: Seq[Long])
 
@@ -34,5 +34,12 @@ object RankedVotingPartialHelper {
         Seq(Symbol("value") -> null, Symbol("value") -> question.id.getOrElse(0), Symbol("value") -> rankChoice)
       )
     }
+  }
+
+  def getErrorForQuestion(ballotForm: Form[BallotDTO], questionPosition: Int): Option[FormError] = {
+    val key = s"rankedModel.questions[${questionPosition}]"
+    val error = ballotForm.error(key)
+    Console.println(s"Error for key ${key}: ${error.toString}")
+    error
   }
 }

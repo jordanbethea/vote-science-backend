@@ -46,51 +46,56 @@ object ApprovalChoiceDTO{
   implicit val approvalChoiceReads: Reads[ApprovalChoiceDTO] = Json.reads[ApprovalChoiceDTO]
 }
 
-case class RankedModelDTO (choices: Seq[Seq[RankedChoiceDTO]])
+case class RankedModelDTO (questions: Seq[RankedChoiceQuestionDTO])
 
 object RankedModelDTO {
   implicit val rankedModelWrites: Writes[RankedModelDTO] = Json.writes[RankedModelDTO]
   implicit val rankedModelReads: Reads[RankedModelDTO] = Json.reads[RankedModelDTO]
+}
 
-  val rankedValuesConstraint: Constraint[RankedModelDTO] = Constraint("constraints.rankedCheck")({
-    rankedModel =>
-      val errorsByQuestion = rankedModel.choices.map { qChoices =>
-        def checkDuplicates(remainingChoices:Seq[RankedChoiceDTO],
-                            ranksUsed: Set[Int], candidatesUsed: Set[Long],
-                            accruedErrors: Seq[ValidationError]): Seq[ValidationError] = {
-          if(remainingChoices == Nil) {
-            val expectedRanks = 1 to qChoices.size
-            val unexpectedRankErrors = for(
-              rank <- ranksUsed
-              if !expectedRanks.contains(rank))
-              yield
-                ValidationError(s"Question ${qChoices.head.questionID} had ${qChoices.size} ranks submitted. The submitted rank ${rank} is outside of that range.")
+case class RankedChoiceQuestionDTO(choices: Seq[RankedChoiceDTO])
 
-            /* val missingRankErrors = for(  //superfluous?
+object RankedChoiceQuestionDTO {
+  implicit val rankedChoiceQuestionWrites: Writes[RankedChoiceQuestionDTO] = Json.writes[RankedChoiceQuestionDTO]
+  implicit val rankedChoiceQuestionReads: Reads[RankedChoiceQuestionDTO] = Json.reads[RankedChoiceQuestionDTO]
+
+  val rankedValuesConstraint: Constraint[RankedChoiceQuestionDTO] = Constraint("constraints.rankedCheck")({
+    qChoices =>
+      def checkDuplicates(remainingChoices: Seq[RankedChoiceDTO],
+                          ranksUsed: Set[Int], candidatesUsed: Set[Long],
+                          accruedErrors: Seq[ValidationError]): Seq[ValidationError] = {
+        if (remainingChoices == Nil) {
+          val expectedRanks = 1 to qChoices.choices.size
+          val unexpectedRankErrors = for (
+            rank <- ranksUsed
+            if !expectedRanks.contains(rank))
+          yield
+            ValidationError(s"Question ${qChoices.choices.head.questionID} had ${qChoices.choices.size} ranks submitted. The submitted rank ${rank} is outside of that range.")
+
+          /* val missingRankErrors = for(  //superfluous?
               rank <- expectedRanks
               if !ranksUsed.contains(rank))
               yield
                 ValidationError(s"Question ${qChoices.head.questionID} had ${ranksUsed.size} ranks submitted. The expected rank ${rank} is missing.") */
 
-             unexpectedRankErrors.toSeq ++ accruedErrors
-          }
-          else {
-            val duplicateRank = if(ranksUsed.contains(remainingChoices.head.rank)){
-              Option(ValidationError(s"Question ${remainingChoices.head.questionID} contains duplicate rank ${remainingChoices.head.rank}"))
-            } else None
-            val duplicateCandidate = if(candidatesUsed.contains(remainingChoices.head.candidateID)){
-              Option(ValidationError(s"Question ${remainingChoices.head.questionID} contains duplicate candidate ${remainingChoices.head.candidateID}"))
-            } else None
-            val updatedErrors = accruedErrors ++ duplicateRank ++ duplicateCandidate
-            checkDuplicates(remainingChoices.tail, ranksUsed + remainingChoices.head.rank,
-              candidatesUsed + remainingChoices.head.candidateID, updatedErrors)
-          }
+          unexpectedRankErrors.toSeq ++ accruedErrors
         }
-        checkDuplicates(qChoices, Set(), Set(), Nil)
+        else {
+          val duplicateRank = if (ranksUsed.contains(remainingChoices.head.rank)) {
+            Option(ValidationError(s"Question ${remainingChoices.head.questionID} contains duplicate rank ${remainingChoices.head.rank}"))
+          } else None
+          val duplicateCandidate = if (candidatesUsed.contains(remainingChoices.head.candidateID)) {
+            Option(ValidationError(s"Question ${remainingChoices.head.questionID} contains duplicate candidate ${remainingChoices.head.candidateID}"))
+          } else None
+          val updatedErrors = accruedErrors ++ duplicateRank ++ duplicateCandidate
+          checkDuplicates(remainingChoices.tail, ranksUsed + remainingChoices.head.rank,
+            candidatesUsed + remainingChoices.head.candidateID, updatedErrors)
+        }
       }
-      val errors = errorsByQuestion.flatten
 
-      if(errors.isEmpty) {
+      val errors = checkDuplicates(qChoices.choices, Set(), Set(), Nil)
+
+      if (errors.isEmpty) {
         Valid
       } else {
         Invalid(errors)

@@ -26,7 +26,7 @@ class BallotRepository @Inject()(protected val dbConfigProvider: DatabaseConfigP
               approvalResults ++= ballot.approvalModel.get.choices.flatten.filter(_.approved).map(entry => ApprovalChoice(newBallotId,entry.questionID, entry.candidateID))
             else DBIOAction.successful()}
       _ <- { if(ballot.rankedModel.isDefined)
-            rankedResults ++= ballot.rankedModel.get.choices.flatten.map(entry => RankedChoice(newBallotId, entry.questionID, entry.candidateID, entry.rank))
+            rankedResults ++= ballot.rankedModel.get.questions.flatMap(_.choices).map(entry => RankedChoice(newBallotId, entry.questionID, entry.candidateID, entry.rank))
             else DBIOAction.successful()}
       _ <- { if(ballot.rangeModel.isDefined)
             rangeResults ++= ballot.rangeModel.get.choices.flatten.map(entry => RangeChoice(newBallotId, entry.questionID, entry.candidateID, entry.score))
