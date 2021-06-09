@@ -29,7 +29,7 @@ class VotingWebController @Inject() (slateService: SlateService,
     implicit request =>
     Form(ballotMapping).bindFromRequest().fold(
       formWithErrors => {
-        Console.println(s"bad form: $formWithErrors")
+        Console.println(s"bad form. errors: ${formWithErrors.errors}")
         for {
           slate <- slateService.slateInfo(slateID)
         } yield {

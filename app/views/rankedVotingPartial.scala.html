@@ -9,11 +9,14 @@
         <h3>@question._1.text</h3>
         @* @multifieldRadioRanking(ballotForm, question._1, question._2) *@
         @multifieldDropdownRanking(ballotForm, question._1, question._2)
+        @for(error <- ballotForm.errors("rankedModel")){
+            @error.format
+        }
     </div>
 }
 
     @multifieldDropdownRanking(ballotForm: Form[BallotDTO], question: QuestionDTO, questionCount:Int) = {
-        @b4.multifield(fields = createFields(ballotForm, question, questionCount): _*)(Nil, createFieldOptions(question)) { implicit cfc =>
+        @b4.multifield(fields = createFields(ballotForm, question, questionCount): _*)(Seq(Symbol("_error") -> ballotForm.errors("rankedModel").head), createFieldOptions(question)) { implicit cfc =>
                 <div>
             @for(rank <- (1 to question.candidates.length)){
                 @b4.select(
