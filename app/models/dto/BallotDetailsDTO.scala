@@ -82,10 +82,12 @@ object RankedChoiceQuestionDTO {
         }
         else {
           val duplicateRank = if (ranksUsed.contains(remainingChoices.head.rank)) {
-            Option(ValidationError(s"Question ${remainingChoices.head.questionID} contains duplicate rank ${remainingChoices.head.rank}"))
+            Option(ValidationError(s"Question ${0} contains duplicate rank ${1}",
+              remainingChoices.head.questionID, remainingChoices.head.rank))
           } else None
           val duplicateCandidate = if (candidatesUsed.contains(remainingChoices.head.candidateID)) {
-            Option(ValidationError(s"Question ${remainingChoices.head.questionID} contains duplicate candidate ${remainingChoices.head.candidateID}"))
+            Option(ValidationError("voting.error.rankingDuplicateCandidate",
+              remainingChoices.head.candidateID))
           } else None
           val updatedErrors = accruedErrors ++ duplicateRank ++ duplicateCandidate
           checkDuplicates(remainingChoices.tail, ranksUsed + remainingChoices.head.rank,

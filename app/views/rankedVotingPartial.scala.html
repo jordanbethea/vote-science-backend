@@ -16,7 +16,7 @@
 }
 
     @multifieldDropdownRanking(ballotForm: Form[BallotDTO], question: QuestionDTO, questionCount:Int) = {
-        @b4.multifield(fields = createFields(ballotForm, question, questionCount): _*)(Seq(Symbol("_error") -> getErrorForQuestion(ballotForm, questionCount)), createFieldOptions(question)) { implicit cfc =>
+        @b4.multifield(fields = createFields(ballotForm, question, questionCount): _*)(Seq(Symbol("_error") -> getErrorForQuestion(ballotForm, questionCount, slate)), createFieldOptions(question)) { implicit cfc =>
                 <div>
             @for(rank <- (1 to question.candidates.length)){
                 @b4.select(

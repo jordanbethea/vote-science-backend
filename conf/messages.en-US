@@ -41,6 +41,7 @@ voting.fptpModel=First Past the Post Voting
 voting.approvalModel=Approval Voting
 voting.rankedModel=Ranked Choice Voting
 voting.rangeModel=Range Voting
+voting.error.rankingDuplicateCandidate=This question contains duplicates of candidate {0}
 
 slate.info.title=Title:
 slate.info.creator=Creator:

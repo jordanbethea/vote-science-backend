@@ -19,6 +19,10 @@ case class SlateLoadDTO (id: Option[Long], title: String, creator: Either[String
       case Right(user) => user.fullName.getOrElse("")
     }
   }
+
+  def candidateName(candidateID:Long):Option[String] = {
+    questions.flatMap(_.candidates).find(_.id.getOrElse(0) == candidateID).flatMap(s => Option(s.name))
+  }
 }
 
 case class QuestionDTO  (id: Option[Long], text: String, candidates: Seq[CandidateDTO])
