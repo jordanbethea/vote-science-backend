@@ -26,6 +26,10 @@ signin.submit=Sign In
 signin.notAMember=Not a Member?
 signin.signUpNow=Sign up Now!
 
+slateList.title=List of all slates
+slateList.createdBy=Created by
+slateList.voteNow=Vote on this slate
+
 createSlate.title=Create a new Slate
 createSlate.titleField.title=Title
 createSlate.creator.title=Creator
@@ -44,6 +48,8 @@ voting.rankedModel=Ranked Choice Voting
 voting.rangeModel=Range Voting
 voting.error.rankingDuplicateCandidate=This question contains duplicates of candidate {0}
 
+slate.info.pageTitle=Info for slate {0}
+slate.info.pageTitleMissing=Not a valid state!
 slate.info.title=Title:
 slate.info.creator=Creator:
 slate.info.fptpResults=First Past the Post Results
@@ -52,6 +58,16 @@ slate.info.questions=Questions:
 slate.info.fptpVotesCast=Votes Cast:
 slate.info.approvalResults=Approval Results
 slate.info.approvalVotesCast=Total Approvals
+slate.info.candidateTotal=Total for this candidate
+slate.info.totalsPerRank=Rank {0} choices: {1}
+slate.info.bordaScore=Borda Score: {0}
+slate.info.dowdallScore=Dowdall Score: {0}
+slate.info.irvRoundTotal=Round {0}: Winner: {1}
+slate.info.irvCandidateTotal=Candidate {0}: {1} votes ({2}%)
+slate.info.irvEliminated=No Winner, candidate {0} has been eliminated
+slate.info.rawRangeResults=Raw Results
+slate.info.scoreChosen=Score {0} chosen {1} times
+slate.info.noSlateFound=No slate was found, are you sure you have the right id?
 
 user.info.votedSlates=Slates Voted On:
 user.info.createdSlates=Slates Created:

@@ -2,7 +2,8 @@
 @import models.dto.SlateResultsDTO
 @(slateOption: Option[SlateLoadDTO], results: SlateResultsDTO, user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
 
-@title = @{if(slateOption.isDefined){s"Info for slate ${slateOption.get.title}"} else {"Not a valid slate!"}}
+@title = @{if(slateOption.isDefined){ messages("slate.info.pageTitle", slateOption.get.title)
+                    } else {messages("slate.info.pageTitleMissing")}}
 
 @main(title, user){
     @if(slateOption.isDefined) {
@@ -49,10 +50,10 @@
                   @for(candidate <- question.candidates) {
                       <h5>@candidate.name</h5>
                       @for(rank <- results.rankedResults.getOrderedRanksForCandidates(question.id.getOrElse(0), candidate.id.getOrElse(0))){
-                          <p>@{s"Rank ${rank.rankChosen} choices: ${rank.totalVotes}"}</p>
+                          <p>@messages("slate.info.totalsPerRank", rank.rankChosen, rank.totalVotes)</p>
                       }
-                      <p>@{s"Borda Score: ${results.rankedResults.getBordaScoreForCandidate(question.id.getOrElse(0), candidate.id.getOrElse(0))}" }</p>
-                      <p>@{s"Dowdall Score: ${results.rankedResults.getDowdallScoreForCandidate(question.id.getOrElse(0), candidate.id.getOrElse(0))}"}</p>
+                      <p>@messages("slate.info.bordaScore", results.rankedResults.getBordaScoreForCandidate(question.id.getOrElse(0), candidate.id.getOrElse(0)))</p>
+                      <p>@messages("slate.info.dowdallScore", results.rankedResults.getDowdallScoreForCandidate(question.id.getOrElse(0), candidate.id.getOrElse(0)))</p>
 
                   }
               }
@@ -61,11 +62,11 @@
                   <h4>@{question.text}</h4>
                   @for(result <- results.irvResult.singleQuestionIRVResults(question.id.getOrElse(0))){
                       @for(roundResult <- result.roundResults){
-                          <p>@{s"Round ${roundResult.round}: Winner: ${roundResult.winner.getOrElse(None)}"}</p>
+                          <p>@messages("slate.info.irvRoundTotal", roundResult.round, roundResult.winner.getOrElse(None))</p>
                           @for(voteTotal <- roundResult.voteTotals){
-                              <p>@{s"Candidate ${voteTotal.candidateID}: ${voteTotal.voteCount} votes  (${voteTotal.percent}%)"}</p>
+                              <p>@messages("slate.info.irvCandidateTotal", voteTotal.candidateID, voteTotal.voteCount, voteTotal.percent)</p>
                           }
-                          @if(roundResult.winner.isEmpty){ <p>@{s"No Winner, candidate ${roundResult.eliminated} has been eliminated"}</p> }
+                          @if(roundResult.winner.isEmpty){ <p>@messages("slate.info.irvEliminated", roundResult.eliminated)</p> }
                       }
                   }
               }
@@ -82,7 +83,7 @@
                       </p>
                       <h6>@messages("slate.info.rawRangeResults")</h6>
                       @for(result <- results.rangeResult.getRawResults(question.id.getOrElse(0), candidate.id.getOrElse(0))){
-                          <p>@{s"Score ${result.score} chosen ${result.votes} times"}  (Not intlzd)</p>
+                          <p>@messages("slate.info.scoreChosen", result.score, result.votes)</p>
                       }
                   }
               }
@@ -90,6 +91,6 @@
           </div>
         }
     } else {
-        <p>No slate was found, are you sure you have the right id?</p>
+        <p>@messages("slate.info.noSlateFound")</p>
     }
 }

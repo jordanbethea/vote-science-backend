@@ -1,19 +1,19 @@
 @import models.dto.SlateLoadDTO
 @(slates: List[SlateLoadDTO], user: Option[models.User] = None)(implicit request: RequestHeader, messages:Messages)
-@main("List of all slates", user) {
+@main(messages("slateList.title"), user) {
     <ul class="list-group">
     @for(slate <- slates) {
         <li class="list-group-item">
             <a href=@{
                 s"slates/${slate.id.getOrElse(0)}"
             }>@(slate.title)</a>
-            Created by @{
-                slate.creator match {
+            @messages("slateList.createdBy")
+            @{ slate.creator match {
                     case Left(name) => name
                     case Right(user) => user.fullName
                 }
             }
-            <a href=@{s"slates/${slate.id.getOrElse(0)}/vote"}>Vote on this slate</a>
+            <a href=@{s"slates/${slate.id.getOrElse(0)}/vote"}>@messages("slateList.voteNow")</a>
         </li>
     }
     </ul>
