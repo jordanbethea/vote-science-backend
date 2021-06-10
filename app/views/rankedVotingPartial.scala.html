@@ -6,31 +6,29 @@
 @(ballotForm: Form[BallotDTO], slate: SlateLoadDTO)(implicit messages: Messages, fieldConstructor: b4.B4FieldConstructor)
 @for(question <- slate.questions.zip((0 to slate.questions.length).toList)) {
     <div>
-        <h3>@question._1.text</h3>
-        @* @multifieldRadioRanking(ballotForm, question._1, question._2) *@
         @multifieldDropdownRanking(ballotForm, question._1, question._2)
-        @* @for(error <- ballotForm.errors("rankedModel")){
-            <div>@error.format</div>
-        } *@
     </div>
 }
 
-    @multifieldDropdownRanking(ballotForm: Form[BallotDTO], question: QuestionDTO, questionCount:Int) = {
-        @b4.multifield(fields = createFields(ballotForm, question, questionCount): _*)(Seq(Symbol("_error") -> getErrorForQuestion(ballotForm, questionCount, slate)), createFieldOptions(question)) { implicit cfc =>
-                <div>
-            @for(rank <- (1 to question.candidates.length)){
-                @b4.select(
-                    field=ballotForm(s"rankedModel.questions[$questionCount].choices[$rank].candidateID"),
-                    options = ("" -> "No Preference") +: question.candidates.map(c => c.id.getOrElse(0).toString -> c.name),
-                    Symbol("_label") -> question.text
-                )
-                @b4.hidden(ballotForm(s"rankedModel.questions[$questionCount].choices[$rank].questionID"), Symbol("value") -> question.id.getOrElse(0))
-                @b4.hidden(ballotForm(s"rankedModel.questions[$questionCount].choices[$rank].rank"), Symbol("value") -> rank)
-            }
-                </div>
+@multifieldDropdownRanking(ballotForm: Form[BallotDTO], question: QuestionDTO, questionCount:Int) = {
+    @b4.multifield(fields = createFields(ballotForm, question, questionCount): _*)(
+        Seq(Symbol("_error") -> getErrorForQuestion(ballotForm, questionCount, slate), Symbol("_label") -> question.text),
+        createFieldOptions(question)) { implicit cfc =>
+            <div class="row">
+        @for(rank <- (1 to question.candidates.length)){
+            <div class="col-1 text-center"><label class="col-form-label">@rank</label></div>
+            <div class="col-11">@b4.select(
+                field=ballotForm(s"rankedModel.questions[$questionCount].choices[$rank].candidateID"),
+                options = ("" -> "No Preference") +: question.candidates.map(c => c.id.getOrElse(0).toString -> c.name),
+                Symbol("_label") -> s"$rank"
+            )</div>
+            @b4.hidden(ballotForm(s"rankedModel.questions[$questionCount].choices[$rank].questionID"), Symbol("value") -> question.id.getOrElse(0))
+            @b4.hidden(ballotForm(s"rankedModel.questions[$questionCount].choices[$rank].rank"), Symbol("value") -> rank)
         }
+            </div>
     }
-
+}
+@*
 @multifieldRadioRanking(ballotForm: Form[BallotDTO], question: QuestionDTO, questionCount: Int) = {
     @b4.multifield(fields = createFields(ballotForm, question, questionCount): _*)(Nil, createFieldOptions(question)){ implicit cfc =>
         <div class="row">
@@ -46,4 +44,4 @@
         }
         </div>
     }
-}
+} *@

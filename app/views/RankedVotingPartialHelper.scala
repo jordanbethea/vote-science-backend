@@ -8,13 +8,13 @@ case class radioRankingData(rank: Int, showLabel:Boolean, candidateIDOptions: Se
 object RankedVotingPartialHelper {
 
   /**
-   * Helper function for the template. Takes in size of candidate list
+   * Helper function for Radio button version. Not currently used. Takes in size of candidate list
    * returns combo of 'Rank' and boolean for whether to display label for that rank of radio buttons
    */
   def rankDisplayCreator(candidateListSize: Int): Seq[(Int, Boolean)] = {
     (1 until candidateListSize).toSeq.map(_ -> false) :+ (candidateListSize -> true)
   }
-
+  /** Used for Radio button version. Not currently used. */
   def radioOptionsHelper(question: QuestionDTO, showLabel: Boolean): Seq[(String, Any)] = {
     question.candidates.map(c => (c.id.getOrElse(0).toString, if(showLabel) c.name else ""))
   }
@@ -31,7 +31,8 @@ object RankedVotingPartialHelper {
   def createFieldOptions(question: QuestionDTO): Seq[(Symbol, Any)] = {
     (1 to question.candidates.length).toList.flatMap { rankChoice =>
       question.candidates.flatMap( a =>
-        Seq(Symbol("value") -> null, Symbol("value") -> question.id.getOrElse(0), Symbol("value") -> rankChoice)
+        //Seq(Symbol("value") -> null, Symbol("value") -> question.id.getOrElse(0), Symbol("value") -> rankChoice)
+        Seq(Symbol("value") -> null, Symbol("value") -> null, Symbol("value") -> null)
       )
     }
   }
