@@ -1,10 +1,11 @@
 # https://www.playframework.com/documentation/latest/ScalaI18N
 
+nav.logo=Vote Science!
 nav.viewAll=View All Slates
 nav.createSlate=Create a new slate
 nav.signUp=Sign up for an account
 nav.signIn=Sign in to your account
-
+nav.signOut=Sign Out
 
 home.title=Vote Science
 home.content=Learn about different voting methods, try them out for yourself!

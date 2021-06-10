@@ -1,11 +1,11 @@
-@(user: Option[models.User] = None)
+@(user: Option[models.User] = None)(implicit messages:Messages)
 <nav id="navHeader" class="nav navbar-expand-lg">
-    <a href="/" class="navbar-brand">Vote Science!</a>
+    <a href="/" class="navbar-brand">@messages("nav.logo")</a>
     <!--<div class="collapse navbar-collapse show">
         <span class="navbar-nav mr-auto"> -->
 
-            <a href="/slateList" class="nav-link">View all Slates</a>
-            <a href="/createSlate" class="nav-link">Create a new Slate</a>
+            <a href="/slateList" class="nav-link">@messages("nav.viewAll")</a>
+            <a href="/createSlate" class="nav-link">@messages("nav.createSlate")</a>
 
 <!--        </span>
     </div>-->
@@ -16,10 +16,10 @@
         @if(u.loginInfo.providerID == com.mohiva.play.silhouette.impl.providers.CredentialsProvider.ID) {
             <!--change password-->
         }
-        <a href="/signOut" class="nav-link">Sign Out</a>
+        <a href="/signOut" class="nav-link">@messages("nav.signOut")</a>
     }.getOrElse {
-        <a href="/signUp" class="nav-link">Sign up for an account</a>
-        <a href="/signIn" class="nav-link">Sign in to your account</a>
+        <a href="/signUp" class="nav-link">@messages("nav.signUp")</a>
+        <a href="/signIn" class="nav-link">@messages("nav.signIn")</a>
     }
 </span>
 <!--</div>-->
