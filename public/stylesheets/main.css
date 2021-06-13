@@ -8,3 +8,8 @@
 .userSide {
     float:right;
 }
+
+.ballotNum {
+    font-size: 40px;
+    display:block;
+}

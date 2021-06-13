@@ -1,6 +1,6 @@
 package services
 
-import models.dto.SlateResultsDTO
+import models.dto.votingResults.SlateResultsDTO
 
 import scala.concurrent.Future
 

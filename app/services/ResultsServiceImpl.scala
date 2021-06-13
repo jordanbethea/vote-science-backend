@@ -2,7 +2,7 @@ package services
 
 import javax.inject.Inject
 import models.db.VotingResultsRepository
-import models.dto.SlateResultsDTO
+import models.dto.votingResults.SlateResultsDTO
 
 import scala.concurrent.{ExecutionContext, Future}
 

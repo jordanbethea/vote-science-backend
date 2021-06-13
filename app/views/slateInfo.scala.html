@@ -1,5 +1,5 @@
 @import models.dto.SlateLoadDTO
-@import models.dto.SlateResultsDTO
+@import models.dto.votingResults.SlateResultsDTO
 @(slateOption: Option[SlateLoadDTO], results: SlateResultsDTO, user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
 
 @title = @{if(slateOption.isDefined){ messages("slate.info.pageTitle", slateOption.get.title)
@@ -8,23 +8,30 @@
 @main(title, user){
     @if(slateOption.isDefined) {
         @defining(slateOption.get) { slate =>
+            <div class="container">
+                <div class="">
+                    <h3>@messages("slate.info.title") @slate.title</h3>
+                    <h6>@messages("slate.info.creator") @slate.creatorName()</h6>
+                </div>
 
-            <p>@messages("slate.info.title") @slate.title</p>
-            <p>@messages("slate.info.creator") @slate.creatorName()</p>
-
-            <div id="fptpResults">
                 <h3>@messages("slate.info.fptpResults")</h3>
-                <p>@messages("slate.info.totalBallots") @results.fptpResults.totalBallots</p>
-                <p>@messages("slate.info.questions")</p>
-                @for(question <- slate.questions) {
-                    <h6>@question.text</h6>
-                    @for(candidate <- question.candidates) {
-                        <div>
-                            <span>@candidate.name - @candidate.description</span>
-                            <span>@{messages("slate.info.fptpVotesCast")} @{results.fptpResults.getCountForCandidate(question.id, candidate.id)}</span>
-                        </div>
+            <div class="row" id="fptpResults">
+                <span class="col-2">
+                    <span class="ballotNum">@results.fptpResults.totalBallots</span>
+                    @messages("slate.info.totalBallots")
+                </span>
+                <span class="col-10">
+                    <p>@messages("slate.info.questions")</p>
+                    @for(question <- slate.questions) {
+                        <h6>@question.text</h6>
+                        @for(candidate <- question.candidates) {
+                            <div>
+                                <span>@candidate.name - @candidate.description</span>
+                                <span>@{messages("slate.info.fptpVotesCast")} @{results.fptpResults.getCountForCandidate(question.id, candidate.id)}</span>
+                            </div>
+                        }
                     }
-                }
+                </span>
             </div>
 
           <div id="approvalResults">
@@ -89,8 +96,12 @@
               }
 
           </div>
+            </div>
         }
     } else {
         <p>@messages("slate.info.noSlateFound")</p>
     }
+    <script type="text/javascript">
+
+    </script>
 }

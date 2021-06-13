@@ -1,7 +1,7 @@
 package models.db
 
 import javax.inject.Inject
-import models.dto.{IRVDataSingleQuestionAllBallots, IRVDataSingleQuestionSingleBallot, IRVResult, IRVSingleRank, NonscoredCandidateResult, NonscoredQuestionResult, NonscoredResultsDTO, RangeResultByCandidate, RangeResultByQuestion, RangeResultByScore, RangeResultBySlate, RankedChoiceCandidateResult, RankedChoiceIRVData, RankedChoiceQuestionResult, ScoredRankResultsDTO, SlateResultsDTO}
+import models.dto.votingResults.{IRVDataSingleQuestionAllBallots, IRVDataSingleQuestionSingleBallot, IRVSingleRank, NonscoredCandidateResult, NonscoredQuestionResult, NonscoredResultsDTO, RangeResultByCandidate, RangeResultByQuestion, RangeResultByScore, RangeResultBySlate, RankedChoiceCandidateResult, RankedChoiceIRVData, RankedChoiceQuestionResult, ScoredRankResultsDTO, SlateResultsDTO}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.H2Profile.api._
