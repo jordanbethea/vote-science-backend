@@ -16,37 +16,43 @@
 
                 <h3>@messages("slate.info.fptpResults")</h3>
             <div class="row" id="fptpResults">
-                <span class="col-2">
+                @* <span class="col-2">
                     <span class="ballotNum">@results.fptpResults.totalBallots</span>
                     @messages("slate.info.totalBallots")
-                </span>
+                </span> *@
                 <span class="col-10">
                     <p>@messages("slate.info.questions")</p>
                     @for(question <- slate.questions) {
                         <h6>@question.text</h6>
+                        <canvas id="canvasID_fptp_@(s"${question.id.get}")" width="600" height="200">
                         @for(candidate <- question.candidates) {
                             <div>
                                 <span>@candidate.name - @candidate.description</span>
                                 <span>@{messages("slate.info.fptpVotesCast")} @{results.fptpResults.getCountForCandidate(question.id, candidate.id)}</span>
                             </div>
                         }
+                        </canvas>
                     }
                 </span>
             </div>
 
           <div id="approvalResults">
               <h3>@messages("slate.info.approvalResults")</h3>
-              <p>@messages("slate.info.totalBallots") @results.approvalResults.totalBallots</p>
-              <p>@messages("slate.info.questions")</p>
-              @for(question <- slate.questions) {
-                  <h6>@question.text</h6>
-                  @for(candidate <- question.candidates) {
-                      <div>
-                          <span>@candidate.name - @candidate.description</span>
-                          <span>@{messages("slate.info.approvalVotesCast")} @{results.approvalResults.getCountForCandidate(question.id, candidate.id)}</span>
-                      </div>
+              @*<p>@messages("slate.info.totalBallots") @results.approvalResults.totalBallots</p>
+              <p>@messages("slate.info.questions")</p> *@
+              <span class="col-10">
+                  @for(question <- slate.questions) {
+                      <h6>@question.text</h6>
+                      <canvas id="canvasID_approval_@(s"${question.id.get}")" width="600" height="200">
+                          @for(candidate <- question.candidates) {
+                              <div>
+                                  <span>@candidate.name - @candidate.description</span>
+                                  <span>@{messages("slate.info.approvalVotesCast")} @{results.approvalResults.getCountForCandidate(question.id, candidate.id)}</span>
+                              </div>
+                          }
+                      </canvas>
                   }
-              }
+              </span>
           </div>
 
           <div id="rankedResults">
@@ -96,12 +102,21 @@
               }
 
           </div>
-            </div>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+            @for(question <- slate.questions){
+                @Html(s"const chart_fptp_${question.id.get} = $$('#canvasID_fptp_${question.id.get}');")
+                @Html(s"new Chart(chart_fptp_${question.id.get}, ${results.fptpResults.getChartJsonAsString(question.id.get)});")
+
+                @Html(s"const chart_approval_${question.id.get} = $$('#canvasID_approval_${question.id.get}');")
+                @Html(s"new Chart(chart_approval_${question.id.get}, ${results.approvalResults.getChartJsonAsString(question.id.get)});")
+            }
+            });
+        </script>
         }
     } else {
         <p>@messages("slate.info.noSlateFound")</p>
     }
-    <script type="text/javascript">
 
-    </script>
 }
