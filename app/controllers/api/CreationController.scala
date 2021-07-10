@@ -14,7 +14,7 @@ class CreationController @Inject()(slatesRepo: SlateRepository, cc: ControllerCo
                                   (implicit ex: ExecutionContext) extends AbstractController(cc) {
 
   def createSlate = Action.async(parse.json) { request =>
-    val newSlateParsing: JsResult[SlateSaveDTO] = Json.fromJson[SlateSaveDTO](request.body);
+    val newSlateParsing: JsResult[SlateSaveDTO] = Json.fromJson[SlateSaveDTO](request.body)
     val newSlate:SlateSaveDTO = newSlateParsing match {
       case JsSuccess(value: SlateSaveDTO, path: JsPath) => value
       case e @ JsError(_) =>

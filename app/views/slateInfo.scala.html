@@ -82,9 +82,10 @@
                   @for(result <- results.irvResult.singleQuestionIRVResults(question.id.getOrElse(0))){
                       @for(roundResult <- result.roundResults){
                           <p>@messages("slate.info.irvRoundTotal", roundResult.round, roundResult.winner.getOrElse(None))</p>
-                          @for(voteTotal <- roundResult.voteTotals){
+                          <canvas id="canvasID_irv_@(s"${question.id.get}")_@(s"${roundResult.round}")" width="600" height="200"></canvas>
+                          @* @for(voteTotal <- roundResult.voteTotals){
                               <p>@messages("slate.info.irvCandidateTotal", voteTotal.candidateID, voteTotal.voteCount, voteTotal.percent)</p>
-                          }
+                          } *@
                           @if(roundResult.winner.isEmpty){ <p>@messages("slate.info.irvEliminated", roundResult.eliminated)</p> }
                       }
                   }
@@ -123,6 +124,11 @@
 
                 @Html(s"const chart_rankBorda_${question.id.get} = $$('#canvasID_rankBorda_${question.id.get}');")
                 @Html(s"new Chart(chart_rankBorda_${question.id.get}, ${results.rankedResults.getBordaChartJson(question.id.get)});")
+
+                @for(roundRes <- results.irvResult.singleQuestionIRVResults(question.id.getOrElse(0)).flatMap(r => Option(r.roundResults)).getOrElse(Nil)){
+                @Html(s"const chart_irv_${question.id.get}_${roundRes.round} = $$('#canvasID_irv_${question.id.get}_${roundRes.round}');")
+                @Html(s"new Chart(chart_irv_${question.id.get}_${roundRes.round}, ${roundRes.getChartJsonForRound(roundRes.round)});")
+                }
             }
             });
         </script>

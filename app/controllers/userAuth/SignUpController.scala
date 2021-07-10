@@ -27,7 +27,7 @@ class SignUpController @Inject() (scc: SilhouetteControllerComponents)
       SignUpForm.form.bindFromRequest.fold(
         form => Future.successful(BadRequest(views.html.userAuth.signUpPage(form))),
         data => {
-          val result = Redirect(routes.SignUpController.view()).flashing("info" -> Messages("signup.email.sent", data.email))  //display temporary message, need to add support
+          val result = Redirect(routes.SignUpController.view).flashing("info" -> Messages("signup.email.sent", data.email))  //display temporary message, need to add support
           //val result = Redirect(controllers.routes.HomeController.index())
           val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
           userService.retrieve(loginInfo).flatMap {
