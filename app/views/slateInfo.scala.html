@@ -96,7 +96,8 @@
               <h3>@messages("slate.info.rangeResults")</h3>
               @for(question <- slate.questions){
                   <h4>@{question.text}</h4>
-                  @for(candidate <- question.candidates){
+                  <canvas id="canvasID_range_@(s"${question.id.get}")" width="600" height="200"></canvas>
+                  @* @for(candidate <- question.candidates){
                       <h5>@candidate.name</h5>
                       <p>@messages("slate.info.candidateTotal")
                         <span>@{results.rangeResult.getScore(question.id.getOrElse(0), candidate.id.getOrElse(0))}</span>
@@ -105,7 +106,7 @@
                       @for(result <- results.rangeResult.getRawResults(question.id.getOrElse(0), candidate.id.getOrElse(0))){
                           <p>@messages("slate.info.scoreChosen", result.score, result.votes)</p>
                       }
-                  }
+                  } *@
               }
 
           </div>
@@ -129,6 +130,9 @@
                 @Html(s"const chart_irv_${question.id.get}_${roundRes.round} = $$('#canvasID_irv_${question.id.get}_${roundRes.round}');")
                 @Html(s"new Chart(chart_irv_${question.id.get}_${roundRes.round}, ${roundRes.getChartJsonForRound(roundRes.round)});")
                 }
+
+                @Html(s"const chart_range_${question.id.get} = $$('#canvasID_range_${question.id.get}');")
+                @Html(s"new Chart(chart_range_${question.id.get}, ${results.rangeResult.getChartJsonInner(question.id.get)});")
             }
             });
         </script>
