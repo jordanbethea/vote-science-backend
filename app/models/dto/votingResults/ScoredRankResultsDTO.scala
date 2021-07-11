@@ -1,6 +1,7 @@
 package models.dto.votingResults
 
-import play.api.libs.json.{JsNumber, JsValue, Json}
+import models.dto.SlateLoadDTO
+import play.api.libs.json.{JsNumber, JsString, JsValue, Json}
 
 /**
  * Class for generating Ranked voting results for counting methods involving scoring - IE Borda or Dowdall method
@@ -43,20 +44,26 @@ case class ScoredRankResultsDTO(choicesByQuestion:Map[Long, RankedChoiceQuestion
     )
   )
 
-  def getBordaChartJson(questionID:Long): JsValue = {
+  def getBordaChartJson(questionID:Long, slate: Option[SlateLoadDTO]=None): JsValue = {
     val scores = getBordaScores(questionID)
-    getChartJsonInner(questionID, scores)
+    getChartJsonInner(questionID, scores, slate)
   }
 
-  def getDowdalChartJson(questionID:Long): JsValue = {
+  def getDowdalChartJson(questionID:Long, slate: Option[SlateLoadDTO]=None): JsValue = {
     val scores = getDowdalScores(questionID)
-    getChartJsonInner(questionID, scores)
+    getChartJsonInner(questionID, scores, slate)
   }
 
-  private def getChartJsonInner(questionID:Long, results:Iterable[(Long, Float)]):JsValue = {
+  private def getChartJsonInner(questionID:Long, results:Iterable[(Long, Float)], slate: Option[SlateLoadDTO]=None):JsValue = {
     val data = Json.obj(
       "data" -> Json.obj(
-        "labels" -> Json.toJson(results.map(q => JsNumber(q._1))),
+        "labels" -> Json.toJson(results.map{q =>
+          val name= for {
+            s <- slate
+            n <- s.candidateName(q._1)
+          } yield JsString(n)
+          name.getOrElse(JsNumber(q._1))
+        }),
         "datasets" -> Json.arr(
           Json.obj(
             "label" -> "Score per Choice",

@@ -115,24 +115,24 @@
             $(document).ready(function() {
             @for(question <- slate.questions){
                 @Html(s"const chart_fptp_${question.id.get} = $$('#canvasID_fptp_${question.id.get}');")
-                @Html(s"new Chart(chart_fptp_${question.id.get}, ${results.fptpResults.getChartJsonAsString(question.id.get)});")
+                @Html(s"new Chart(chart_fptp_${question.id.get}, ${results.fptpResults.getChartJsonAsString(question.id.get, Option(slate))});")
 
                 @Html(s"const chart_approval_${question.id.get} = $$('#canvasID_approval_${question.id.get}');")
-                @Html(s"new Chart(chart_approval_${question.id.get}, ${results.approvalResults.getChartJsonAsString(question.id.get)});")
+                @Html(s"new Chart(chart_approval_${question.id.get}, ${results.approvalResults.getChartJsonAsString(question.id.get, Option(slate))});")
 
                 @Html(s"const chart_rankDowdal_${question.id.get} = $$('#canvasID_rankDowdal_${question.id.get}');")
-                @Html(s"new Chart(chart_rankDowdal_${question.id.get}, ${results.rankedResults.getDowdalChartJson(question.id.get)});")
+                @Html(s"new Chart(chart_rankDowdal_${question.id.get}, ${results.rankedResults.getDowdalChartJson(question.id.get, Option(slate))});")
 
                 @Html(s"const chart_rankBorda_${question.id.get} = $$('#canvasID_rankBorda_${question.id.get}');")
-                @Html(s"new Chart(chart_rankBorda_${question.id.get}, ${results.rankedResults.getBordaChartJson(question.id.get)});")
+                @Html(s"new Chart(chart_rankBorda_${question.id.get}, ${results.rankedResults.getBordaChartJson(question.id.get, Option(slate))});")
 
                 @for(roundRes <- results.irvResult.singleQuestionIRVResults(question.id.getOrElse(0)).flatMap(r => Option(r.roundResults)).getOrElse(Nil)){
                 @Html(s"const chart_irv_${question.id.get}_${roundRes.round} = $$('#canvasID_irv_${question.id.get}_${roundRes.round}');")
-                @Html(s"new Chart(chart_irv_${question.id.get}_${roundRes.round}, ${roundRes.getChartJsonForRound(roundRes.round)});")
+                @Html(s"new Chart(chart_irv_${question.id.get}_${roundRes.round}, ${roundRes.getChartJsonForRound(roundRes.round, Option(slate))});")
                 }
 
                 @Html(s"const chart_range_${question.id.get} = $$('#canvasID_range_${question.id.get}');")
-                @Html(s"new Chart(chart_range_${question.id.get}, ${results.rangeResult.getChartJsonInner(question.id.get)});")
+                @Html(s"new Chart(chart_range_${question.id.get}, ${results.rangeResult.getChartJsonInner(question.id.get, Option(slate))});")
             }
             });
         </script>

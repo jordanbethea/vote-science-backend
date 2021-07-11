@@ -1,6 +1,7 @@
 package models.dto.votingResults
 
-import play.api.libs.json.{JsNumber, JsValue, Json}
+import models.dto.SlateLoadDTO
+import play.api.libs.json.{JsNumber, JsString, JsValue, Json}
 
 /* Data for calculating IRV results */
 case class RankedChoiceIRVData(questionChoices: Seq[IRVDataSingleQuestionAllBallots], allQuestionIDs: Seq[Long], totalBallots: Int) {
@@ -68,11 +69,17 @@ case class IRVRoundResult(round:Int, voteTotals:Seq[IRVSingleVoteTotal], winner:
       "responsive" -> false
     )
   )
-  def getChartJsonForRound(round:Int):JsValue = {
+  def getChartJsonForRound(round:Int, slate:Option[SlateLoadDTO]=None):JsValue = {
     val counts = voteTotals.map(t => t.candidateID -> t.voteCount)
     val data = Json.obj(
       "data" -> Json.obj(
-        "labels" -> Json.toJson(counts.map(q => JsNumber(q._1))),
+        "labels" -> Json.toJson(counts.map { q =>
+          val name = for {
+            s <- slate
+            n <- s.candidateName(q._1)
+          } yield JsString(n)
+          name.getOrElse(JsNumber(q._1))
+        }),
         "datasets" -> Json.arr(
           Json.obj(
             "label" -> "Votes per Choice",

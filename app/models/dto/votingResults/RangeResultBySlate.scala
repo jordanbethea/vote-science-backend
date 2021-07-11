@@ -1,6 +1,7 @@
 package models.dto.votingResults
 
-import play.api.libs.json.{JsNumber, JsValue, Json}
+import models.dto.SlateLoadDTO
+import play.api.libs.json.{JsNumber, JsString, JsValue, Json}
 
 /* Range Voting results */
 case class RangeResultBySlate(qResults: Seq[RangeResultByQuestion]){
@@ -23,13 +24,19 @@ case class RangeResultBySlate(qResults: Seq[RangeResultByQuestion]){
     )
   )
 
-  def getChartJsonInner(questionID:Long):JsValue = {
+  def getChartJsonInner(questionID:Long, slate:Option[SlateLoadDTO]=None):JsValue = {
     val qResultCounts = qResults.find(_.questionID == questionID).flatMap(o => Option(
       o.questionResults.map(qResult => (qResult.candidateID, qResult.getTotalScore()))
     )).getOrElse(Nil)
     val data = Json.obj(
       "data" -> Json.obj(
-        "labels" -> Json.toJson(qResultCounts.map(q => JsNumber(q._1))),
+        "labels" -> Json.toJson(qResultCounts.map{q =>
+          val name = for {
+            s <- slate
+            n <- s.candidateName(q._1)
+          } yield JsString(n)
+          name.getOrElse(JsNumber(q._1))
+        }),
         "datasets" -> Json.arr(
           Json.obj(
             "label" -> "Score per Choice",
