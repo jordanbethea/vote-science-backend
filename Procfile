@@ -1,0 +1,1 @@
+web: target/universal/stage/bin/vote-science-backend -Dhttp.port=${PORT} -Dconfig.resource="application.prod.conf"
