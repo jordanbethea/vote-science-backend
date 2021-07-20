@@ -30,7 +30,7 @@ class UserServiceImpl @Inject() (userDAO: UserDAO)(implicit val executionContext
    * @param user The user to save.
    * @return The saved user.
    */
-  def save(user: User):Future[User] = userDAO.save(user)
+  def save(user: User, newUser: Boolean):Future[User] = userDAO.save(user, newUser)
 
   /**
    * Saves the social profile for a user.
@@ -49,7 +49,7 @@ class UserServiceImpl @Inject() (userDAO: UserDAO)(implicit val executionContext
           fullName = profile.fullName,
           email = profile.email,
           avatarURL = profile.avatarURL
-        ))
+        ), false)
       case None => // Insert a new user
         userDAO.save(User(
           userID = UUID.randomUUID(),
@@ -59,7 +59,7 @@ class UserServiceImpl @Inject() (userDAO: UserDAO)(implicit val executionContext
           fullName = profile.fullName,
           email = profile.email,
           avatarURL = profile.avatarURL
-        ))
+        ), true)
     }
   }
 

@@ -1,7 +1,6 @@
 package models.db.UsersAndAuthentication
 
 import java.util.UUID
-
 import com.mohiva.play.silhouette.api.LoginInfo
 import models.User
 
@@ -41,5 +40,5 @@ trait UserDAO {
    * @param user The user to save.
    * @return The saved user.
    */
-  def save(user: User): Future[User]
+  def save(user: User, newUser: Boolean): Future[User]
 }

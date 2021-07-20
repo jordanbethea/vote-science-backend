@@ -90,7 +90,7 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
    * @param user The user to save.
    * @return The saved user.
    */
-  def save(user: User) = {
+  def save(user: User, newUser: Boolean) = {
     val dbUser = DBUser(user.userID.toString, user.firstName, user.lastName, user.fullName, user.email, user.avatarURL)
     val dbLoginInfo = DBLoginInfo(None, user.loginInfo.providerID, user.loginInfo.providerKey)
     // We don't have the LoginInfo id so we try to get it first.
@@ -108,7 +108,8 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
     }
     // combine database actions to be run sequentially
     val actions = (for {
-      _ <- slickUsers.insertOrUpdate(dbUser)
+      _ <- if(newUser) slickUsers += dbUser else slickUsers.update(dbUser)
+      //_ <- slickUsers.insertOrUpdate(dbUser)
       loginInfo <- loginInfoAction
       _ <- slickUserLoginInfos += DBUserLoginInfo(dbUser.userID, loginInfo.id.get)
     } yield ()).transactionally

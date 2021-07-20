@@ -19,7 +19,7 @@ trait UserService extends IdentityService[User] {
    * @param user The user to save.
    * @return The saved user.
    */
-  def save(user: User): Future[User]
+  def save(user: User, newUser:Boolean): Future[User]
 
   /**
    * Saves the social profile for a user.

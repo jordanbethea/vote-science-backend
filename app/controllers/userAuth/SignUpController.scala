@@ -47,7 +47,7 @@ class SignUpController @Inject() (scc: SilhouetteControllerComponents)
               )
               for {
                 //avatar <- avatarService.retrieveURL(data.email)   //avatar service...maybe later
-                user <- userService.save(user.copy(avatarURL = None))
+                user <- userService.save(user.copy(avatarURL = None), true)
                 authInfo <- authInfoRepository.add(loginInfo, authInfo)
                 authToken <- authTokenService.create(user.userID)
               } yield {
