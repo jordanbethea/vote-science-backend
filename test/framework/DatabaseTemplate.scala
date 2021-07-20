@@ -10,9 +10,9 @@ import scala.concurrent.duration._
 trait DatabaseTemplate {
 
   lazy val inMemoryDataBaseConf: Map[String, Any] = Map[String, Any](
-    "slick.dbs.default.profile" -> "slick.jdbc.H2Profile$",
-    "slick.dbs.default.db.driver" -> "org.h2.Driver",
-    "slick.dbs.default.db.url" -> "jdbc:h2:mem:play",
+    "slick.dbs.test.profile" -> "slick.jdbc.H2Profile$",
+    "slick.dbs.test.db.driver" -> "org.h2.Driver",
+    "slick.dbs.test.db.url" -> "jdbc:h2:mem:play",
     "play.evolutions.autoApply" -> true
   )
 

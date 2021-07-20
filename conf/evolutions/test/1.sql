@@ -3,7 +3,7 @@
 -- !Ups
 
 CREATE TABLE SLATES (
-    id SERIAL,
+    id bigint NOT NULL AUTO_INCREMENT,
     title varchar(255) NOT NULL,
     creator varchar(255) NOT NULL,
     anonymous boolean NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE SLATES (
 );
 
 CREATE TABLE QUESTIONS (
-    id SERIAL,
+    id bigint NOT NULL AUTO_INCREMENT,
     slate_id bigint,
     text varchar(255) NOT NULL,
     PRIMARY KEY (id),
@@ -19,7 +19,7 @@ CREATE TABLE QUESTIONS (
 );
 
 CREATE TABLE CANDIDATES (
-    id SERIAL,
+    id bigint NOT NULL AUTO_INCREMENT,
     name varchar(255) NOT NULL,
     description varchar(255) NULL,
     question_id bigint,
@@ -30,7 +30,7 @@ CREATE TABLE CANDIDATES (
 );
 
 CREATE TABLE BALLOTS (
-    id SERIAL,
+    id bigint NOT NULL AUTO_INCREMENT,
     slate_id bigint,
     voter varchar(255) NOT NULL,
     anonymous boolean NOT NULL,
@@ -76,7 +76,7 @@ CREATE TABLE RANGE_CHOICES(
    CONSTRAINT FK_RANGE_CANDIDATE FOREIGN KEY (candidate_id) REFERENCES CANDIDATES(id)
 );
 
-CREATE TABLE USER_DATA (
+CREATE TABLE USER (
     user_id varchar(255) NOT NULL,
     first_name varchar(255) NULL,
     last_name varchar(255) NULL,
@@ -87,7 +87,7 @@ CREATE TABLE USER_DATA (
 );
 
 CREATE TABLE LOGIN_INFO (
-    id SERIAL,
+    id bigint NOT NULL AUTO_INCREMENT,
     provider_id varchar(255) NOT NULL,
     provider_key varchar(255) NOT NULL,
     PRIMARY KEY(id)
@@ -113,7 +113,7 @@ DROP TABLE FPTP_CHOICES;
 DROP TABLE APPROVAL_CHOICES;
 DROP TABLE RANKED_CHOICES;
 DROP TABLE RANGE_CHOICES;
-DROP TABLE USER_DATA;
+DROP TABLE USER;
 DROP TABLE LOGIN_INFO;
 DROP TABLE USER_LOGIN_INFO;
 DROP TABLE PASSWORD_INFO;

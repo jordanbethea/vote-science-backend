@@ -29,8 +29,8 @@ libraryDependencies ++= Seq(
   "org.webjars.npm" % "chart.js" % "3.3.0",
   "com.iheart" %% "ficus" % "1.4.7",
   "com.adrianhurt" %% "play-bootstrap" % "1.6.1-P28-B4",
-  //"org.postgresql" % "postgresql" % "9.4-1201-jdbc41"
-  "mysql" % "mysql-connector-java" % "5.1.49"
+  "org.postgresql" % "postgresql" % "9.4-1201-jdbc41"
+  //"mysql" % "mysql-connector-java" % "5.1.49"
 )
 
 // Adds additional packages into Twirl

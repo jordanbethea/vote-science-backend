@@ -17,13 +17,13 @@ trait DBTableDefinitions {
                      avatarURL: Option[String]
                    )
 
-  class Users(tag: Tag) extends Table[DBUser](tag, "USER") {
-    def id = column[String]("USER_ID", O.PrimaryKey)
-    def firstName = column[Option[String]]("FIRST_NAME")
-    def lastName = column[Option[String]]("LAST_NAME")
-    def fullName = column[Option[String]]("FULL_NAME")
-    def email = column[Option[String]]("EMAIL")
-    def avatarURL = column[Option[String]]("AVATAR_URL")
+  class Users(tag: Tag) extends Table[DBUser](tag, "user_data") {
+    def id = column[String]("user_id", O.PrimaryKey)
+    def firstName = column[Option[String]]("first_name")
+    def lastName = column[Option[String]]("last_name")
+    def fullName = column[Option[String]]("full_name")
+    def email = column[Option[String]]("email")
+    def avatarURL = column[Option[String]]("avatar_url")
 
     def * = (id, firstName, lastName, fullName, email, avatarURL) <> (DBUser.tupled, DBUser.unapply)
   }
@@ -34,10 +34,10 @@ trait DBTableDefinitions {
                           providerKey: String
                         )
 
-  class LoginInfos(tag: Tag) extends Table[DBLoginInfo](tag, "LOGIN_INFO") {
-    def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-    def providerID = column[String]("PROVIDER_ID")
-    def providerKey = column[String]("PROVIDER_KEY")
+  class LoginInfos(tag: Tag) extends Table[DBLoginInfo](tag, "login_info") {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def providerID = column[String]("provider_id")
+    def providerKey = column[String]("provider_key")
 
     def * = (id.?, providerID, providerKey) <> (DBLoginInfo.tupled, DBLoginInfo.unapply)
   }
@@ -47,9 +47,9 @@ trait DBTableDefinitions {
                               loginInfoId: Long
                             )
 
-  class UserLoginInfos(tag: Tag) extends Table[DBUserLoginInfo](tag, "USER_LOGIN_INFO") {
-    def userID = column[String]("USER_ID")
-    def loginInfoId = column[Long]("LOGIN_INFO_ID")
+  class UserLoginInfos(tag: Tag) extends Table[DBUserLoginInfo](tag, "user_login_info") {
+    def userID = column[String]("user_id")
+    def loginInfoId = column[Long]("login_info_id")
 
     def * = (userID, loginInfoId) <> (DBUserLoginInfo.tupled, DBUserLoginInfo.unapply)
   }
@@ -61,11 +61,11 @@ trait DBTableDefinitions {
                              loginInfoId: Long
                            )
 
-  class PasswordInfos(tag: Tag) extends Table[DBPasswordInfo](tag, "PASSWORD_INFO") {
-    def hasher = column[String]("HASHER")
-    def password = column[String]("PASSWORD")
-    def salt = column[Option[String]]("SALT")
-    def loginInfoId = column[Long]("LOGIN_INFO_ID")
+  class PasswordInfos(tag: Tag) extends Table[DBPasswordInfo](tag, "password_info") {
+    def hasher = column[String]("hasher")
+    def password = column[String]("password")
+    def salt = column[Option[String]]("salt")
+    def loginInfoId = column[Long]("login_info_id")
 
     def * = (hasher, password, salt, loginInfoId) <> (DBPasswordInfo.tupled, DBPasswordInfo.unapply)
   }
@@ -77,11 +77,11 @@ trait DBTableDefinitions {
                            loginInfoId: Long
                          )
 
-  class OAuth1Infos(tag: Tag) extends Table[DBOAuth1Info](tag, "OAUTH1_INFO") {
-    def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-    def token = column[String]("TOKEN")
-    def secret = column[String]("SECRET")
-    def loginInfoId = column[Long]("LOGIN_INFO_ID")
+  class OAuth1Infos(tag: Tag) extends Table[DBOAuth1Info](tag, "oauth1_info") {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def token = column[String]("token")
+    def secret = column[String]("secret")
+    def loginInfoId = column[Long]("login_info_id")
 
     def * = (id.?, token, secret, loginInfoId) <> (DBOAuth1Info.tupled, DBOAuth1Info.unapply)
   }
@@ -95,13 +95,13 @@ trait DBTableDefinitions {
                            loginInfoId: Long
                          )
 
-  class OAuth2Infos(tag: Tag) extends Table[DBOAuth2Info](tag, "OAUTH2_INFO") {
-    def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-    def accessToken = column[String]("ACCESS_TOKEN")
-    def tokenType = column[Option[String]]("TOKEN_TYPE")
-    def expiresIn = column[Option[Int]]("EXPIRES_IN")
-    def refreshToken = column[Option[String]]("REFRESH_TOKEN")
-    def loginInfoId = column[Long]("LOGIN_INFO_ID")
+  class OAuth2Infos(tag: Tag) extends Table[DBOAuth2Info](tag, "oauth2_info") {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def accessToken = column[String]("access_token")
+    def tokenType = column[Option[String]]("token_type")
+    def expiresIn = column[Option[Int]]("expires_in")
+    def refreshToken = column[Option[String]]("refresh_token")
+    def loginInfoId = column[Long]("login_info_id")
 
     def * = (id.?, accessToken, tokenType, expiresIn, refreshToken, loginInfoId) <> (DBOAuth2Info.tupled, DBOAuth2Info.unapply)
   }
@@ -111,9 +111,9 @@ trait DBTableDefinitions {
                            loginInfoId: Long
                          )
 
-  class OpenIDInfos(tag: Tag) extends Table[DBOpenIDInfo](tag, "OPEN_ID_INFO") {
-    def id = column[String]("ID", O.PrimaryKey)
-    def loginInfoId = column[Long]("LOGIN_INFO_ID")
+  class OpenIDInfos(tag: Tag) extends Table[DBOpenIDInfo](tag, "open_id_info") {
+    def id = column[String]("id", O.PrimaryKey)
+    def loginInfoId = column[Long]("login_info_id")
 
     def * = (id, loginInfoId) <> (DBOpenIDInfo.tupled, DBOpenIDInfo.unapply)
   }
@@ -124,114 +124,114 @@ trait DBTableDefinitions {
                                 value: String
                               )
 
-  class OpenIDAttributes(tag: Tag) extends Table[DBOpenIDAttribute](tag, "OPEN_ID_ATTRIBUTES") {
-    def id = column[String]("ID")
-    def key = column[String]("KEY")
-    def value = column[String]("VALUE")
+  class OpenIDAttributes(tag: Tag) extends Table[DBOpenIDAttribute](tag, "open_id_attributes") {
+    def id = column[String]("id")
+    def key = column[String]("key")
+    def value = column[String]("value")
 
     def * = (id, key, value) <> (DBOpenIDAttribute.tupled, DBOpenIDAttribute.unapply)
   }
 
   case class Slate(id: Long, title: String, creator: String, anonymous: Boolean)
 
-  class SlateTableDef(tag: Tag) extends Table[Slate](tag, "SLATES") {
-    def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-    def title = column[String]("TITLE")
-    def creator = column[String]("CREATOR")
-    def anonymous = column[Boolean]("ANONYMOUS")
+  class SlateTableDef(tag: Tag) extends Table[Slate](tag, "slates") {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def title = column[String]("title")
+    def creator = column[String]("creator")
+    def anonymous = column[Boolean]("anonymous")
 
     override def * = (id, title, creator, anonymous).mapTo[Slate]
   }
 
   case class Question (id: Long, slateID: Long, text:String)
 
-  class QuestionTableDef(tag: Tag) extends Table[Question](tag, "QUESTIONS") {
-    def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-    def slateID = column[Long]("SLATE_ID")
-    def text = column[String]("TEXT")
+  class QuestionTableDef(tag: Tag) extends Table[Question](tag, "questions") {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def slateID = column[Long]("slate_id")
+    def text = column[String]("text")
 
     override def * = (id, slateID, text).mapTo[Question]
-    def slate = foreignKey("SLATE_QUESTION_FK", slateID, slates)(_.id)
+    def slate = foreignKey("slate_question_fk", slateID, slates)(_.id)
   }
 
   case class Candidate (id: Long, name: String, description: String, slateID: Long, questionID:Long)
 
-  class CandidateTableDef(tag: Tag) extends Table[Candidate](tag, "CANDIDATES") {
-    def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-    def name = column[String]("NAME")
-    def description = column[String]("DESCRIPTION")
-    def slateID = column[Long]("SLATE_ID")
-    def questionID = column[Long]("QUESTION_ID")
+  class CandidateTableDef(tag: Tag) extends Table[Candidate](tag, "candidates") {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def name = column[String]("name")
+    def description = column[String]("description")
+    def slateID = column[Long]("slate_id")
+    def questionID = column[Long]("question_id")
 
     override def * = (id, name, description, slateID, questionID).mapTo[Candidate]
-    def question = foreignKey("QUESTION_CANDIDATE_FK", questionID, questions)(_.id)
-    def slate = foreignKey("SLATE_CANDIDATE_FK", slateID, slates)(_.id)
+    def question = foreignKey("question_candidate_fk", questionID, questions)(_.id)
+    def slate = foreignKey("slate_candidate_fk", slateID, slates)(_.id)
   }
 
   case class Ballot(id: Long, slateID: Long, voter: String, anonymous: Boolean)
 
-  class BallotTableDef(tag: Tag) extends Table[Ballot](tag, "BALLOTS") {
-    def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-    def slateID = column[Long]("SLATE_ID")
-    def voter = column[String]("VOTER")
-    def anonymous = column[Boolean]("ANONYMOUS")
+  class BallotTableDef(tag: Tag) extends Table[Ballot](tag, "ballots") {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def slateID = column[Long]("slate_id")
+    def voter = column[String]("voter")
+    def anonymous = column[Boolean]("anonymous")
 
     override def * = (id, slateID, voter, anonymous).mapTo[Ballot]
-    def slate = foreignKey("BALLOT_SLATE_FK", slateID, slates)(_.id)
+    def slate = foreignKey("ballot_slate_fk", slateID, slates)(_.id)
   }
 
   case class FPTPChoice(ballotID: Long, questionID: Long, candidateID:Long)
 
-  class FPTPTableDef(tag: Tag) extends Table[FPTPChoice](tag, "FPTP_CHOICES") {
-    def ballotID = column[Long]("BALLOT_ID")
-    def questionID = column[Long]("QUESTION_ID")
-    def candidateID = column[Long]("CANDIDATE_ID")
+  class FPTPTableDef(tag: Tag) extends Table[FPTPChoice](tag, "fptp_choices") {
+    def ballotID = column[Long]("ballot_id")
+    def questionID = column[Long]("question_id")
+    def candidateID = column[Long]("candidate_id")
 
     override def * = (ballotID, questionID, candidateID).mapTo[FPTPChoice]
-    def ballotKey = foreignKey("FPTP_BALLOT_FK", ballotID, ballots)(_.id)
-    def questionKey = foreignKey("FPTP_QUESTION_FK", questionID, questions)(_.id)
-    def candidateKey = foreignKey("FPTP_CANDIDATE_FK", candidateID, candidates)(_.id)
+    def ballotKey = foreignKey("fptp_ballot_fk", ballotID, ballots)(_.id)
+    def questionKey = foreignKey("fptp_question_fk", questionID, questions)(_.id)
+    def candidateKey = foreignKey("fptp_candididate_fk", candidateID, candidates)(_.id)
   }
 
   case class ApprovalChoice(ballotID:Long, questionID:Long, candidateID:Long)
 
-  class ApprovalTableDef(tag: Tag) extends Table[ApprovalChoice](tag, "APPROVAL_CHOICES"){
-    def ballotID = column[Long]("BALLOT_ID")
-    def questionID = column[Long]("QUESTION_ID")
-    def candidateID = column[Long]("CANDIDATE_ID")
+  class ApprovalTableDef(tag: Tag) extends Table[ApprovalChoice](tag, "approval_choices"){
+    def ballotID = column[Long]("ballot_id")
+    def questionID = column[Long]("question_id")
+    def candidateID = column[Long]("candidate_id")
 
     override def * = (ballotID, questionID, candidateID).mapTo[ApprovalChoice]
-    def ballotKey = foreignKey("FPTP_BALLOT_FK", ballotID, ballots)(_.id)
-    def questionKey = foreignKey("FPTP_QUESTION_FK", questionID, questions)(_.id)
-    def candidateKey = foreignKey("FPTP_CANDIDATE_FK", candidateID, candidates)(_.id)
+    def ballotKey = foreignKey("approval_ballot_fk", ballotID, ballots)(_.id)
+    def questionKey = foreignKey("approval_question_fk", questionID, questions)(_.id)
+    def candidateKey = foreignKey("approval_candidate_fk", candidateID, candidates)(_.id)
   }
 
   case class RankedChoice(ballotID:Long, questionID:Long, candidateID:Long, rank:Int)
 
-  class RankedTableDef(tag: Tag) extends Table[RankedChoice](tag, "RANKED_CHOICES"){
-    def ballotID = column[Long]("BALLOT_ID")
-    def questionID = column[Long]("QUESTION_ID")
-    def candidateID = column[Long]("CANDIDATE_ID")
-    def rank = column[Int]("RANK")
+  class RankedTableDef(tag: Tag) extends Table[RankedChoice](tag, "ranked_choices"){
+    def ballotID = column[Long]("ballot_id")
+    def questionID = column[Long]("question_id")
+    def candidateID = column[Long]("candidate_id")
+    def rank = column[Int]("rank")
 
     override def * = (ballotID, questionID, candidateID, rank).mapTo[RankedChoice]
-    def ballotKey = foreignKey("FPTP_BALLOT_FK", ballotID, ballots)(_.id)
-    def questionKey = foreignKey("FPTP_QUESTION_FK", questionID, questions)(_.id)
-    def candidateKey = foreignKey("FPTP_CANDIDATE_FK", candidateID, candidates)(_.id)
+    def ballotKey = foreignKey("rank_ballot_fk", ballotID, ballots)(_.id)
+    def questionKey = foreignKey("rank_question_fk", questionID, questions)(_.id)
+    def candidateKey = foreignKey("rank_candidate_fk", candidateID, candidates)(_.id)
   }
 
   case class RangeChoice(ballotID:Long, questionID:Long, candidateID:Long, score:Int)
 
-  class RangeTableDef(tag: Tag) extends Table[RangeChoice](tag, "RANGE_CHOICES"){
-    def ballotID = column[Long]("BALLOT_ID")
-    def questionID = column[Long]("QUESTION_ID")
-    def candidateID = column[Long]("CANDIDATE_ID")
-    def score = column[Int]("SCORE")
+  class RangeTableDef(tag: Tag) extends Table[RangeChoice](tag, "range_choices"){
+    def ballotID = column[Long]("ballot_id")
+    def questionID = column[Long]("question_id")
+    def candidateID = column[Long]("candidate_id")
+    def score = column[Int]("score")
 
     override def * = (ballotID, questionID, candidateID, score).mapTo[RangeChoice]
-    def ballotKey = foreignKey("FPTP_BALLOT_FK", ballotID, ballots)(_.id)
-    def questionKey = foreignKey("FPTP_QUESTION_FK", questionID, questions)(_.id)
-    def candidateKey = foreignKey("FPTP_CANDIDATE_FK", candidateID, candidates)(_.id)
+    def ballotKey = foreignKey("range_ballot_fk", ballotID, ballots)(_.id)
+    def questionKey = foreignKey("range_question_fk", questionID, questions)(_.id)
+    def candidateKey = foreignKey("range_candidate_fk", candidateID, candidates)(_.id)
   }
 
   // table query definitions
