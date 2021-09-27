@@ -20,7 +20,7 @@ import models.db.UsersAndAuthentication.{AuthTokenDAO, AuthTokenDAOImpl, OAuth1I
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import utils.DefaultEnv
-import services.{AuthTokenService, AuthTokenServiceImpl, BallotService, BallotServiceImpl, ResultsService, ResultsServiceImpl, SlateService, SlateServiceImpl, UserService, UserServiceImpl}
+import services.{AuthTokenService, AuthTokenServiceImpl, BallotService, BallotServiceImpl, MailService, MailServiceImpl, ResultsService, ResultsServiceImpl, SlateService, SlateServiceImpl, UserService, UserServiceImpl}
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.ValueReader
 import net.ceedubs.ficus.readers.ArbitraryTypeReader._
@@ -63,8 +63,11 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
     bind[Clock].toInstance(Clock())
     bind[UserDAO].to[UserDAOImpl]
+
+    //maybe put these into a base module??
     bind[AuthTokenDAO].to[AuthTokenDAOImpl]
     bind[AuthTokenService].to[AuthTokenServiceImpl]
+    bind[MailService].to[MailServiceImpl]
   }
 
   @Provides

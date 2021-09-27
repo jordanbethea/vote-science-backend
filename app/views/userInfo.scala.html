@@ -31,4 +31,11 @@
     <div>
         <h2>@messages("user.info.passwordResetTitle")</h2>
     </div>
+
+    @if(!user.emailVerified) {
+        <h2>@messages("user.info.resendEmail")</h2>
+        <div>
+            <a href="@{"account/resendActivation"}">@messages("user.info.resendEmailLink")</a>
+        </div>
+    }
 }

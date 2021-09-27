@@ -25,6 +25,14 @@ class UserServiceImpl @Inject() (userDAO: UserDAO)(implicit val executionContext
   def retrieve(loginInfo: LoginInfo): Future[Option[User]] = userDAO.find(loginInfo)
 
   /**
+   * Retrieves a user that matches the specified login info.
+   *
+   * @param loginInfo The login info to retrieve a user.
+   * @return The retrieved user or None if no user could be retrieved for the given login info.
+   */
+  def retrieve(userID: UUID): Future[Option[User]] = userDAO.find(userID)
+
+  /**
    * Saves a user.
    *
    * @param user The user to save.
@@ -58,13 +66,19 @@ class UserServiceImpl @Inject() (userDAO: UserDAO)(implicit val executionContext
           lastName = profile.lastName,
           fullName = profile.fullName,
           email = profile.email,
-          avatarURL = profile.avatarURL
+          avatarURL = profile.avatarURL,
+          emailVerified = false
         ), true)
     }
   }
 
   def findAllProfiles(userIDs: Seq[UUID]): Future[Seq[User]] = {
     userDAO.findAllProfiles(userIDs)
+  }
+
+  //for testing purposes only
+  def clearAll(): Unit = {
+    userDAO.clearAll
   }
 
 }

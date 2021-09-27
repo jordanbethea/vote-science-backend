@@ -30,7 +30,8 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
     } yield dbUser
     db.run(userQuery.result.headOption).map { dbUserOption =>
       dbUserOption.map { user =>
-        User(UUID.fromString(user.userID), loginInfo, user.firstName, user.lastName, user.fullName, user.email, user.avatarURL)
+        User(UUID.fromString(user.userID), loginInfo, user.firstName, user.lastName, user.fullName,
+          user.email, user.avatarURL, user.emailVerified)
       }
     }
   }
@@ -57,7 +58,8 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
             user.lastName,
             user.fullName,
             user.email,
-            user.avatarURL)
+            user.avatarURL,
+            user.emailVerified)
       }
     }
   }
@@ -78,7 +80,8 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
             user.lastName,
             user.fullName,
             user.email,
-            user.avatarURL
+            user.avatarURL,
+            user.emailVerified
           )
       }
     }
@@ -91,7 +94,8 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
    * @return The saved user.
    */
   def save(user: User, newUser: Boolean) = {
-    val dbUser = DBUser(user.userID.toString, user.firstName, user.lastName, user.fullName, user.email, user.avatarURL)
+    val dbUser = DBUser(user.userID.toString, user.firstName, user.lastName, user.fullName,
+        user.email, user.avatarURL, user.emailVerified)
     val dbLoginInfo = DBLoginInfo(None, user.loginInfo.providerID, user.loginInfo.providerKey)
     // We don't have the LoginInfo id so we try to get it first.
     // If there is no LoginInfo yet for this user we retrieve the id on insertion.    
@@ -115,5 +119,11 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
     } yield ()).transactionally
     // run actions and return user afterwards
     db.run(actions).map(_ => user)
+  }
+
+  //for testing purposes only
+  def clearAll() = {
+    val query = DBIO.seq(slickLoginInfos.delete, slickUsers.delete, slickUserLoginInfos.delete)
+    db.run(query)
   }
 }

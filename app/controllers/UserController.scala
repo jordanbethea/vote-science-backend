@@ -23,4 +23,10 @@ class UserController @Inject()(scc: SilhouetteControllerComponents,
       }
   }
 
+  def clearAll() = silhouette.UnsecuredAction {
+    implicit request =>
+      userService.clearAll()
+      Redirect(routes.HomeController.index()).flashing("info" -> "users cleared")
+  }
+
 }

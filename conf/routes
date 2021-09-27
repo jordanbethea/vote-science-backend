@@ -34,9 +34,12 @@ POST    /signIn                      controllers.userAuth.SignInController.submi
 
 GET     /home                        controllers.UserController.userInfo()
 
+GET     /account/activate/:token     controllers.userAuth.ActivateAccountController.activate(token: java.util.UUID)
+GET     /account/resendActivation    controllers.userAuth.ActivateAccountController.send
 
 GET     /createTestData              controllers.TestDataController.addSlates
 
+GET     /clearAll                    controllers.UserController.clearAll()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

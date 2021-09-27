@@ -1,7 +1,8 @@
 package services
 
-import java.util.UUID
+import com.mohiva.play.silhouette.api.LoginInfo
 
+import java.util.UUID
 import com.mohiva.play.silhouette.api.services.IdentityService
 import com.mohiva.play.silhouette.impl.providers.CommonSocialProfile
 import models.User
@@ -32,4 +33,21 @@ trait UserService extends IdentityService[User] {
   def save(profile: CommonSocialProfile): Future[User]
 
   def findAllProfiles(userIDs: Seq[UUID]): Future[Seq[User]]
+
+  /**
+   * Retrieves a user with a specific login info
+   * @param loginInfo User's loginInfo
+   * @return The user, or none
+   */
+  def retrieve(loginInfo: LoginInfo): Future[Option[User]]
+
+  /**
+   * Retrieves a user with a specific ID
+   * @param id User's id
+   * @return The user, or none
+   */
+  def retrieve(id: UUID): Future[Option[User]]
+
+  //for testing purposes only
+  def clearAll(): Unit
 }

@@ -6,12 +6,14 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AuthenticatorService
 import com.mohiva.play.silhouette.api.util.{Clock, PasswordHasherRegistry}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+
 import javax.inject.Inject
 import play.api.Logging
 import play.api.http.FileMimeTypes
 import play.api.i18n.{I18nSupport, Langs, MessagesApi}
+import play.api.libs.mailer.MailerClient
 import play.api.mvc.{AnyContent, DefaultActionBuilder, MessagesAbstractController, MessagesActionBuilder, MessagesControllerComponents, PlayBodyParsers}
-import services.{AuthTokenService, UserService}
+import services.{AuthTokenService, MailService, UserService}
 import utils.DefaultEnv
 
 import scala.concurrent.duration.FiniteDuration
@@ -29,6 +31,8 @@ abstract class SilhouetteController(override protected val controllerComponents:
   def rememberMeConfig: RememberMeConfig = controllerComponents.rememberMeConfig
   def clock: Clock = controllerComponents.clock
   def credentialsProvider: CredentialsProvider = controllerComponents.credentialsProvider
+  def mailerClient: MailerClient = controllerComponents.mailerClient
+  def mailService: MailService = controllerComponents.mailService
 
   def silhouette: Silhouette[EnvType] = controllerComponents.silhouette
   def authenticatorService: AuthenticatorService[AuthType] = silhouette.env.authenticatorService
@@ -47,6 +51,8 @@ trait SilhouetteComponents {
   def rememberMeConfig: RememberMeConfig
   def clock: Clock
   def credentialsProvider: CredentialsProvider
+  def mailerClient: MailerClient
+  def mailService: MailService
 
   def silhouette: Silhouette[EnvType]
 }
@@ -69,7 +75,9 @@ final case class DefaultSilhouetteControllerComponents @Inject()
     langs: Langs,
     fileMimeTypes: FileMimeTypes,
     messagesApi: MessagesApi,
-    executionContext: scala.concurrent.ExecutionContext
+    executionContext: scala.concurrent.ExecutionContext,
+    mailerClient: MailerClient,
+    mailService: MailService
   ) extends SilhouetteControllerComponents
 
 trait RememberMeConfig {

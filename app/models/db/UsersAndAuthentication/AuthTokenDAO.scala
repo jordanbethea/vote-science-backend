@@ -3,7 +3,7 @@ package models.db.UsersAndAuthentication
 import java.util.UUID
 
 import models.AuthToken
-import org.joda.time.DateTime
+import java.time.Instant
 
 import scala.concurrent.Future
 
@@ -25,7 +25,7 @@ trait AuthTokenDAO {
    *
    * @param dateTime The current date time.
    */
-  def findExpired(dateTime: DateTime): Future[Seq[AuthToken]]
+  def findExpired(dateTime: Instant): Future[Seq[AuthToken]]
 
   /**
    * Saves a token.
@@ -33,7 +33,7 @@ trait AuthTokenDAO {
    * @param token The token to save.
    * @return The saved token.
    */
-  def save(token: AuthToken): Future[AuthToken]
+  def save(token: AuthToken): Future[UUID]
 
   /**
    * Removes the token for the given ID.
@@ -41,5 +41,5 @@ trait AuthTokenDAO {
    * @param id The ID for which the token should be removed.
    * @return A future to wait for the process to be completed.
    */
-  def remove(id: UUID): Future[Unit]
+  def remove(id: UUID): Future[Int]
 }

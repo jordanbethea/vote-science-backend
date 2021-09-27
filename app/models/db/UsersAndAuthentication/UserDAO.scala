@@ -41,4 +41,7 @@ trait UserDAO {
    * @return The saved user.
    */
   def save(user: User, newUser: Boolean): Future[User]
+
+  //for testing purposes only
+  def clearAll()
 }
