@@ -2,6 +2,8 @@
 
 -- !Ups
 
+-- Postgres style for deployment
+
 CREATE TABLE SLATES (
     id SERIAL,
     title varchar(255) NOT NULL,
@@ -83,6 +85,7 @@ CREATE TABLE USER_DATA (
     full_name varchar(255) NULL,
     email varchar(255) NULL,
     avatar_url varchar(255) NULL,
+    email_verified boolean NOT NULL,
     PRIMARY KEY(user_id)
 );
 
@@ -105,6 +108,11 @@ CREATE TABLE PASSWORD_INFO (
     login_info_id bigint NOT NULL
 );
 
+CREATE TABLE AUTH_TOKENS (
+     id varchar(255) NOT NULL,
+     user_id varchar(255) NOT NULL,
+     expiry timestamp NOT NULL
+);
 
 
 -- !Downs
@@ -117,6 +125,7 @@ DROP TABLE USER_DATA;
 DROP TABLE LOGIN_INFO;
 DROP TABLE USER_LOGIN_INFO;
 DROP TABLE PASSWORD_INFO;
+DROP TABLE AUTH_TOKENS;
 
 DROP TABLE BALLOTS;
 DROP TABLE CANDIDATES;

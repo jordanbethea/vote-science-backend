@@ -161,6 +161,6 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
   //TODO - think about a better solution for this
   private implicit def dbUserToGenUser(user: DBUser):User = {
     User(UUID.fromString(user.userID), null,
-      user.firstName, user.lastName, user.fullName, user.email, user.avatarURL)
+      user.firstName, user.lastName, user.fullName, user.email, user.avatarURL, user.emailVerified)
   }
 }

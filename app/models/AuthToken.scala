@@ -2,7 +2,7 @@ package models
 
 import java.util.UUID
 
-import org.joda.time.DateTime
+import java.time.Instant
 
 /**
  * A token to authenticate a user against an endpoint for a short time period.
@@ -14,4 +14,4 @@ import org.joda.time.DateTime
 case class AuthToken(
   id: UUID,
   userID: UUID,
-  expiry: DateTime)
+  expiry: Instant)

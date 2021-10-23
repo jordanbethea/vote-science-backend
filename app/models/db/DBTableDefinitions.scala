@@ -1,7 +1,10 @@
 package models.db
 
 import com.mohiva.play.silhouette.api.LoginInfo
+import models.AuthToken
 import slick.jdbc.JdbcProfile
+
+import java.time.Instant
 
 trait DBTableDefinitions {
 
@@ -14,7 +17,8 @@ trait DBTableDefinitions {
                      lastName: Option[String],
                      fullName: Option[String],
                      email: Option[String],
-                     avatarURL: Option[String]
+                     avatarURL: Option[String],
+                     emailVerified: Boolean
                    )
 
   class Users(tag: Tag) extends Table[DBUser](tag, "user_data") {
@@ -24,8 +28,10 @@ trait DBTableDefinitions {
     def fullName = column[Option[String]]("full_name")
     def email = column[Option[String]]("email")
     def avatarURL = column[Option[String]]("avatar_url")
+    def emailVerified = column[Boolean]("email_verified")
 
-    def * = (id, firstName, lastName, fullName, email, avatarURL) <> (DBUser.tupled, DBUser.unapply)
+    def * = (id, firstName, lastName, fullName, email, avatarURL,
+      emailVerified) <> (DBUser.tupled, DBUser.unapply)
   }
 
   case class DBLoginInfo(
@@ -234,6 +240,16 @@ trait DBTableDefinitions {
     def candidateKey = foreignKey("range_candidate_fk", candidateID, candidates)(_.id)
   }
 
+  case class AuthTokenDB(id: String, userID:String, expiry: Instant)
+
+  class AuthTokenTableDef(tag: Tag) extends Table[AuthTokenDB](tag, "auth_tokens"){
+    def id = column[String]("id")
+    def userID = column[String]("user_id")
+    def expiry = column[Instant]("expiry")
+
+    override def * = (id, userID, expiry).mapTo[AuthTokenDB]
+  }
+
   // table query definitions
   val slickUsers = TableQuery[Users]
   val slickLoginInfos = TableQuery[LoginInfos]
@@ -243,6 +259,8 @@ trait DBTableDefinitions {
   val slickOAuth2Infos = TableQuery[OAuth2Infos]
   val slickOpenIDInfos = TableQuery[OpenIDInfos]
   val slickOpenIDAttributes = TableQuery[OpenIDAttributes]
+  val slickAuthTokens = TableQuery[AuthTokenTableDef]
+  val slickAuthTokenInserts = slickAuthTokens returning slickAuthTokens.map(_.id)
 
   val slates = TableQuery[SlateTableDef]
   val slatesInserts = slates returning slates.map(_.id)

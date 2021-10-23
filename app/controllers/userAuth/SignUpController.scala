@@ -27,8 +27,8 @@ class SignUpController @Inject() (scc: SilhouetteControllerComponents)
       SignUpForm.form.bindFromRequest.fold(
         form => Future.successful(BadRequest(views.html.userAuth.signUpPage(form))),
         data => {
-          val result = Redirect(routes.SignUpController.view).flashing("info" -> Messages("signup.email.sent", data.email))  //display temporary message, need to add support
-          //val result = Redirect(controllers.routes.HomeController.index())
+          val result = Redirect(routes.SignInController.view)
+            .flashing("info" -> Messages("signup.email.sent", data.email))
           val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
           userService.retrieve(loginInfo).flatMap {
             case Some(user) =>
@@ -43,7 +43,8 @@ class SignUpController @Inject() (scc: SilhouetteControllerComponents)
                 lastName = Some(data.lastName),
                 fullName = Some(data.firstName + " " + data.lastName),
                 email = Some(data.email),
-                avatarURL = None
+                avatarURL = None,
+                emailVerified = false
               )
               for {
                 //avatar <- avatarService.retrieveURL(data.email)   //avatar service...maybe later
@@ -51,8 +52,9 @@ class SignUpController @Inject() (scc: SilhouetteControllerComponents)
                 authInfo <- authInfoRepository.add(loginInfo, authInfo)
                 authToken <- authTokenService.create(user.userID)
               } yield {
-                // val url = routes.ActivateAccountController.activate(authToken.id).absoluteURL()
+                val url = routes.ActivateAccountController.activate(authToken.id).absoluteURL()
                 // get url from activation controller, send email with link to activate
+                scc.mailService.sendConfirmationEmail(user, url)(request.lang)
 
                 eventBus.publish(SignUpEvent(user, request))
                 result

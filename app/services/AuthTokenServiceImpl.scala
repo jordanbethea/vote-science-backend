@@ -34,8 +34,11 @@ class AuthTokenServiceImpl @Inject()(
    * @return The saved auth token.
    */
   def create(userID: UUID, expiry: FiniteDuration = 5 minutes): Future[AuthToken] = {
-    val token = AuthToken(UUID.randomUUID(), userID, clock.now.withZone(DateTimeZone.UTC).plusSeconds(expiry.toSeconds.toInt))
-    authTokenDAO.save(token)
+    val expireInstant = java.time.Instant.now().plusSeconds(expiry.toSeconds)
+    val token = AuthToken(UUID.randomUUID(), userID, expireInstant)
+    authTokenDAO.save(token).flatMap{ id =>
+      Future.successful(token)
+    }
   }
 
   /**
@@ -51,7 +54,7 @@ class AuthTokenServiceImpl @Inject()(
    *
    * @return The list of deleted tokens.
    */
-  def clean: Future[Seq[AuthToken]] = authTokenDAO.findExpired(clock.now.withZone(DateTimeZone.UTC)).flatMap { tokens =>
+  def clean: Future[Seq[AuthToken]] = authTokenDAO.findExpired(java.time.Instant.now()).flatMap { tokens =>
     Future.sequence(tokens.map { token =>
       authTokenDAO.remove(token.id).map(_ => token)
     })

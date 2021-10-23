@@ -15,6 +15,9 @@ libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0
 libraryDependencies += "com.h2database" % "h2" % "1.4.199"
 libraryDependencies += "com.typesafe.play" %% "play-slick" % "4.0.2"
 libraryDependencies += "com.typesafe.play" %% "play-slick-evolutions" % "4.0.2"
+libraryDependencies += "com.typesafe.play" %% "play-mailer" % "8.0.1"
+libraryDependencies += "com.typesafe.play" %% "play-mailer-guice" % "8.0.1"
+
 
 libraryDependencies ++= Seq(
   "com.mohiva" %% "play-silhouette" % "7.0.0",
