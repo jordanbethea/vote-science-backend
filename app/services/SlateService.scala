@@ -1,8 +1,9 @@
 package services
 
 import models.User
-import models.dto.{SlateLoadDTO, SlateSaveDTO}
+import models.dto.{SlateLoadDTO, SlateSaveNewDTO}
 
+import java.util.UUID
 import scala.concurrent.Future
 
 /**
@@ -13,12 +14,12 @@ trait SlateService {
   /**
    * Take in slate data and create new slate in database
    */
-  def saveSlate(slateData: SlateSaveDTO): Future[Long]
+  def saveSlate(slateData: SlateSaveNewDTO): Future[UUID]
 
   /**
    * Return full slate info for given slate ID
    */
-  def slateInfo(slateID: Long): Future[Option[SlateLoadDTO]]
+  def slateInfo(slateID: UUID): Future[Option[SlateLoadDTO]]
 
   /**
    * Return list of all slates, for viewing page of all slates. Filtering ability will be added later as needed.
@@ -33,6 +34,6 @@ trait SlateService {
   /**
    * Retrieve all slates based on input list of slate ids
    */
-  def slatesFromList(slateIDs: Seq[Long]): Future[Seq[SlateLoadDTO]]
+  def slatesFromList(slateIDs: Seq[UUID]): Future[Seq[SlateLoadDTO]]
 
 }

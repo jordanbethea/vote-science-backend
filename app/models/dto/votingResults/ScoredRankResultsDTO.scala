@@ -3,12 +3,14 @@ package models.dto.votingResults
 import models.dto.SlateLoadDTO
 import play.api.libs.json.{JsNumber, JsString, JsValue, Json}
 
+import java.util.UUID
+
 /**
  * Class for generating Ranked voting results for counting methods involving scoring - IE Borda or Dowdall method
  */
-case class ScoredRankResultsDTO(choicesByQuestion:Map[Long, RankedChoiceQuestionResult]) {
+case class ScoredRankResultsDTO(choicesByQuestion:Map[UUID, RankedChoiceQuestionResult]) {
 
-  def getOrderedRanksForCandidates(questionID: Long, candidateID:Long): Seq[RankedChoiceCandidateResult] = {
+  def getOrderedRanksForCandidates(questionID: UUID, candidateID:UUID): Seq[RankedChoiceCandidateResult] = {
     val choicesForQ = for {
       choicesByQ <- choicesByQuestion.get(questionID)
       choicesByC <- choicesByQ.candidateCounts.get(candidateID)
@@ -20,19 +22,19 @@ case class ScoredRankResultsDTO(choicesByQuestion:Map[Long, RankedChoiceQuestion
     }
   }
 
-  def getBordaScoreForCandidate(questionID:Long, candidateID:Long): Float = {
+  def getBordaScoreForCandidate(questionID:UUID, candidateID:UUID): Float = {
     choicesByQuestion.get(questionID).flatMap(r => Option(r.bordaCountForCandidate(candidateID))).getOrElse(0f)
   }
 
-  def getBordaScores(questionID:Long): Iterable[(Long, Float)] = {
+  def getBordaScores(questionID:UUID): Iterable[(UUID, Float)] = {
     choicesByQuestion.get(questionID).flatMap(r => Option(r.bordaCount())).getOrElse(Nil)
   }
 
-  def getDowdalScores(questionID:Long): Iterable[(Long, Float)] = {
+  def getDowdalScores(questionID:UUID): Iterable[(UUID, Float)] = {
     choicesByQuestion.get(questionID).flatMap(r => Option(r.dowdalCount())).getOrElse(Nil)
   }
 
-  def getDowdallScoreForCandidate(questionID:Long, candidateID:Long): Float = {
+  def getDowdallScoreForCandidate(questionID:UUID, candidateID:UUID): Float = {
     choicesByQuestion.get(questionID).flatMap(r => Option(r.dowdalCountForCandidate(candidateID))).getOrElse(0f)
   }
 
@@ -44,17 +46,17 @@ case class ScoredRankResultsDTO(choicesByQuestion:Map[Long, RankedChoiceQuestion
     )
   )
 
-  def getBordaChartJson(questionID:Long, slate: Option[SlateLoadDTO]=None): JsValue = {
+  def getBordaChartJson(questionID:UUID, slate: Option[SlateLoadDTO]=None): JsValue = {
     val scores = getBordaScores(questionID)
     getChartJsonInner(questionID, scores, slate)
   }
 
-  def getDowdalChartJson(questionID:Long, slate: Option[SlateLoadDTO]=None): JsValue = {
+  def getDowdalChartJson(questionID:UUID, slate: Option[SlateLoadDTO]=None): JsValue = {
     val scores = getDowdalScores(questionID)
     getChartJsonInner(questionID, scores, slate)
   }
 
-  private def getChartJsonInner(questionID:Long, results:Iterable[(Long, Float)], slate: Option[SlateLoadDTO]=None):JsValue = {
+  private def getChartJsonInner(questionID:UUID, results:Iterable[(UUID, Float)], slate: Option[SlateLoadDTO]=None):JsValue = {
     val data = Json.obj(
       "data" -> Json.obj(
         "labels" -> Json.toJson(results.map{q =>
@@ -62,7 +64,7 @@ case class ScoredRankResultsDTO(choicesByQuestion:Map[Long, RankedChoiceQuestion
             s <- slate
             n <- s.candidateName(q._1)
           } yield JsString(n)
-          name.getOrElse(JsNumber(q._1))
+          name.getOrElse(JsString(q._1.toString))
         }),
         "datasets" -> Json.arr(
           Json.obj(
@@ -75,24 +77,24 @@ case class ScoredRankResultsDTO(choicesByQuestion:Map[Long, RankedChoiceQuestion
   }
 }
 
-case class RankedChoiceQuestionResult(questionID:Long, maxRank: Int, candidateCounts: Map[Long, Seq[RankedChoiceCandidateResult]]){
+case class RankedChoiceQuestionResult(questionID:UUID, maxRank: Int, candidateCounts: Map[UUID, Seq[RankedChoiceCandidateResult]]){
   private val bordaVal: RankedChoiceCandidateResult => Float = { res => res.totalVotes * (maxRank - res.rankChosen)}
   private val dowdalVal: RankedChoiceCandidateResult => Float = { res => res.totalVotes * (1f / res.rankChosen)}
 
-  private def countForSingleCandidate(candidateID: Long, counterScheme:RankedChoiceCandidateResult => Float):Float = {
+  private def countForSingleCandidate(candidateID: UUID, counterScheme:RankedChoiceCandidateResult => Float):Float = {
     val optcount:Option[Float] = candidateCounts.get(candidateID).flatMap(results => Option(results.map(counterScheme).sum))
     optcount.getOrElse(0f)
   }
-  private def countsForAllCandidates(counterScheme:RankedChoiceCandidateResult => Float):Iterable[(Long, Float)] = {
+  private def countsForAllCandidates(counterScheme:RankedChoiceCandidateResult => Float):Iterable[(UUID, Float)] = {
     for(candidateID <- candidateCounts.keys) yield {
         (candidateID, countForSingleCandidate(candidateID, counterScheme))
     }
   }
 
-  def bordaCountForCandidate(candidateID:Long) = countForSingleCandidate(candidateID, bordaVal)
-  def dowdalCountForCandidate(candidateID:Long) = countForSingleCandidate(candidateID, dowdalVal)
+  def bordaCountForCandidate(candidateID:UUID) = countForSingleCandidate(candidateID, bordaVal)
+  def dowdalCountForCandidate(candidateID:UUID) = countForSingleCandidate(candidateID, dowdalVal)
   def bordaCount() = countsForAllCandidates(bordaVal)
   def dowdalCount() = countsForAllCandidates(dowdalVal)
 }
-case class RankedChoiceCandidateResult(candidateID:Long, rankChosen:Int, totalVotes:Int)
+case class RankedChoiceCandidateResult(candidateID:UUID, rankChosen:Int, totalVotes:Int)
 

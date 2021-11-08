@@ -1,7 +1,9 @@
 package views
 
-import models.dto.{BallotDTO, QuestionDTO, SlateLoadDTO}
+import models.dto.{BallotDTO, LoadQuestionDTO, NewQuestionDTO, SlateLoadDTO}
 import play.api.data.{Field, Form, FormError}
+
+import java.util.UUID
 
 case class radioRankingData(rank: Int, showLabel:Boolean, candidateIDOptions: Seq[Long])
 
@@ -15,11 +17,11 @@ object RankedVotingPartialHelper {
     (1 until candidateListSize).toSeq.map(_ -> false) :+ (candidateListSize -> true)
   }
   /** Used for Radio button version. Not currently used. */
-  def radioOptionsHelper(question: QuestionDTO, showLabel: Boolean): Seq[(String, Any)] = {
-    question.candidates.map(c => (c.id.getOrElse(0).toString, if(showLabel) c.name else ""))
+  def radioOptionsHelper(question: LoadQuestionDTO, showLabel: Boolean): Seq[(String, Any)] = {
+    question.candidates.map(c => (c.id.toString, if(showLabel) c.name else ""))
   }
 
-  def createFields(ballotForm: Form[BallotDTO], question: QuestionDTO, questionCount: Int): List[Field] = {
+  def createFields(ballotForm: Form[BallotDTO], question: LoadQuestionDTO, questionCount: Int): List[Field] = {
     (1 to question.candidates.length).toList.flatMap{ rankChoice =>
       question.candidates.flatMap(c => Seq(
         ballotForm(s"rankedModel.choices[$questionCount][$rankChoice].candidateID"),
@@ -28,10 +30,9 @@ object RankedVotingPartialHelper {
     }
   }
 
-  def createFieldOptions(question: QuestionDTO): Seq[(Symbol, Any)] = {
+  def createFieldOptions(question: LoadQuestionDTO): Seq[(Symbol, Any)] = {
     (1 to question.candidates.length).toList.flatMap { rankChoice =>
       question.candidates.flatMap( a =>
-        //Seq(Symbol("value") -> null, Symbol("value") -> question.id.getOrElse(0), Symbol("value") -> rankChoice)
         Seq(Symbol("value") -> null, Symbol("value") -> null, Symbol("value") -> null)
       )
     }
@@ -43,7 +44,7 @@ object RankedVotingPartialHelper {
     Console.println(s"Error for key ${key}: ${errorOpt.toString}")
     errorOpt match {
       case Some(error) => {
-        val cID:Long = error.args.head.asInstanceOf[Long]
+        val cID:UUID = error.args.head.asInstanceOf[UUID]
         val candidateText = slateInfo.candidateName(cID).getOrElse("")
         Option(FormError(key, error.message, Seq(candidateText)))
       }

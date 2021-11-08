@@ -1,12 +1,12 @@
 @import models.dto.SlateDTO
 @import views.html.helper.CSRF
 
-@import models.dto.SlateSaveDTO
-@(slateForm: Form[SlateSaveDTO], user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
+@import models.dto.SlateSaveNewDTO
+@(slateForm: Form[SlateSaveNewDTO], user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
     @implicitFieldConstructor = @{ b4.vertical.fieldConstructor() }
 
 @main("Create a new Slate", user){
-    @b4.form(action = routes.CreationWebController.createSlate) {
+    @b4.form(action = routes.CreationWebController.createSlate()) {
         @CSRF.formField
         <div class="row">
         <div class="col-4">
@@ -14,11 +14,9 @@
                 <legend>@messages("createSlate.title")</legend>
                 @b4.text(slateForm("title"), Symbol("_label") -> messages("createSlate.titleField.title"))
                 @if(user.isEmpty) {
-                    @b4.text(slateForm("creator"), Symbol("_label") -> messages("createSlate.creator.title"))
-                    @b4.hidden(slateForm("anonymous"), Symbol("value") -> true)
+                    @b4.text(slateForm("creatorText"), Symbol("_label") -> messages("createSlate.creator.title"))
                 } else {
-                    @b4.hidden(slateForm("creator"), Symbol("value") -> user.get.userID.toString)
-                    @b4.hidden(slateForm("anonymous"), Symbol("value") -> false)
+                    @b4.hidden(slateForm("creatorID"), Symbol("value") -> user.get.userID.toString)
                 }
             </fieldset>
 

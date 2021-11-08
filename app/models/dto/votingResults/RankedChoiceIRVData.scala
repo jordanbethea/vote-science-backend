@@ -3,10 +3,12 @@ package models.dto.votingResults
 import models.dto.SlateLoadDTO
 import play.api.libs.json.{JsNumber, JsString, JsValue, Json}
 
+import java.util.UUID
+
 /* Data for calculating IRV results */
-case class RankedChoiceIRVData(questionChoices: Seq[IRVDataSingleQuestionAllBallots], allQuestionIDs: Seq[Long], totalBallots: Int) {
+case class RankedChoiceIRVData(questionChoices: Seq[IRVDataSingleQuestionAllBallots], allQuestionIDs: Seq[UUID], totalBallots: Int) {
   //recursive function - pass in 1) list of ballot data 2) eliminated candidates 3) RoundResult data from previous rounds
-  def roundOfIRVVoting(round: Int, choices: IRVDataSingleQuestionAllBallots, eliminatedCandidates: Seq[Long], prevRounds: Seq[IRVRoundResult]): Seq[IRVRoundResult] = {
+  def roundOfIRVVoting(round: Int, choices: IRVDataSingleQuestionAllBallots, eliminatedCandidates: Seq[UUID], prevRounds: Seq[IRVRoundResult]): Seq[IRVRoundResult] = {
     val totals = choices.calculateCurrentQuestionResults(eliminatedCandidates, totalBallots)
     val percents = for(total <- totals) yield { total.candidateID -> total.voteCount.toFloat / totalBallots.toFloat}
     Console.println(s"percents: ${percents.toString}")
@@ -25,16 +27,22 @@ case class RankedChoiceIRVData(questionChoices: Seq[IRVDataSingleQuestionAllBall
     }
   }
 
-  def singleQuestionIRVResults(questionID:Long): Option[IRVResult] = {
+  def singleQuestionIRVResults(questionID:UUID): Option[IRVResult] = {
     questionChoices.find(_.questionID == questionID) flatMap { data =>
       Option(IRVResult(questionID, roundOfIRVVoting(0, data, Nil, Nil).reverse))
     }
+  }
 
+  //as singleQuestionIRVResults, but altered for easier use in template
+  def singleQuestionRoundResults(question: UUID): Seq[IRVRoundResult] = {
+    (for {
+      rawRes <- singleQuestionIRVResults(question)
+    } yield rawRes.roundResults).getOrElse(Nil)
   }
 }
 /* Seq of Seqs is by list of rankings, grouped by voter/ballot */
-case class IRVDataSingleQuestionAllBallots(questionID: Long, allCandidates:Seq[Long], rankings: Seq[IRVDataSingleQuestionSingleBallot]){
-  def calculateCurrentQuestionResults(excluded:Seq[Long], totalBallots:Int): Seq[IRVSingleVoteTotal] = {
+case class IRVDataSingleQuestionAllBallots(questionID: UUID, allCandidates:Seq[UUID], rankings: Seq[IRVDataSingleQuestionSingleBallot]){
+  def calculateCurrentQuestionResults(excluded:Seq[UUID], totalBallots:Int): Seq[IRVSingleVoteTotal] = {
     val rawResults = rankings.map(_.findCurrentVote(excluded, allCandidates)).flatten
     val uniqueCandidates = rawResults.distinct
     for(c <- uniqueCandidates) yield {
@@ -44,7 +52,7 @@ case class IRVDataSingleQuestionAllBallots(questionID: Long, allCandidates:Seq[L
   }
 }
 case class IRVDataSingleQuestionSingleBallot(choices: Seq[IRVSingleRank]){
-  def findCurrentVote(excluded: Seq[Long], allCandidates:Seq[Long]): Option[Long] = {
+  def findCurrentVote(excluded: Seq[UUID], allCandidates:Seq[UUID]): Option[UUID] = {
     val maxRank = allCandidates.length + 1
     val noVoteCandidates = allCandidates.filterNot(c1 => choices.contains(IRVSingleRank(c1, _)))
     val missingRanks = for(c <- noVoteCandidates) yield { IRVSingleRank(c, maxRank) }
@@ -54,14 +62,14 @@ case class IRVDataSingleQuestionSingleBallot(choices: Seq[IRVSingleRank]){
     for(option <- currentVoteOption) yield { option.candidateID }
   }
 }
-case class IRVSingleRank(candidateID: Long, rank:Int)
+case class IRVSingleRank(candidateID: UUID, rank:Int)
 
 
 /* Results of IRV calculation */
-case class IRVResult(questionID: Long, roundResults: Seq[IRVRoundResult]){
+case class IRVResult(questionID: UUID, roundResults: Seq[IRVRoundResult]){
 
 }
-case class IRVRoundResult(round:Int, voteTotals:Seq[IRVSingleVoteTotal], winner:Option[Long], eliminated:Option[Long]) {
+case class IRVRoundResult(round:Int, voteTotals:Seq[IRVSingleVoteTotal], winner:Option[UUID], eliminated:Option[UUID]) {
   val baseChartObject = Json.obj(
     "type" -> "bar",
     "options" -> Json.obj(
@@ -78,7 +86,7 @@ case class IRVRoundResult(round:Int, voteTotals:Seq[IRVSingleVoteTotal], winner:
             s <- slate
             n <- s.candidateName(q._1)
           } yield JsString(n)
-          name.getOrElse(JsNumber(q._1))
+          name.getOrElse(JsString(q._1.toString))
         }),
         "datasets" -> Json.arr(
           Json.obj(
@@ -90,4 +98,4 @@ case class IRVRoundResult(round:Int, voteTotals:Seq[IRVSingleVoteTotal], winner:
     baseChartObject ++ data
   }
 }
-case class IRVSingleVoteTotal(candidateID:Long, voteCount:Int, percent:Float)
+case class IRVSingleVoteTotal(candidateID:UUID, voteCount:Int, percent:Float)

@@ -6,6 +6,7 @@ import play.api.data._
 import play.api.data.Forms._
 import services.{BallotService, SlateService}
 
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -14,7 +15,7 @@ class VotingWebController @Inject() (slateService: SlateService,
                                      scc: SilhouetteControllerComponents)
                                     (implicit ex: ExecutionContext) extends AbstractAuthController(scc) {
 
-  def slateVoteForm(slateID: Long) = silhouette.UserAwareAction.async { implicit request =>
+  def slateVoteForm(slateID: UUID) = silhouette.UserAwareAction.async { implicit request =>
     for {
       slateO <- slateService.slateInfo(slateID)
     } yield {
@@ -25,7 +26,7 @@ class VotingWebController @Inject() (slateService: SlateService,
     }
   }
 
-  def slateVote(slateID: Long) = silhouette.UserAwareAction.async {
+  def slateVote(slateID: UUID) = silhouette.UserAwareAction.async {
     implicit request =>
     Form(ballotMapping).bindFromRequest().fold(
       formWithErrors => {
@@ -52,23 +53,23 @@ class VotingWebController @Inject() (slateService: SlateService,
 
 
   val ballotDetailsMapping = mapping(
-    "id" -> optional(longNumber),
-    "voter" -> text,
-    "slateID" -> longNumber,
-    "anonymous" -> boolean
+    "id" -> optional(uuid),
+    "voterID" -> optional(uuid),
+    "slateID" -> uuid,
+    "anonyVoter" -> optional(text)
   )(BallotDetailsDTO.apply)(BallotDetailsDTO.unapply)
 
   val fptpMapping = mapping (
     "choices" -> seq(mapping(
-      "questionID" -> longNumber,
-      "candidateID" -> longNumber
+      "questionID" -> uuid,
+      "candidateID" -> uuid
     )(FPTPChoiceDTO.apply)(FPTPChoiceDTO.unapply))
   )(FPTPModelDTO.apply)(FPTPModelDTO.unapply)
 
   val approvalMapping = mapping(
     "choices" -> seq(seq(mapping(
-      "questionID" -> longNumber,
-      "candidateID" -> longNumber,
+      "questionID" -> uuid,
+      "candidateID" -> uuid,
       "approved" -> boolean
     )(ApprovalChoiceDTO.apply)(ApprovalChoiceDTO.unapply)))
   )(ApprovalModelDTO.apply)(ApprovalModelDTO.unapply)
@@ -76,8 +77,8 @@ class VotingWebController @Inject() (slateService: SlateService,
   val rankedMapping = mapping(
     "questions" -> seq(
       mapping("choices" -> seq(mapping(
-      "questionID" -> longNumber,
-      "candidateID" -> longNumber,
+      "questionID" -> uuid,
+      "candidateID" -> uuid,
       "rank" -> number
       )(RankedChoiceDTO.apply)(RankedChoiceDTO.unapply))
       )(RankedChoiceQuestionDTO.apply)(RankedChoiceQuestionDTO.unapply).verifying(RankedChoiceQuestionDTO.rankedValuesConstraint)
@@ -85,8 +86,8 @@ class VotingWebController @Inject() (slateService: SlateService,
 
   val rangeMapping = mapping(
     "choices" -> seq(seq(mapping(
-      "questionID" -> longNumber,
-      "candidateID" -> longNumber,
+      "questionID" -> uuid,
+      "candidateID" -> uuid,
       "score" -> number(min=1, max=10)
     )(RangeChoiceDTO.apply)(RangeChoiceDTO.unapply)))
   )(RangeModelDTO.apply)(RangeModelDTO.unapply)

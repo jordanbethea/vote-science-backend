@@ -8,15 +8,16 @@ import slick.jdbc.H2Profile.api._
 import slick.jdbc.JdbcProfile
 import models.User
 
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 class BallotRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
                                 (implicit executionContext: ExecutionContext)
   extends HasDatabaseConfigProvider[JdbcProfile] with DBTableDefinitions {
 
-  def saveBallot(ballot: BallotDTO): Future[Long] ={
+  def saveBallot(ballot: BallotDTO): Future[UUID] ={
     Console.println(s"Adding Ballot and model data to db, ballot: ${ballot.toString}, fptp: ${ballot.fptpModel.toString}")
-    val dbBallot : Ballot = Ballot(ballot.details.id.getOrElse(0), ballot.details.slateID, ballot.details.voter, ballot.details.anonymous)
+    val dbBallot : Ballot = Ballot(ballot.details.id.getOrElse(UUID.randomUUID()), ballot.details.slateID, ballot.details.voterID, ballot.details.anonVoter)
     val tx = for {
       newBallotId <- ballotsInserts += dbBallot
       _ <- { if(ballot.fptpModel.isDefined)
@@ -37,16 +38,16 @@ class BallotRepository @Inject()(protected val dbConfigProvider: DatabaseConfigP
     db.run(tx)
   }
 
-  def add(ballot: Ballot) : Future[Long] = {
+  def add(ballot: Ballot) : Future[UUID] = {
     dbConfig.db.run(ballotsInserts += ballot)
   }
 
-  def addDTO(ballot: BallotDTO) : Future[Long] = {
-    dbConfig.db.run(ballotsInserts += Ballot(ballot.details.id.getOrElse(0), ballot.details.slateID,
-      ballot.details.voter, ballot.details.anonymous))
+  def addDTO(ballot: BallotDTO) : Future[UUID] = {
+    dbConfig.db.run(ballotsInserts += Ballot(ballot.details.id.getOrElse(UUID.randomUUID()), ballot.details.slateID,
+      ballot.details.voterID, ballot.details.anonVoter))
   }
 
-  def get(id: Long): Future[Option[Ballot]] = {
+  def get(id: UUID): Future[Option[Ballot]] = {
     dbConfig.db.run(ballots.filter(_.id === id).result.headOption)
   }
 
@@ -56,9 +57,9 @@ class BallotRepository @Inject()(protected val dbConfigProvider: DatabaseConfigP
 
   def getBallotsForUser(user: User) = {
     val q = for {
-      ballotIDs <- ballots.filter(_.voter === user.userID.toString).result
+      ballotIDs <- ballots.filter(_.voterID === Option(user.userID)).result
     } yield {
-      ballotIDs.map(b => BallotDTO(BallotDetailsDTO(Option(b.id), b.voter, b.slateID, b.anonymous)))
+      ballotIDs.map(b => BallotDTO(BallotDetailsDTO(Option(b.id), b.voterID, b.slateID, None)))
     }
     db.run(q)
   }

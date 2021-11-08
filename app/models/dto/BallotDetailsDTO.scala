@@ -3,6 +3,8 @@ package models.dto
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.libs.json._
 
+import java.util.UUID
+
 case class BallotDTO(details: BallotDetailsDTO, fptpModel: Option[FPTPModelDTO] = None, approvalModel: Option[ApprovalModelDTO] = None,
                      rankedModel: Option[RankedModelDTO] = None, rangeModel: Option[RangeModelDTO] = None)
 
@@ -11,7 +13,7 @@ object BallotDTO {
   implicit val ballotReads: Reads[BallotDTO] = Json.reads[BallotDTO]
 }
 
-case class BallotDetailsDTO(id: Option[Long], voter: String, slateID: Long, anonymous: Boolean)
+case class BallotDetailsDTO(id: Option[UUID], voterID: Option[UUID], slateID: UUID, anonVoter: Option[String])
 
 object BallotDetailsDTO {
   implicit val ballotDetailsWrites: Writes[BallotDetailsDTO] = Json.writes[BallotDetailsDTO]
@@ -25,7 +27,7 @@ object FPTPModelDTO {
   implicit val fptpModelReads: Reads[FPTPModelDTO] = Json.reads[FPTPModelDTO]
 }
 
-case class FPTPChoiceDTO (questionID: Long, candidateID: Long)
+case class FPTPChoiceDTO (questionID: UUID, candidateID: UUID)
 
 object FPTPChoiceDTO {
   implicit val fptpChoiceWrites: Writes[FPTPChoiceDTO] = Json.writes[FPTPChoiceDTO]
@@ -39,7 +41,7 @@ object ApprovalModelDTO {
   implicit val approvalModelReads: Reads[ApprovalModelDTO] = Json.reads[ApprovalModelDTO]
 }
 
-case class ApprovalChoiceDTO (questionID:Long, candidateID:Long, approved:Boolean)
+case class ApprovalChoiceDTO (questionID:UUID, candidateID:UUID, approved:Boolean)
 
 object ApprovalChoiceDTO{
   implicit val approvalChoiceWrites: Writes[ApprovalChoiceDTO] = Json.writes[ApprovalChoiceDTO]
@@ -62,7 +64,7 @@ object RankedChoiceQuestionDTO {
   val rankedValuesConstraint: Constraint[RankedChoiceQuestionDTO] = Constraint("constraints.rankedCheck")({
     qChoices =>
       def checkDuplicates(remainingChoices: Seq[RankedChoiceDTO],
-                          ranksUsed: Set[Int], candidatesUsed: Set[Long],
+                          ranksUsed: Set[Int], candidatesUsed: Set[UUID],
                           accruedErrors: Seq[ValidationError]): Seq[ValidationError] = {
         if (remainingChoices == Nil) {
           val expectedRanks = 1 to qChoices.choices.size
@@ -105,7 +107,7 @@ object RankedChoiceQuestionDTO {
   })
 }
 
-case class RankedChoiceDTO (questionID:Long, candidateID:Long, rank:Int)
+case class RankedChoiceDTO (questionID:UUID, candidateID:UUID, rank:Int)
 
 object RankedChoiceDTO {
   implicit val rankedChoiceWrites: Writes[RankedChoiceDTO] = Json.writes[RankedChoiceDTO]
@@ -119,7 +121,7 @@ object RangeModelDTO {
   implicit val rangeModelReads: Reads[RangeModelDTO] = Json.reads[RangeModelDTO]
 }
 
-case class RangeChoiceDTO (questionID:Long, candidateID:Long, score:Int)
+case class RangeChoiceDTO (questionID:UUID, candidateID:UUID, score:Int)
 
 object RangeChoiceDTO {
   implicit val rangeChoiceWrites: Writes[RangeChoiceDTO] = Json.writes[RangeChoiceDTO]

@@ -7,6 +7,7 @@ import play.api.data.Forms._
 import play.api.i18n.Messages
 import services.{ResultsService, SlateService}
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -16,7 +17,7 @@ class CreationWebController @Inject()(slateService: SlateService,
                                      (implicit ex: ExecutionContext) extends AbstractAuthController(scc) {
 
 
-  def slateInfo(slateID: Long) = silhouette.UserAwareAction.async { implicit request =>
+  def slateInfo(slateID: UUID) = silhouette.UserAwareAction.async { implicit request =>
 
     Console.println(s"Controller - slate info request: ${request.identity}")
     for {
@@ -54,19 +55,16 @@ Console.println(s"Submitted slate: ${slateData.toString}")
 
   val slateForm = Form(
     mapping(
-      "id" -> optional(longNumber),
       "title" -> nonEmptyText(maxLength=250),
-      "creator" -> nonEmptyText(maxLength=250),
-      "anonymous" -> boolean,
+      "creatorID" -> optional(uuid),
+      "creatorText" -> optional(text(maxLength=250)),
       "questions" -> seq(mapping(
-        "id" -> optional(longNumber),
         "text" -> text,
         "candidates" -> seq(mapping(
-          "id" -> optional(longNumber),
           "name" -> text,
           "description" -> text
-        )(CandidateDTO.apply)(CandidateDTO.unapply))
-      )(QuestionDTO.apply)(QuestionDTO.unapply))
-    )(SlateSaveDTO.apply)(SlateSaveDTO.unapply)
+        )(NewCandidateDTO.apply)(NewCandidateDTO.unapply))
+      )(NewQuestionDTO.apply)(NewQuestionDTO.unapply))
+    )(SlateSaveNewDTO.apply)(SlateSaveNewDTO.unapply)
   )
 }

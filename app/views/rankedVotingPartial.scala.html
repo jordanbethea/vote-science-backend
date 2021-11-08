@@ -1,8 +1,9 @@
 @import models.dto.BallotDTO
 @import models.dto.SlateLoadDTO
-@import models.dto.QuestionDTO
+@import models.dto.NewQuestionDTO
 @import views.RankedVotingPartialHelper._
 
+@import models.dto.LoadQuestionDTO
 @(ballotForm: Form[BallotDTO], slate: SlateLoadDTO)(implicit messages: Messages, fieldConstructor: b4.B4FieldConstructor)
 @for(question <- slate.questions.zip((0 to slate.questions.length).toList)) {
     <div>
@@ -10,7 +11,7 @@
     </div>
 }
 
-@multifieldDropdownRanking(ballotForm: Form[BallotDTO], question: QuestionDTO, questionCount:Int) = {
+@multifieldDropdownRanking(ballotForm: Form[BallotDTO], question: LoadQuestionDTO, questionCount:Int) = {
     @b4.multifield(fields = createFields(ballotForm, question, questionCount): _*)(
         Seq(Symbol("_error") -> getErrorForQuestion(ballotForm, questionCount, slate), Symbol("_label") -> question.text),
         createFieldOptions(question)) { implicit cfc =>
@@ -19,10 +20,10 @@
             <div class="col-1 text-center"><label class="col-form-label">@rank</label></div>
             <div class="col-11">@b4.select(
                 field=ballotForm(s"rankedModel.questions[$questionCount].choices[$rank].candidateID"),
-                options = ("" -> "No Preference") +: question.candidates.map(c => c.id.getOrElse(0).toString -> c.name),
+                options = ("" -> "No Preference") +: question.candidates.map(c => c.id.toString -> c.name),
                 Symbol("_label") -> s"$rank"
             )</div>
-            @b4.hidden(ballotForm(s"rankedModel.questions[$questionCount].choices[$rank].questionID"), Symbol("value") -> question.id.getOrElse(0))
+            @b4.hidden(ballotForm(s"rankedModel.questions[$questionCount].choices[$rank].questionID"), Symbol("value") -> question.id)
             @b4.hidden(ballotForm(s"rankedModel.questions[$questionCount].choices[$rank].rank"), Symbol("value") -> rank)
         }
             </div>

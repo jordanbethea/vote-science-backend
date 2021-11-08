@@ -1,7 +1,7 @@
 package models.db
 
 import framework.DatabaseTemplate
-import models.dto.{CandidateDTO, QuestionDTO, SlateDTO, SlateSaveDTO}
+import models.dto.{NewCandidateDTO, NewQuestionDTO, SlateDTO, SlateSaveNewDTO}
 import org.scalatest.Suite
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite

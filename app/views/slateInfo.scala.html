@@ -1,5 +1,6 @@
 @import models.dto.SlateLoadDTO
 @import models.dto.votingResults.SlateResultsDTO
+@import java.util.UUID
 @(slateOption: Option[SlateLoadDTO], results: SlateResultsDTO, user: Option[models.User] = None)(implicit request: RequestHeader, messages: Messages)
 
 @title = @{if(slateOption.isDefined){ messages("slate.info.pageTitle", slateOption.get.title)
@@ -16,15 +17,11 @@
 
                 <h3>@messages("slate.info.fptpResults")</h3>
             <div class="row" id="fptpResults">
-                @* <span class="col-2">
-                    <span class="ballotNum">@results.fptpResults.totalBallots</span>
-                    @messages("slate.info.totalBallots")
-                </span> *@
                 <span class="col-10">
                     <p>@messages("slate.info.questions")</p>
                     @for(question <- slate.questions) {
                         <h6>@question.text</h6>
-                        <canvas id="canvasID_fptp_@(s"${question.id.get}")" width="600" height="200">
+                        <canvas id="canvasID_fptp_@(s"${question.id}")" width="600" height="200">
                         @for(candidate <- question.candidates) {
                             <div>
                                 <span>@candidate.name - @candidate.description</span>
@@ -38,12 +35,10 @@
 
           <div id="approvalResults">
               <h3>@messages("slate.info.approvalResults")</h3>
-              @*<p>@messages("slate.info.totalBallots") @results.approvalResults.totalBallots</p>
-              <p>@messages("slate.info.questions")</p> *@
               <span class="col-10">
                   @for(question <- slate.questions) {
                       <h6>@question.text</h6>
-                      <canvas id="canvasID_approval_@(s"${question.id.get}")" width="600" height="200">
+                      <canvas id="canvasID_approval_@(s"${question.id}")" width="600" height="200">
                           @for(candidate <- question.candidates) {
                               <div>
                                   <span>@candidate.name - @candidate.description</span>
@@ -57,35 +52,22 @@
 
           <div id="rankedResults">
               <h3>@messages("slate.info.rankedResults")</h3>
-              @*<p>@messages("slate.info.questions")</p>*@
               <span class="col-10">
               @for(question <- slate.questions){
                   <h4>@question.text</h4>
                   <h6>Borda Score</h6>
-                  <canvas id="canvasID_rankBorda_@(s"${question.id.get}")" width="600" height="200"></canvas>
+                  <canvas id="canvasID_rankBorda_@(s"${question.id}")" width="600" height="200"></canvas>
                   <h6>Dowdal Score</h6>
-                  <canvas id="canvasID_rankDowdal_@(s"${question.id.get}")" width="600" height="200"></canvas>
-                  @* @for(candidate <- question.candidates) {
-                      <h5>@candidate.name</h5>
-                      @for(rank <- results.rankedResults.getOrderedRanksForCandidates(question.id.getOrElse(0), candidate.id.getOrElse(0))){
-                          <p>@messages("slate.info.totalsPerRank", rank.rankChosen, rank.totalVotes)</p>
-                      }
-                      <p>@messages("slate.info.bordaScore", results.rankedResults.getBordaScoreForCandidate(question.id.getOrElse(0), candidate.id.getOrElse(0)))</p>
-                      <p>@messages("slate.info.dowdallScore", results.rankedResults.getDowdallScoreForCandidate(question.id.getOrElse(0), candidate.id.getOrElse(0)))</p>
-
-                  } *@
+                  <canvas id="canvasID_rankDowdal_@(s"${question.id}")" width="600" height="200"></canvas>
               }
               </span>
               <h3>@messages("slate.info.IRVResults")</h3>
               @for(question <- slate.questions){
                   <h4>@{question.text}</h4>
-                  @for(result <- results.irvResult.singleQuestionIRVResults(question.id.getOrElse(0))){
+                  @for(result <- results.irvResult.singleQuestionIRVResults(question.id)){
                       @for(roundResult <- result.roundResults){
                           <p>@messages("slate.info.irvRoundTotal", roundResult.round, roundResult.winner.getOrElse(None))</p>
-                          <canvas id="canvasID_irv_@(s"${question.id.get}")_@(s"${roundResult.round}")" width="600" height="200"></canvas>
-                          @* @for(voteTotal <- roundResult.voteTotals){
-                              <p>@messages("slate.info.irvCandidateTotal", voteTotal.candidateID, voteTotal.voteCount, voteTotal.percent)</p>
-                          } *@
+                          <canvas id="canvasID_irv_@(s"${question.id}")_@(s"${roundResult.round}")" width="600" height="200"></canvas>
                           @if(roundResult.winner.isEmpty){ <p>@messages("slate.info.irvEliminated", roundResult.eliminated)</p> }
                       }
                   }
@@ -96,43 +78,36 @@
               <h3>@messages("slate.info.rangeResults")</h3>
               @for(question <- slate.questions){
                   <h4>@{question.text}</h4>
-                  <canvas id="canvasID_range_@(s"${question.id.get}")" width="600" height="200"></canvas>
-                  @* @for(candidate <- question.candidates){
-                      <h5>@candidate.name</h5>
-                      <p>@messages("slate.info.candidateTotal")
-                        <span>@{results.rangeResult.getScore(question.id.getOrElse(0), candidate.id.getOrElse(0))}</span>
-                      </p>
-                      <h6>@messages("slate.info.rawRangeResults")</h6>
-                      @for(result <- results.rangeResult.getRawResults(question.id.getOrElse(0), candidate.id.getOrElse(0))){
-                          <p>@messages("slate.info.scoreChosen", result.score, result.votes)</p>
-                      }
-                  } *@
+                  <canvas id="canvasID_range_@(s"${question.id}")" width="600" height="200"></canvas>
               }
 
           </div>
         </div>
+
         <script type="text/javascript">
             $(document).ready(function() {
             @for(question <- slate.questions){
-                @Html(s"const chart_fptp_${question.id.get} = $$('#canvasID_fptp_${question.id.get}');")
-                @Html(s"new Chart(chart_fptp_${question.id.get}, ${results.fptpResults.getChartJsonAsString(question.id.get, Option(slate))});")
+                @defining(question.id.toString().replaceAll("-", "")) { qidName =>
+                    @Html(s"const chart_fptp_${qidName} = $$('#canvasID_fptp_${question.id}');")
+                    @Html(s"new Chart(chart_fptp_${qidName}, ${results.fptpResults.getChartJsonAsString(question.id, Option(slate))});")
 
-                @Html(s"const chart_approval_${question.id.get} = $$('#canvasID_approval_${question.id.get}');")
-                @Html(s"new Chart(chart_approval_${question.id.get}, ${results.approvalResults.getChartJsonAsString(question.id.get, Option(slate))});")
+                    @Html(s"const chart_approval_${qidName} = $$('#canvasID_approval_${question.id}');")
+                    @Html(s"new Chart(chart_approval_${qidName}, ${results.approvalResults.getChartJsonAsString(question.id, Option(slate))});")
 
-                @Html(s"const chart_rankDowdal_${question.id.get} = $$('#canvasID_rankDowdal_${question.id.get}');")
-                @Html(s"new Chart(chart_rankDowdal_${question.id.get}, ${results.rankedResults.getDowdalChartJson(question.id.get, Option(slate))});")
+                    @Html(s"const chart_rankDowdal_${qidName} = $$('#canvasID_rankDowdal_${question.id}');")
+                    @Html(s"new Chart(chart_rankDowdal_${qidName}, ${results.rankedResults.getDowdalChartJson(question.id, Option(slate))});")
 
-                @Html(s"const chart_rankBorda_${question.id.get} = $$('#canvasID_rankBorda_${question.id.get}');")
-                @Html(s"new Chart(chart_rankBorda_${question.id.get}, ${results.rankedResults.getBordaChartJson(question.id.get, Option(slate))});")
+                    @Html(s"const chart_rankBorda_${qidName} = $$('#canvasID_rankBorda_${question.id}');")
+                    @Html(s"new Chart(chart_rankBorda_${qidName}, ${results.rankedResults.getBordaChartJson(question.id, Option(slate))});")
 
-                @for(roundRes <- results.irvResult.singleQuestionIRVResults(question.id.getOrElse(0)).flatMap(r => Option(r.roundResults)).getOrElse(Nil)){
-                @Html(s"const chart_irv_${question.id.get}_${roundRes.round} = $$('#canvasID_irv_${question.id.get}_${roundRes.round}');")
-                @Html(s"new Chart(chart_irv_${question.id.get}_${roundRes.round}, ${roundRes.getChartJsonForRound(roundRes.round, Option(slate))});")
+                    @for(roundRes <- results.irvResult.singleQuestionRoundResults(question.id)){
+                        @Html(s"const chart_irv_${qidName}_${roundRes.round} = $$('#canvasID_irv_${question.id}_${roundRes.round}');")
+                        @Html(s"new Chart(chart_irv_${qidName}_${roundRes.round}, ${roundRes.getChartJsonForRound(roundRes.round, Option(slate))});")
+                    }
+
+                    @Html(s"const chart_range_${qidName} = $$('#canvasID_range_${question.id}');")
+                    @Html(s"new Chart(chart_range_${qidName}, ${results.rangeResult.getChartJsonInner(question.id, Option(slate))});")
                 }
-
-                @Html(s"const chart_range_${question.id.get} = $$('#canvasID_range_${question.id.get}');")
-                @Html(s"new Chart(chart_range_${question.id.get}, ${results.rangeResult.getChartJsonInner(question.id.get, Option(slate))});")
             }
             });
         </script>

@@ -13,16 +13,16 @@ GET     /createSlate                controllers.CreationWebController.createSlat
 POST    /createSlate                controllers.CreationWebController.createSlate()
 
 # slate info page
-GET     /slates/:slateID             controllers.CreationWebController.slateInfo(slateID: Long)
+GET     /slates/:slateID             controllers.CreationWebController.slateInfo(slateID: java.util.UUID)
 
 # list of all slates
 GET     /slateList                  controllers.CreationWebController.slateList()
 
 # load page for slate voting
-GET     /slates/:slateID/vote        controllers.VotingWebController.slateVoteForm(slateID: Long)
+GET     /slates/:slateID/vote        controllers.VotingWebController.slateVoteForm(slateID: java.util.UUID)
 
 # submit vote for slate
-POST    /slates/:slateID/vote        controllers.VotingWebController.slateVote(slateID: Long)
+POST    /slates/:slateID/vote        controllers.VotingWebController.slateVote(slateID: java.util.UUID)
 
 GET     /signOut                     controllers.HomeController.signOut
 

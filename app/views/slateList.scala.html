@@ -5,7 +5,7 @@
     @for(slate <- slates) {
         <li class="list-group-item">
             <a href=@{
-                s"slates/${slate.id.getOrElse(0)}"
+                s"slates/${slate.id}"
             }>@(slate.title)</a>
             @messages("slateList.createdBy")
             @{ slate.creator match {
@@ -13,7 +13,7 @@
                     case Right(user) => user.fullName
                 }
             }
-            <a href=@{s"slates/${slate.id.getOrElse(0)}/vote"}>@messages("slateList.voteNow")</a>
+            <a href=@{s"slates/${slate.id}/vote"}>@messages("slateList.voteNow")</a>
         </li>
     }
     </ul>

@@ -6,6 +6,7 @@ import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.H2Profile.api._
 
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 class VotingResultsRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
@@ -14,7 +15,7 @@ class VotingResultsRepository @Inject()(protected val dbConfigProvider: Database
 
   //TODO - update this to use slick aggregations? Not sure if it's worth it yet
   //Simple version first
-  def getSlateResults(slateID: Long):Future[SlateResultsDTO] = {
+  def getSlateResults(slateID: UUID):Future[SlateResultsDTO] = {
     val query = for {
       ballotIDs <- ballots.filter(_.slateID === slateID).map(_.id).result
       fptpResultsQ <- fptpResults.filter(_.ballotID.inSet(ballotIDs)).result
@@ -74,8 +75,8 @@ class VotingResultsRepository @Inject()(protected val dbConfigProvider: Database
   }
 
   private def getIRVModel(rankedResults: Seq[RankedChoice], questionInfo: Seq[(Question, Candidate)], totalBallots:Int): RankedChoiceIRVData = {
-    val allQuestionIDs: Seq[Long] = questionInfo.distinctBy(_._1.id).map(_._1.id)
-    val questionCandidateCountMap: Map[Long, Seq[Long]] = allQuestionIDs.map(id => (id -> questionInfo.filter(_._1.id == id).map(_._2.id))).toMap
+    val allQuestionIDs: Seq[UUID] = questionInfo.distinctBy(_._1.id).map(_._1.id)
+    val questionCandidateCountMap: Map[UUID, Seq[UUID]] = allQuestionIDs.map(id => (id -> questionInfo.filter(_._1.id == id).map(_._2.id))).toMap
 
     val questionIDs = rankedResults.map(_.questionID).distinct
     val choices = for(qid <- questionIDs) yield {
