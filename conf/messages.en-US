@@ -47,6 +47,8 @@ voting.approvalModel=Approval Voting
 voting.rankedModel=Ranked Choice Voting
 voting.rangeModel=Range Voting
 voting.error.rankingDuplicateCandidate=This question contains duplicates of candidate {0}
+voting.error.rankingDuplicateRank=This question contains duplicates of rank {0}
+voting.error.rankingExcessRank=This question had {0} ranks submitted, but submitted rank {1} is outside that range.
 
 slate.info.pageTitle=Info for slate {0}
 slate.info.pageTitleMissing=Not a valid state!

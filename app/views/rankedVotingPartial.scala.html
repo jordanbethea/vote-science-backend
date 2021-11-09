@@ -29,20 +29,3 @@
             </div>
     }
 }
-@*
-@multifieldRadioRanking(ballotForm: Form[BallotDTO], question: QuestionDTO, questionCount: Int) = {
-    @b4.multifield(fields = createFields(ballotForm, question, questionCount): _*)(Nil, createFieldOptions(question)){ implicit cfc =>
-        <div class="row">
-        @for(rankSet <- rankDisplayCreator(question.candidates.length)){
-            <div class="col-auto">
-            @b4.radio(ballotForm(s"rankedModel.choices[$questionCount][${rankSet._1}].candidateID"),
-                options = radioOptionsHelper(question, rankSet._2),
-                Symbol("_class") -> "",
-                Symbol("_label") -> s"Rank ${rankSet._1}")
-            @b4.hidden(ballotForm(s"rankedModel.choices[$questionCount][${rankSet._1}].questionID"), Symbol("value") -> question.id.getOrElse(0))
-            @b4.hidden(ballotForm(s"rankedModel.choices[$questionCount][${rankSet._1}].rank"), Symbol("value") -> rankSet._1)
-            </div>
-        }
-        </div>
-    }
-} *@

@@ -5,6 +5,8 @@ import models.dto._
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 
+import java.util.UUID
+
 class BallotTest extends PlaySpec with DatabaseTemplate with GuiceOneAppPerSuite with SampleSlates {
 
   override def fakeApplication() = baseApplication
@@ -13,7 +15,7 @@ class BallotTest extends PlaySpec with DatabaseTemplate with GuiceOneAppPerSuite
   val ballots = injector.instanceOf[BallotRepository]
   val slates = injector.instanceOf[SlateRepository]
 
-  val ballotStandaloneInsert = (sID: Long) => BallotDTO(BallotDetailsDTO(None, "The Phantom Stranger", sID, false))
+  val ballotStandaloneInsert = (sID: UUID) => BallotDTO(BallotDetailsDTO(None, None, sID, Option("The Phantom Stranger")))
 
   "Ballots table schema" must {
     "create without error" in {

@@ -72,24 +72,16 @@ object RankedChoiceQuestionDTO {
             rank <- ranksUsed
             if !expectedRanks.contains(rank))
           yield
-            ValidationError(s"Question ${qChoices.choices.head.questionID} had ${qChoices.choices.size} ranks submitted. The submitted rank ${rank} is outside of that range.")
-
-          /* val missingRankErrors = for(  //superfluous?
-              rank <- expectedRanks
-              if !ranksUsed.contains(rank))
-              yield
-                ValidationError(s"Question ${qChoices.head.questionID} had ${ranksUsed.size} ranks submitted. The expected rank ${rank} is missing.") */
+            ValidationError("voting.error.rankingExcessRank", qChoices.choices.size, rank)
 
           unexpectedRankErrors.toSeq ++ accruedErrors
         }
         else {
           val duplicateRank = if (ranksUsed.contains(remainingChoices.head.rank)) {
-            Option(ValidationError(s"Question ${0} contains duplicate rank ${1}",
-              remainingChoices.head.questionID, remainingChoices.head.rank))
+            Option(ValidationError("voting.error.rankingDuplicateRank", remainingChoices.head.rank))
           } else None
           val duplicateCandidate = if (candidatesUsed.contains(remainingChoices.head.candidateID)) {
-            Option(ValidationError("voting.error.rankingDuplicateCandidate",
-              remainingChoices.head.candidateID))
+            Option(ValidationError("voting.error.rankingDuplicateCandidate", remainingChoices.head.candidateID))
           } else None
           val updatedErrors = accruedErrors ++ duplicateRank ++ duplicateCandidate
           checkDuplicates(remainingChoices.tail, ranksUsed + remainingChoices.head.rank,
