@@ -3,15 +3,24 @@ package models.dto
 import play.api.libs.json._
 import models.User
 
+import java.util.UUID
+
 /**
   * Nested version of Slate data classes, for converting from json.
   */
 /* For taking in new slates and then saving them to db */
-case class SlateSaveDTO(id: Option[Long], title: String, creator: String, anonymous: Boolean,
-                        questions: Seq[QuestionDTO])
+case class SlateSaveNewDTO(title: String, creatorID: Option[UUID], anonCreator: Option[String],
+                           questions: Seq[NewQuestionDTO])
 
-case class SlateLoadDTO (id: Option[Long], title: String, creator: Either[String, User],
-                     questions: Seq[QuestionDTO]) {
+case class NewQuestionDTO(text: String, candidates: Seq[NewCandidateDTO])
+
+case class NewCandidateDTO(name: String, description: String)
+
+
+
+/* For loading slates from the db and using them to populate pages and other things */
+case class SlateLoadDTO (id: UUID, title: String, creator: Either[String, User],
+                     questions: Seq[LoadQuestionDTO]) {
   def creatorName():String = {
     Console.println(s"creator name: ${creator}")
     creator match {
@@ -20,28 +29,30 @@ case class SlateLoadDTO (id: Option[Long], title: String, creator: Either[String
     }
   }
 
-  def candidateName(candidateID:Long):Option[String] = {
-    questions.flatMap(_.candidates).find(_.id.getOrElse(0) == candidateID).flatMap(s => Option(s.name))
+  def candidateName(candidateID:UUID):Option[String] = {
+    questions.flatMap(_.candidates).find(_.id == candidateID).flatMap(s => Option(s.name))
   }
 }
 
-case class QuestionDTO  (id: Option[Long], text: String, candidates: Seq[CandidateDTO])
+case class LoadQuestionDTO(id: UUID, text: String, candidates: Seq[LoadCandidateDTO])
 
-case class CandidateDTO (id: Option[Long], name: String, description: String)
+case class LoadCandidateDTO(id: UUID, name: String, description: String)
+
+
 
 
 
 object SlateDTO {
 
   //reads
-  implicit val candidateReads: Reads[CandidateDTO] = Json.reads[CandidateDTO]
-  implicit val questionReads: Reads[QuestionDTO] = Json.reads[QuestionDTO]
-  implicit val slateSaveReads: Reads[SlateSaveDTO] = Json.reads[SlateSaveDTO]
+  implicit val candidateReads: Reads[NewCandidateDTO] = Json.reads[NewCandidateDTO]
+  implicit val questionReads: Reads[NewQuestionDTO] = Json.reads[NewQuestionDTO]
+  implicit val slateSaveReads: Reads[SlateSaveNewDTO] = Json.reads[SlateSaveNewDTO]
   //implicit val slateLoadReads: Reads[SlateLoadDTO] = Json.reads[SlateLoadDTO]
 
   //writes
-  implicit val candidateWrites: Writes[CandidateDTO] = Json.writes[CandidateDTO]
-  implicit val questionWrites: Writes[QuestionDTO] = Json.writes[QuestionDTO]
-  implicit val slateSaveWrites: Writes[SlateSaveDTO] = Json.writes[SlateSaveDTO]
+  implicit val candidateWrites: Writes[NewCandidateDTO] = Json.writes[NewCandidateDTO]
+  implicit val questionWrites: Writes[NewQuestionDTO] = Json.writes[NewQuestionDTO]
+  implicit val slateSaveWrites: Writes[SlateSaveNewDTO] = Json.writes[SlateSaveNewDTO]
   //implicit val slateLoadWrites: Writes[SlateLoadDTO] = Json.writes[SlateLoadDTO]
 }

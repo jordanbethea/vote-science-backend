@@ -9,15 +9,15 @@
 
 @main("Vote on this slate", user) {
     <h2>@(slate.title)</h2>
-    @b4.form(action = routes.VotingWebController.slateVote(slate.id.getOrElse(0))) {
+    @b4.form(action = routes.VotingWebController.slateVote(slate.id)) {
         @CSRF.formField
 
-        <input type="hidden" name="@(s"details.slateID")" value="@(s"${slate.id.getOrElse(0)}")" />
+        <input type="hidden" name="@(s"details.slateID")" value="@(s"${slate.id.toString()}")" />
         @if(user.isEmpty) {
             @b4.text(ballotForm("details.voter"), Symbol("_label") -> "Voter Name")
             @b4.hidden(ballotForm("details.anonymous"), Symbol("value") -> true)
         } else {
-            @b4.hidden(ballotForm("details.voter"), Symbol("value") -> user.get.userID.toString)
+            @b4.hidden(ballotForm("details.voter"), Symbol("value") -> user.get.userID.toString())
             @b4.hidden(ballotForm("details.anonymous"), Symbol("value") -> false)
         }
 
@@ -27,10 +27,10 @@
             <div>
                 @b4.select(
                     field=ballotForm(s"fptpModel.choices[${question._2}].candidateID"),
-                    options=question._1.candidates.map(c => c.id.getOrElse(0).toString -> c.name),
+                    options=question._1.candidates.map(c => c.id.toString() -> c.name),
                     Symbol("_label") -> question._1.text
                 )
-                <input type="hidden" name="@(s"fptpModel.choices[${question._2}].questionID")" value="@(s"${question._1.id.getOrElse(0)}")" />
+                <input type="hidden" name="@(s"fptpModel.choices[${question._2}].questionID")" value="@(s"${question._1.id.toString()}")" />
             </div>
         }
 
@@ -44,8 +44,8 @@
                     field=ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].approved"),
                     Symbol("_label") -> candidate._1.name
                 )
-                @b4.hidden(ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].questionID"), Symbol("value") -> question._1.id.getOrElse(0))
-                @b4.hidden(ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].candidateID"), Symbol("value") -> candidate._1.id.getOrElse(0))
+                @b4.hidden(ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].questionID"), Symbol("value") -> question._1.id)
+                @b4.hidden(ballotForm(s"approvalModel.choices[${question._2}][${candidate._2}].candidateID"), Symbol("value") -> candidate._1.id)
             }
             </div>
         }
@@ -61,8 +61,8 @@
                 <h3>@question._1.text</h3>
                 @for(candidate <- question._1.candidates.zip((0 to question._1.candidates.length).toList)){
                     @b4.text(ballotForm(s"rangeModel.choices[${question._2}][${candidate._2}].score"), Symbol("_label") -> candidate._1.name)
-                    @b4.hidden(ballotForm(s"rangeModel.choices[${question._2}][${candidate._2}].questionID"), Symbol("value") -> question._1.id.getOrElse(0))
-                    @b4.hidden(ballotForm(s"rangeModel.choices[${question._2}][${candidate._2}].candidateID"), Symbol("value") -> candidate._1.id.getOrElse(0))
+                    @b4.hidden(ballotForm(s"rangeModel.choices[${question._2}][${candidate._2}].questionID"), Symbol("value") -> question._1.id)
+                    @b4.hidden(ballotForm(s"rangeModel.choices[${question._2}][${candidate._2}].candidateID"), Symbol("value") -> candidate._1.id)
                 }
             </div>
         }

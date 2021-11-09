@@ -1,31 +1,31 @@
 package models.db
 
-import models.dto.{CandidateDTO, QuestionDTO, SlateSaveDTO}
+import models.dto.{NewCandidateDTO, NewQuestionDTO, SlateSaveNewDTO}
 
 trait SampleSlates {
-  val slateDTOInsert:SlateSaveDTO = SlateSaveDTO(None, "Slate 1", "Slate Maker", true, Seq(
-    QuestionDTO(None, "How you doing?", Seq(
-      CandidateDTO(None, "Good", "Actually it should be well"),
-      CandidateDTO(None, "Bad", "Poorly, actually"))),
-    QuestionDTO(None, "It's Pie time: ", Seq(
-      CandidateDTO(None, "Blueberry", "Good choice"),
-      CandidateDTO(None, "Sweet Potato", "Best choice")))
+  val slateDTOInsert:SlateSaveNewDTO = SlateSaveNewDTO("Slate 1", None, Option("Slate Maker"), Seq(
+    NewQuestionDTO("How you doing?", Seq(
+      NewCandidateDTO("Good", "Actually it should be well"),
+      NewCandidateDTO("Bad", "Poorly, actually"))),
+    NewQuestionDTO("It's Pie time: ", Seq(
+      NewCandidateDTO("Blueberry", "Good choice"),
+      NewCandidateDTO("Sweet Potato", "Best choice")))
   ))
 
-  val pizzaSlate = SlateSaveDTO(None, "Questions about pizza", "Pizza Fan", true, Seq(
-    QuestionDTO(None, "How many pepperonis go on a pizza?", Seq(
-      CandidateDTO(None, "0", "I don't like pepperoni"),
-      CandidateDTO(None, "1", "Aesthetically Pleasing"),
-      CandidateDTO(None, "2", "Symmetry"),
-      CandidateDTO(None, "3", "Low in saturated fat"),
-      CandidateDTO(None, "5", "Can appreciate each one"),
-      CandidateDTO(None, "10", "An even spread"),
-      CandidateDTO(None, "20", "Just pile them up!!")
+  val pizzaSlate = SlateSaveNewDTO("Questions about pizza", None, Option("Pizza Fan"), Seq(
+    NewQuestionDTO("How many pepperonis go on a pizza?", Seq(
+      NewCandidateDTO("0", "I don't like pepperoni"),
+      NewCandidateDTO("1", "Aesthetically Pleasing"),
+      NewCandidateDTO("2", "Symmetry"),
+      NewCandidateDTO("3", "Low in saturated fat"),
+      NewCandidateDTO("5", "Can appreciate each one"),
+      NewCandidateDTO("10", "An even spread"),
+      NewCandidateDTO("20", "Just pile them up!!")
     )),
-    QuestionDTO(None, "Hawaiian pizza ok?", Seq(
-      CandidateDTO(None, "Yes", ""),
-      CandidateDTO(None, "No", ""),
-      CandidateDTO(None, "Only in Hawaii", "")
+    NewQuestionDTO("Hawaiian pizza ok?", Seq(
+      NewCandidateDTO("Yes", ""),
+      NewCandidateDTO("No", ""),
+      NewCandidateDTO("Only in Hawaii", "")
     ))
   ))
 }

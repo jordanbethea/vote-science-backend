@@ -3,13 +3,15 @@ package models.dto.votingResults
 import models.dto.SlateLoadDTO
 import play.api.libs.json._
 
-case class NonscoredResultsDTO(totalBallots:Int, totalCounts:Map[Long, NonscoredQuestionResult]){
-  def getCountForCandidate(questionID: Option[Long], candidateID:Option[Long]):Int = {
-    try{ totalCounts(questionID.get).candidateCounts(candidateID.get).totalVotes}
+import java.util.UUID
+
+case class NonscoredResultsDTO(totalBallots:Int, totalCounts:Map[UUID, NonscoredQuestionResult]){
+  def getCountForCandidate(questionID: UUID, candidateID:UUID):Int = {
+    try{ totalCounts(questionID).candidateCounts(candidateID).totalVotes}
     catch { case e: NoSuchElementException => 0 }
   }
 
-  def getAllCountsForQuestion(questionID: Long): Seq[(Long, Int)] = {
+  def getAllCountsForQuestion(questionID: UUID): Seq[(UUID, Int)] = {
     totalCounts.get(questionID).flatMap(s => Option(s.candidateCounts.toSeq.map {
       c =>
         (c._2.candidateID, c._2.totalVotes)
@@ -24,7 +26,7 @@ case class NonscoredResultsDTO(totalBallots:Int, totalCounts:Map[Long, Nonscored
     )
   )
 
-  def getChartJsonForQuestion(questionID:Long, slate:Option[SlateLoadDTO] = None):JsValue = {
+  def getChartJsonForQuestion(questionID:UUID, slate:Option[SlateLoadDTO] = None):JsValue = {
     val counts = getAllCountsForQuestion(questionID)
     val data = Json.obj(
       "data" -> Json.obj(
@@ -34,7 +36,7 @@ case class NonscoredResultsDTO(totalBallots:Int, totalCounts:Map[Long, Nonscored
             s <- slate
             n <- s.candidateName(q._1)
           } yield JsString(n)
-          name.getOrElse(JsNumber(q._1))
+          name.getOrElse(JsString(q._1.toString))
       }),
       "datasets" -> Json.arr(
         Json.obj(
@@ -46,9 +48,9 @@ case class NonscoredResultsDTO(totalBallots:Int, totalCounts:Map[Long, Nonscored
     baseChartObject ++ data
   }
 
-  def getChartJsonAsString(questionID:Long, slate:Option[SlateLoadDTO]=None):String = {
+  def getChartJsonAsString(questionID:UUID, slate:Option[SlateLoadDTO]=None):String = {
     Json.stringify(getChartJsonForQuestion(questionID, slate))
   }
 }
-case class NonscoredQuestionResult(questionID:Long, candidateCounts:Map[Long, NonscoredCandidateResult])
-case class NonscoredCandidateResult(candidateID:Long, totalVotes:Int)
+case class NonscoredQuestionResult(questionID:UUID, candidateCounts:Map[UUID, NonscoredCandidateResult])
+case class NonscoredCandidateResult(candidateID:UUID, totalVotes:Int)

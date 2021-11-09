@@ -6,6 +6,7 @@ import models.dto.{BallotDTO, BallotDetailsDTO, FPTPModelDTO}
 import play.api.libs.json.{JsResult, Json, _}
 import play.api.mvc.{AbstractController, ControllerComponents}
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 /**
@@ -22,7 +23,7 @@ class VotingController @Inject()(slatesRepo: SlateRepository, ballotRepo: Ballot
                                  cc: ControllerComponents)
 (implicit ex: ExecutionContext) extends AbstractController(cc){
 
-  def loadBallot(ballotID: Long) = Action.async {
+  def loadBallot(ballotID: UUID) = Action.async {
     for {
       slate <- slatesRepo.getSingleSlate(ballotID)
     } yield {

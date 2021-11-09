@@ -5,12 +5,13 @@ import models.User
 import models.db.BallotRepository
 import models.dto.BallotDTO
 
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 class BallotServiceImpl @Inject() (ballotRepo: BallotRepository) (implicit val ExecutionContext: ExecutionContext)
   extends BallotService {
 
-  override def saveBallot(ballot: BallotDTO): Future[Long] = {
+  override def saveBallot(ballot: BallotDTO): Future[UUID] = {
     ballotRepo.saveBallot(ballot)
   }
 

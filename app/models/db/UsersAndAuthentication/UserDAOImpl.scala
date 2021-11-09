@@ -30,7 +30,7 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
     } yield dbUser
     db.run(userQuery.result.headOption).map { dbUserOption =>
       dbUserOption.map { user =>
-        User(UUID.fromString(user.userID), loginInfo, user.firstName, user.lastName, user.fullName,
+        User(user.userID, loginInfo, user.firstName, user.lastName, user.fullName,
           user.email, user.avatarURL, user.emailVerified)
       }
     }
@@ -44,7 +44,7 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
    */
   def find(userID: UUID) = {
     val query = for {
-      dbUser <- slickUsers.filter(_.id === userID.toString)
+      dbUser <- slickUsers.filter(_.id === userID)
       dbUserLoginInfo <- slickUserLoginInfos.filter(_.userID === dbUser.id)
       dbLoginInfo <- slickLoginInfos.filter(_.id === dbUserLoginInfo.loginInfoId)
     } yield (dbUser, dbLoginInfo)
@@ -52,7 +52,7 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
       resultOption.map {
         case (user, loginInfo) =>
           User(
-            UUID.fromString(user.userID),
+            user.userID,
             LoginInfo(loginInfo.providerID, loginInfo.providerKey),
             user.firstName,
             user.lastName,
@@ -65,16 +65,15 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
   }
 
   def findAllProfiles(userIDs: Seq[UUID]): Future[Seq[User]] = {
-    val userIDStrings = userIDs.map(_.toString)
     val query = for {
-      dbUsers <- slickUsers.filter(_.id.inSet(userIDStrings))
+      dbUsers <- slickUsers.filter(_.id.inSet(userIDs))
     } yield (dbUsers)
 
     db.run(query.result).map{ resultOption =>
       resultOption.map {
         user =>
           User(
-            UUID.fromString(user.userID),
+            user.userID,
             null,
             user.firstName,
             user.lastName,
@@ -94,7 +93,7 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
    * @return The saved user.
    */
   def save(user: User, newUser: Boolean) = {
-    val dbUser = DBUser(user.userID.toString, user.firstName, user.lastName, user.fullName,
+    val dbUser = DBUser(user.userID, user.firstName, user.lastName, user.fullName,
         user.email, user.avatarURL, user.emailVerified)
     val dbLoginInfo = DBLoginInfo(None, user.loginInfo.providerID, user.loginInfo.providerKey)
     // We don't have the LoginInfo id so we try to get it first.

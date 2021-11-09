@@ -9,8 +9,8 @@
     <ul class="list-group">
         @for(slate <- createdSlates) {
             <li class="list-group-item">
-                <a href=@{s"slates/${slate.id.getOrElse(0)}/info"}>@{slate.title}</a>
-                @if(ballots.exists(_.details.slateID == slate.id.getOrElse(0))) {
+                <a href=@{s"slates/${slate.id}/info"}>@{slate.title}</a>
+                @if(ballots.exists(_.details.slateID == slate.id)) {
                     <span>@messages("user.info.voted")</span>
                 }
             </li>
@@ -20,8 +20,8 @@
     <ul class="list-group">
         @for(slate <- votedSlates) {
             <li class="list-group-item">
-                <a href=@{s"slates/${slate.id.getOrElse(0)}/info"}>@{slate.title}</a>
-                    @if(ballots.exists(_.details.slateID == slate.id.getOrElse(0))) {
+                <a href=@{s"slates/${slate.id}/info"}>@{slate.title}</a>
+                    @if(ballots.exists(_.details.slateID == slate.id)) {
                 <span>@messages("user.info.voted")</span>
                 }
             </li>

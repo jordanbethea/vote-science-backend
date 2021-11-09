@@ -1,9 +1,8 @@
 package models.db
 
 import java.util.UUID
-
 import javax.inject.Inject
-import models.dto.{CandidateDTO, QuestionDTO, SlateDTO, SlateLoadDTO, SlateSaveDTO}
+import models.dto.{LoadCandidateDTO, LoadQuestionDTO, NewCandidateDTO, NewQuestionDTO, SlateDTO, SlateLoadDTO, SlateSaveNewDTO}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.H2Profile.api._
 import slick.jdbc.JdbcProfile
@@ -37,13 +36,13 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     db.run(slates.result)
   }
 
-  def get(id: Long): Future[Option[Slate]] = {
+  def get(id: UUID): Future[Option[Slate]] = {
     db.run(slates.filter(_.id === id).result.headOption)
   }
 
   def getSlatesMadeByUser(user:User) : Future[Seq[SlateLoadDTO]] =  {
     val r = for {
-      slateIDList <- slates.filter(_.creator === user.userID.toString).result
+      slateIDList <- slates.filter(_.creator === user.userID).result
       slateLoads <- getFullSlatesHelper(slateIDList.map(_.id))
     } yield {
       slateLoads
@@ -51,7 +50,7 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     db.run(r)
   }
 
-  def getSingleSlate(id: Long) : Future[Option[SlateLoadDTO]] = {
+  def getSingleSlate(id: UUID) : Future[Option[SlateLoadDTO]] = {
     val q = for {
       slate <- slates.filter(_.id === id).result
       slateLoads <- getFullSlatesHelper(slate.map(_.id))
@@ -71,7 +70,7 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     db.run(query)
   }
 
-  def getSlatesFromList(slateIDs: Seq[Long]): Future[Seq[SlateLoadDTO]] = {
+  def getSlatesFromList(slateIDs: Seq[UUID]): Future[Seq[SlateLoadDTO]] = {
     val query = for {
       slates <- slates.filter(_.id.inSet(slateIDs)).result
       slateLoads <- getFullSlatesHelper(slates.map(_.id))
@@ -81,34 +80,34 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     db.run(query)
   }
 
-  private def getFullSlatesHelper(slateIDs: Seq[Long]): DBIOAction[Seq[SlateLoadDTO], NoStream, Effect.Read] = {
+  private def getFullSlatesHelper(slateIDs: Seq[UUID]): DBIOAction[Seq[SlateLoadDTO], NoStream, Effect.Read] = {
     for {
       slate <- slates.filter(_.id.inSet(slateIDs)).result
       question <- questions.filter(_.slateID.inSet(slateIDs)).result
       candidates <- candidates.filter(_.slateID.inSet(slateIDs)).result
-      user <- slickUsers.filter(_.id.inSet(slate.map(_.creator))).result
+      user <- slickUsers.filter(_.id.inSet(slate.flatMap(_.creatorById))).result
     } yield {
       constructSlateDTO(slate, question, candidates, Option(user))
     }
   }
 
 
-  def fullAdd(slate: SlateSaveDTO): Future[Long] = {
-    def addCandidates(sID: Long, qID: Long, inputcandidates: Seq[CandidateDTO]) : DBIO[Option[Int]] = {
-      val dbCandidates = inputcandidates.map(cDTO => Candidate(cDTO.id.getOrElse(0), cDTO.name, cDTO.description, questionID = qID, slateID = sID))
+  def fullAdd(slate: SlateSaveNewDTO): Future[UUID] = {
+    def addCandidates(sID: UUID, qID: UUID, inputcandidates: Seq[NewCandidateDTO]) : DBIO[Option[Int]] = {
+      val dbCandidates = inputcandidates.map(cDTO => Candidate(UUID.randomUUID(), cDTO.name, cDTO.description, questionID = qID, slateID = sID))
       candidates ++= dbCandidates
     }
 
-    def addQuestion(sID: Long, question: QuestionDTO) : DBIO[Unit] = {
-      val dbquestion = Question(question.id.getOrElse(0), sID, question.text)
+    def addQuestion(sID: UUID, question: NewQuestionDTO) : DBIO[Unit] = {
+      val dbquestion = Question(UUID.randomUUID(), sID, question.text)
       for {
         newQid <- questionsInserts += dbquestion
         _ <- addCandidates(sID, newQid, question.candidates)
       } yield ()
     }
 
-    def addSlateOnly(slate: SlateSaveDTO) : DBIO[Long] = {
-      slatesInserts += Slate(slate.id.getOrElse(0), slate.title, slate.creator, slate.anonymous)
+    def addSlateOnly(slate: SlateSaveNewDTO) : DBIO[UUID] = {
+      slatesInserts += Slate(UUID.randomUUID(), slate.title, slate.creatorID, slate.anonCreator)
     }
 
     val tx = addSlateOnly(slate).flatMap {
@@ -120,15 +119,15 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
     db.run(tx)
   }
 
-  def add(slate: Slate): Future[Long] = {
+  def add(slate: Slate): Future[UUID] = {
     db.run(slatesInserts += slate)
   }
 
-  def addAll(slates:Seq[Slate]): Future[Seq[Long]] = {
+  def addAll(slates:Seq[Slate]): Future[Seq[UUID]] = {
     db.run(slatesInserts ++= slates)
   }
 
-  def delete(id: Long): Future[Int] = {
+  def delete(id: UUID): Future[Int] = {
     db.run(slates.filter(_.id === id).delete)
   }
 
@@ -143,15 +142,15 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
                         candidates:Seq[Candidate],
                         creators:Option[Seq[DBUser]] = None): Seq[SlateLoadDTO] = {
     for(s <- slates) yield (
-      SlateLoadDTO(Option(s.id), s.title,
+      SlateLoadDTO(s.id, s.title,
         if(creators.nonEmpty){
-          val result = creators.get.find(_.userID == s.creator);
-          if(result.nonEmpty){ Right(result.get)} else {Left(s.creator)}
-        } else { Left(s.creator) },
+          val result = creators.get.find(_.userID == s.creatorById.getOrElse());
+          if(result.nonEmpty){ Right(result.get)} else {Left(s.anonCreator.getOrElse(""))}
+        } else { Left(s.anonCreator.getOrElse("")) },
         for(q <- questions.filter(_.slateID == s.id)) yield (
-          QuestionDTO(Option(q.id), q.text,
+          LoadQuestionDTO(q.id, q.text,
             candidates.filter(_.questionID == q.id).map(
-              c => new CandidateDTO(Option(c.id), c.name, c.description)
+              c => LoadCandidateDTO(c.id, c.name, c.description)
             )))
       ))
   }
@@ -160,7 +159,8 @@ class SlateRepository @Inject()(protected val dbConfigProvider: DatabaseConfigPr
   //I don't want to use DB object, and don't need login info
   //TODO - think about a better solution for this
   private implicit def dbUserToGenUser(user: DBUser):User = {
-    User(UUID.fromString(user.userID), null,
+    //User(UUID.fromString(user.userID), null,
+    User(user.userID, null,
       user.firstName, user.lastName, user.fullName, user.email, user.avatarURL, user.emailVerified)
   }
 }

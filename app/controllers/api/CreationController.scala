@@ -2,7 +2,7 @@ package controllers.api
 
 import javax.inject.{Inject, Singleton}
 import models.db._
-import models.dto.{SlateSaveDTO}
+import models.dto.{SlateSaveNewDTO}
 import models.dto.SlateDTO._
 import play.api.libs.json.{JsResult, Json, _}
 import play.api.mvc.{AbstractController, ControllerComponents}
@@ -14,9 +14,9 @@ class CreationController @Inject()(slatesRepo: SlateRepository, cc: ControllerCo
                                   (implicit ex: ExecutionContext) extends AbstractController(cc) {
 
   def createSlate = Action.async(parse.json) { request =>
-    val newSlateParsing: JsResult[SlateSaveDTO] = Json.fromJson[SlateSaveDTO](request.body)
-    val newSlate:SlateSaveDTO = newSlateParsing match {
-      case JsSuccess(value: SlateSaveDTO, path: JsPath) => value
+    val newSlateParsing: JsResult[SlateSaveNewDTO] = Json.fromJson[SlateSaveNewDTO](request.body)
+    val newSlate:SlateSaveNewDTO = newSlateParsing match {
+      case JsSuccess(value: SlateSaveNewDTO, path: JsPath) => value
       case e @ JsError(_) =>
         Console.println(s"Parse errors: ${JsError.toJson(e).toString()} ")
         null

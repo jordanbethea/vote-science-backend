@@ -1,10 +1,10 @@
 package models.db
 
 import com.mohiva.play.silhouette.api.LoginInfo
-import models.AuthToken
 import slick.jdbc.JdbcProfile
 
 import java.time.Instant
+import java.util.UUID
 
 trait DBTableDefinitions {
 
@@ -12,7 +12,7 @@ trait DBTableDefinitions {
   import driver.api._
 
   case class DBUser(
-                     userID: String,
+                     userID: UUID,
                      firstName: Option[String],
                      lastName: Option[String],
                      fullName: Option[String],
@@ -22,7 +22,7 @@ trait DBTableDefinitions {
                    )
 
   class Users(tag: Tag) extends Table[DBUser](tag, "user_data") {
-    def id = column[String]("user_id", O.PrimaryKey)
+    def id = column[UUID]("user_id", O.PrimaryKey)
     def firstName = column[Option[String]]("first_name")
     def lastName = column[Option[String]]("last_name")
     def fullName = column[Option[String]]("full_name")
@@ -49,12 +49,12 @@ trait DBTableDefinitions {
   }
 
   case class DBUserLoginInfo(
-                              userID: String,
+                              userID: UUID,
                               loginInfoId: Long
                             )
 
   class UserLoginInfos(tag: Tag) extends Table[DBUserLoginInfo](tag, "user_login_info") {
-    def userID = column[String]("user_id")
+    def userID = column[UUID]("user_id")
     def loginInfoId = column[Long]("login_info_id")
 
     def * = (userID, loginInfoId) <> (DBUserLoginInfo.tupled, DBUserLoginInfo.unapply)
@@ -138,60 +138,60 @@ trait DBTableDefinitions {
     def * = (id, key, value) <> (DBOpenIDAttribute.tupled, DBOpenIDAttribute.unapply)
   }
 
-  case class Slate(id: Long, title: String, creator: String, anonymous: Boolean)
+  case class Slate(id: UUID, title: String, creatorById: Option[UUID], anonCreator: Option[String])
 
   class SlateTableDef(tag: Tag) extends Table[Slate](tag, "slates") {
-    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def id = column[UUID]("id", O.PrimaryKey)
     def title = column[String]("title")
-    def creator = column[String]("creator")
-    def anonymous = column[Boolean]("anonymous")
+    def creator = column[Option[UUID]]("creator_id")
+    def anonCreator = column[Option[String]]("anon_creator")
 
-    override def * = (id, title, creator, anonymous).mapTo[Slate]
+    override def * = (id, title, creator, anonCreator).mapTo[Slate]
   }
 
-  case class Question (id: Long, slateID: Long, text:String)
+  case class Question (id: UUID, slateID: UUID, text:String)
 
   class QuestionTableDef(tag: Tag) extends Table[Question](tag, "questions") {
-    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def slateID = column[Long]("slate_id")
+    def id = column[UUID]("id", O.PrimaryKey)
+    def slateID = column[UUID]("slate_id")
     def text = column[String]("text")
 
     override def * = (id, slateID, text).mapTo[Question]
     def slate = foreignKey("slate_question_fk", slateID, slates)(_.id)
   }
 
-  case class Candidate (id: Long, name: String, description: String, slateID: Long, questionID:Long)
+  case class Candidate (id: UUID, name: String, description: String, slateID: UUID, questionID:UUID)
 
   class CandidateTableDef(tag: Tag) extends Table[Candidate](tag, "candidates") {
-    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def id = column[UUID]("id", O.PrimaryKey)
     def name = column[String]("name")
     def description = column[String]("description")
-    def slateID = column[Long]("slate_id")
-    def questionID = column[Long]("question_id")
+    def slateID = column[UUID]("slate_id")
+    def questionID = column[UUID]("question_id")
 
     override def * = (id, name, description, slateID, questionID).mapTo[Candidate]
     def question = foreignKey("question_candidate_fk", questionID, questions)(_.id)
     def slate = foreignKey("slate_candidate_fk", slateID, slates)(_.id)
   }
 
-  case class Ballot(id: Long, slateID: Long, voter: String, anonymous: Boolean)
+  case class Ballot(id: UUID, slateID: UUID, voterID: Option[UUID], anonVoter: Option[String])
 
   class BallotTableDef(tag: Tag) extends Table[Ballot](tag, "ballots") {
-    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def slateID = column[Long]("slate_id")
-    def voter = column[String]("voter")
-    def anonymous = column[Boolean]("anonymous")
+    def id = column[UUID]("id", O.PrimaryKey)
+    def slateID = column[UUID]("slate_id")
+    def voterID = column[Option[UUID]]("voter_id")
+    def anonVoter = column[Option[String]]("anon_voter")
 
-    override def * = (id, slateID, voter, anonymous).mapTo[Ballot]
+    override def * = (id, slateID, voterID, anonVoter).mapTo[Ballot]
     def slate = foreignKey("ballot_slate_fk", slateID, slates)(_.id)
   }
 
-  case class FPTPChoice(ballotID: Long, questionID: Long, candidateID:Long)
+  case class FPTPChoice(ballotID: UUID, questionID: UUID, candidateID:UUID)
 
   class FPTPTableDef(tag: Tag) extends Table[FPTPChoice](tag, "fptp_choices") {
-    def ballotID = column[Long]("ballot_id")
-    def questionID = column[Long]("question_id")
-    def candidateID = column[Long]("candidate_id")
+    def ballotID = column[UUID]("ballot_id")
+    def questionID = column[UUID]("question_id")
+    def candidateID = column[UUID]("candidate_id")
 
     override def * = (ballotID, questionID, candidateID).mapTo[FPTPChoice]
     def ballotKey = foreignKey("fptp_ballot_fk", ballotID, ballots)(_.id)
@@ -199,12 +199,12 @@ trait DBTableDefinitions {
     def candidateKey = foreignKey("fptp_candididate_fk", candidateID, candidates)(_.id)
   }
 
-  case class ApprovalChoice(ballotID:Long, questionID:Long, candidateID:Long)
+  case class ApprovalChoice(ballotID:UUID, questionID:UUID, candidateID:UUID)
 
   class ApprovalTableDef(tag: Tag) extends Table[ApprovalChoice](tag, "approval_choices"){
-    def ballotID = column[Long]("ballot_id")
-    def questionID = column[Long]("question_id")
-    def candidateID = column[Long]("candidate_id")
+    def ballotID = column[UUID]("ballot_id")
+    def questionID = column[UUID]("question_id")
+    def candidateID = column[UUID]("candidate_id")
 
     override def * = (ballotID, questionID, candidateID).mapTo[ApprovalChoice]
     def ballotKey = foreignKey("approval_ballot_fk", ballotID, ballots)(_.id)
@@ -212,12 +212,12 @@ trait DBTableDefinitions {
     def candidateKey = foreignKey("approval_candidate_fk", candidateID, candidates)(_.id)
   }
 
-  case class RankedChoice(ballotID:Long, questionID:Long, candidateID:Long, rank:Int)
+  case class RankedChoice(ballotID:UUID, questionID:UUID, candidateID:UUID, rank:Int)
 
   class RankedTableDef(tag: Tag) extends Table[RankedChoice](tag, "ranked_choices"){
-    def ballotID = column[Long]("ballot_id")
-    def questionID = column[Long]("question_id")
-    def candidateID = column[Long]("candidate_id")
+    def ballotID = column[UUID]("ballot_id")
+    def questionID = column[UUID]("question_id")
+    def candidateID = column[UUID]("candidate_id")
     def rank = column[Int]("rank")
 
     override def * = (ballotID, questionID, candidateID, rank).mapTo[RankedChoice]
@@ -226,12 +226,12 @@ trait DBTableDefinitions {
     def candidateKey = foreignKey("rank_candidate_fk", candidateID, candidates)(_.id)
   }
 
-  case class RangeChoice(ballotID:Long, questionID:Long, candidateID:Long, score:Int)
+  case class RangeChoice(ballotID:UUID, questionID:UUID, candidateID:UUID, score:Int)
 
   class RangeTableDef(tag: Tag) extends Table[RangeChoice](tag, "range_choices"){
-    def ballotID = column[Long]("ballot_id")
-    def questionID = column[Long]("question_id")
-    def candidateID = column[Long]("candidate_id")
+    def ballotID = column[UUID]("ballot_id")
+    def questionID = column[UUID]("question_id")
+    def candidateID = column[UUID]("candidate_id")
     def score = column[Int]("score")
 
     override def * = (ballotID, questionID, candidateID, score).mapTo[RangeChoice]
