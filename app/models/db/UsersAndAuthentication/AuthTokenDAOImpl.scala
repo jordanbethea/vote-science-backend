@@ -24,10 +24,10 @@ class AuthTokenDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
    * @return The found token or None if no token for the given ID could be found.
    */
   def find(id: UUID) = {
-    val query = slickAuthTokens.filter(_.id === id.toString).result.headOption
+    val query = slickAuthTokens.filter(_.id === id).result.headOption
     db.run(query).map {  resultOption =>
       resultOption.map {
-        case token => AuthToken(UUID.fromString(token.id), UUID.fromString(token.userID), token.expiry)
+        case token => AuthToken(token.id, token.userID, token.expiry)
       }
     }
   }
@@ -41,7 +41,7 @@ class AuthTokenDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
     val query = slickAuthTokens.filter(_.expiry >= dateTime).result
     db.run(query).map { resultSeq =>
       resultSeq.map {  tokenDB =>
-        AuthToken(UUID.fromString(tokenDB.id), UUID.fromString(tokenDB.userID), tokenDB.expiry)
+        AuthToken(tokenDB.id, tokenDB.userID, tokenDB.expiry)
       }
     }
   }
@@ -53,9 +53,9 @@ class AuthTokenDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
    * @return The saved token.
    */
   def save(token: AuthToken) = {
-    val authTokenDB = AuthTokenDB(token.id.toString, token.userID.toString, token.expiry)
+    val authTokenDB = AuthTokenDB(token.id, token.userID, token.expiry)
     val query = slickAuthTokenInserts += authTokenDB
-    db.run(query).map(UUID.fromString(_))
+    db.run(query)
   }
 
   /**
@@ -65,7 +65,7 @@ class AuthTokenDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
    * @return A future to wait for the process to be completed.
    */
   def remove(id: UUID) = {
-    val query = slickAuthTokens.filter(_.id === id.toString).delete
+    val query = slickAuthTokens.filter(_.id === id).delete
     db.run(query)
   }
 }

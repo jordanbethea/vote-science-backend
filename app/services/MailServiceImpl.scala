@@ -1,6 +1,7 @@
 package services
 
 import models.User
+import play.api.Configuration
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl, MessagesProvider}
 import play.api.libs.mailer.{Email, MailerClient}
 
@@ -10,7 +11,6 @@ class MailServiceImpl @Inject() (mailerClient: MailerClient, messagesApi: Messag
 
   def sendConfirmationEmail(user: User, uri: String)(implicit lang: Lang) = {
     implicit val messagesProvider: MessagesProvider = MessagesImpl(lang, messagesApi)
-
     val email = Email(
       Messages("email.activate.account.subject"),
       "from_vote_science@doesnotexist.com",
