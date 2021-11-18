@@ -3,7 +3,6 @@ package models.db.UsersAndAuthentication
 import java.util.UUID
 import com.mohiva.play.silhouette.api.LoginInfo
 import models.User
-import slick.dbio.DBIOAction
 import javax.inject.Inject
 import play.api.db.slick.DatabaseConfigProvider
 import scala.concurrent.{ExecutionContext, Future}
@@ -111,8 +110,8 @@ class UserDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvid
     }
     // combine database actions to be run sequentially
     val actions = (for {
+      //TODO - dont't think this update is correct, need to filter first
       _ <- if(newUser) slickUsers += dbUser else slickUsers.update(dbUser)
-      //_ <- slickUsers.insertOrUpdate(dbUser)
       loginInfo <- loginInfoAction
       _ <- slickUserLoginInfos += DBUserLoginInfo(dbUser.userID, loginInfo.id.get)
     } yield ()).transactionally

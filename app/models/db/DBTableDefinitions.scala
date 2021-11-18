@@ -31,7 +31,7 @@ trait DBTableDefinitions {
     def emailVerified = column[Boolean]("email_verified")
 
     def * = (id, firstName, lastName, fullName, email, avatarURL,
-      emailVerified) <> (DBUser.tupled, DBUser.unapply)
+      emailVerified).mapTo[DBUser]
   }
 
   case class DBLoginInfo(
@@ -240,11 +240,11 @@ trait DBTableDefinitions {
     def candidateKey = foreignKey("range_candidate_fk", candidateID, candidates)(_.id)
   }
 
-  case class AuthTokenDB(id: String, userID:String, expiry: Instant)
+  case class AuthTokenDB(id: UUID, userID:UUID, expiry: Instant)
 
   class AuthTokenTableDef(tag: Tag) extends Table[AuthTokenDB](tag, "auth_tokens"){
-    def id = column[String]("id")
-    def userID = column[String]("user_id")
+    def id = column[UUID]("id")
+    def userID = column[UUID]("user_id")
     def expiry = column[Instant]("expiry")
 
     override def * = (id, userID, expiry).mapTo[AuthTokenDB]
