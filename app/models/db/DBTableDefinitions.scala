@@ -250,6 +250,34 @@ trait DBTableDefinitions {
     override def * = (id, userID, expiry).mapTo[AuthTokenDB]
   }
 
+  case class Group(id: UUID, name: String, description: Option[String], admin: UUID)
+
+  class GroupTableDef(tag: Tag) extends Table[Group](tag, "groups"){
+    def id = column[UUID]("id", O.PrimaryKey)
+    def name = column[String]("name")
+    def description = column[Option[String]]("description")
+    def admin = column[UUID]("admin")
+
+    def adminKey = foreignKey("admin_user_fk", admin, slickUsers)(_.id)
+
+    override def * = (id, name, description, admin).mapTo[Group]
+  }
+
+  val groups = TableQuery[GroupTableDef]
+
+  case class GroupMember(group: UUID, user: UUID)
+
+  class GroupMemberTable(tag: Tag) extends Table[GroupMember](tag, "group_members"){
+    def group = column[UUID]("group")
+    def user = column[UUID]("user")
+
+    def groupKey = foreignKey("groupMem_group_fk", group, groups)(_.id)
+    def userKey = foreignKey("groupMem_user_fk", user, groups)(_.id)
+
+    override def * = (group, user).mapTo[GroupMember]
+  }
+  val groupMembers = TableQuery[GroupMemberTable]
+
   // table query definitions
   val slickUsers = TableQuery[Users]
   val slickLoginInfos = TableQuery[LoginInfos]
